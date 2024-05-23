@@ -1,0 +1,7 @@
+{
+  "[dart]": {
+    "editor.indentSize": 2,
+    "editor.defaultFormatter": "Dart-Code.dart-code",
+    "editor.formatOnSave": true
+  },
+}
