@@ -21,28 +21,32 @@ Future<List<Tutor>> fetchTutors() async {
   return tr.result;
 }
 
-Future<String> chatTrans(String path) async {
-  var r = await dio.post(
-    '$base/aiteacher/chattrans',
-    data: FormData.fromMap({
-      'characterid': 1,
-      'file': MultipartFile.fromBytes(
-        await File.fromUri(Uri.parse(path)).readAsBytes(),
-        filename: 'blob',
-        contentType: MediaType('application', 'audio/m4a'),
-      ),
-    }),
-    options: Options(headers: {'Authorization': auth}),
-  );
-  log(r.data);
-  return r.data;
+Future<String> chatTrans(String path, int tutorId) async {
+  try {
+    var r = await dio.post(
+      '$base/aiteacher/chattrans',
+      data: FormData.fromMap({
+        'characterid': tutorId,
+        'file': MultipartFile.fromBytes(
+          await File.fromUri(Uri.parse(path)).readAsBytes(),
+          filename: 'blob',
+          contentType: MediaType('audio', 'wav'),
+        ),
+      }),
+      options: Options(headers: {'Authorization': auth}),
+    );
+    return r.data["result"]["originaltext"];
+  } catch (e) {
+    log(e.toString());
+    return '';
+  }
 
   // var request =
   //     http.MultipartRequest("POST", Uri.parse('$base/aiteacher/chattrans'));
   // request.files.add(http.MultipartFile.fromBytes(
   //   'file',
   //   await File.fromUri(Uri.parse(path)).readAsBytes(),
-  //   contentType: MediaType('application', 'audio/m4a'),
+  //   contentType: MediaType('application', 'audio/wav'),
   //   filename: 'blob',
   // ));
   // request.fields['characterid'] = '1';

@@ -3,8 +3,10 @@ import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobx/mobx.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:record/record.dart';
+import 'package:audioplayers/audioplayers.dart' as AP;
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../api.dart';
@@ -13,12 +15,12 @@ part 'tutors.g.dart';
 
 class Tutors = _Tutors with _$Tutors;
 
-const useLocalRecognition = false;
+const useLocalRecognition = true;
 
 abstract class _Tutors with Store {
   SpeechToText stt = SpeechToText();
-  AudioPlayer player = AudioPlayer();
-  Record recorder = Record();
+  AP.AudioPlayer player = AP.AudioPlayer();
+  FlutterSoundRecorder recorder = FlutterSoundRecorder();
   String audioPath = '';
   bool speechEnabled = false;
   String lastMsg = '';
@@ -73,9 +75,8 @@ abstract class _Tutors with Store {
       if (!speechEnabled) await initSpeech();
       await stt.listen(onResult: onSpeechResult, localeId: lang);
     } else {
-      if (await recorder.hasPermission()) {
-        await recorder.start();
-      }
+      await requestMicPermission();
+      await recorder.startRecorder(toFile: audioPath, codec: Codec.pcm16WAV);
     }
     isRecording = true;
   }
@@ -86,18 +87,12 @@ abstract class _Tutors with Store {
     if (useLocalRecognition) {
       await stt.stop();
       if (lastMsg != '') {
-        await chat(lastMsg);
+        await voice(lastMsg);
         lastMsg = '';
       }
     } else {
-      String? path = await recorder.stop();
-      log(path ?? '');
-      if (path != null) {
-        audioPath = path;
-        // player.play(UrlSource(path));
-        String trans = await chatTrans(path);
-        if (trans != '') await chat(trans);
-      }
+      await recorder.stopRecorder();
+      await trans();
     }
   }
 
@@ -115,14 +110,23 @@ abstract class _Tutors with Store {
     }
   }
 
-  Future<void> chat(String text) async {
+  Msg addMsg(String text) {
     var msg = Msg()
       ..text = text
       ..lang = lang;
     msgs.add(msg);
+    return msg;
+  }
+
+  void addLoadingMsg(bool isAI) {
     msgs.add(Msg()
       ..isWaiting = true
-      ..isAI = true);
+      ..isAI = isAI);
+  }
+
+  Future<void> voice(String text) async {
+    Msg msg = addMsg(text);
+    addLoadingMsg(true);
     Msg? aiMsg = await chatVoice(msg, tutor!);
     msgs.removeLast();
     if (aiMsg != null) {
@@ -131,8 +135,29 @@ abstract class _Tutors with Store {
     }
   }
 
+  Future<void> trans() async {
+    addLoadingMsg(false);
+    String recognized = await chatTrans(audioPath, tutor!.id);
+    msgs.removeLast();
+    if (recognized != '') await voice(recognized);
+  }
+
   Future<void> initSpeech() async {
     speechEnabled = await stt.initialize();
+  }
+
+  Future<void> initRecorder() async {
+    await recorder.openRecorder();
+    final tempDir = await getTemporaryDirectory();
+    audioPath = '${tempDir.path}/temp.wav';
+    await requestMicPermission();
+  }
+
+  Future<void> requestMicPermission() async {
+    PermissionStatus status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException("Microphone permission not granted");
+    }
   }
 
   void onSpeechResult(SpeechRecognitionResult result) {
@@ -141,10 +166,12 @@ abstract class _Tutors with Store {
   }
 
   _Tutors() {
+    initRecorder();
+
     loadTutors();
 
     player.onPlayerStateChanged.listen((e) {
-      if (e == PlayerState.playing) {
+      if (e == AP.PlayerState.playing) {
         isReading = true;
       } else {
         isReading = false;
@@ -157,7 +184,8 @@ abstract class _Tutors with Store {
 
   void dispose() {
     player.dispose();
-    recorder.dispose();
+    //recorder.dispose();
+    recorder.closeRecorder();
   }
 }
 
