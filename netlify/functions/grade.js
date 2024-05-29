@@ -48,5 +48,5 @@ export default async (req, context) => {
   })
 
   const result = await chatSession.sendMessage(msg)
-  return new Resposnse(result.response.text())
+  return new Response(result.response.text())
 }
