@@ -46,6 +46,6 @@ export default async (req, context) => {
     history: [],
   })
 
-  const result = await chatSession.sendMessage("INSERT_INPUT_HERE")
+  const result = await chatSession.sendMessage(req.body.msg)
   return new Resposnse(result.response.text())
 }
