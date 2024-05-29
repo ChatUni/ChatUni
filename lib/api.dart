@@ -12,6 +12,9 @@ part 'api.g.dart';
 String base = 'https://chat.smartkit.vip';
 String auth =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEwLCJwaG9uZSI6IjEiLCJpYXQiOjE3MTU1OTU0OTQsImV4cCI6MTcxODE4NzQ5NH0.z_KEKFYmC9pNfkzBGZ5AoPCYcyY5bTT2BdUsdr-En6M';
+// String base = 'https://www.mogaverse.xyz';
+// String auth =
+//     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjYsInBob25lIjoiMTczMDI4MTE2MzAiLCJpYXQiOjE3MTYyNTk2MjIsImV4cCI6MTcxODg1MTYyMn0.fuMMDshFxmdTpPiDP5vVT3YlWe9qqS9O76mxBNUEJlU';
 
 final dio = Dio();
 
@@ -21,44 +24,28 @@ Future<List<Tutor>> fetchTutors() async {
   return tr.result;
 }
 
-Future<String> chatTrans(String path, int tutorId) async {
+Future<TransResult?> chatTrans(String path, int tutorId) async {
   try {
     var r = await dio.post(
       '$base/aiteacher/chattrans',
       data: FormData.fromMap({
         'characterid': tutorId,
-        'file': MultipartFile.fromBytes(
-          await File.fromUri(Uri.parse(path)).readAsBytes(),
+        'file': await MultipartFile.fromFile(
+          path,
           filename: 'blob',
           contentType: MediaType('audio', 'wav'),
         ),
       }),
       options: Options(headers: {'Authorization': auth}),
     );
-    return r.data["result"]["originaltext"];
+    return TransResponse.fromJson(r.data).result;
   } catch (e) {
     log(e.toString());
-    return '';
+    return null;
   }
-
-  // var request =
-  //     http.MultipartRequest("POST", Uri.parse('$base/aiteacher/chattrans'));
-  // request.files.add(http.MultipartFile.fromBytes(
-  //   'file',
-  //   await File.fromUri(Uri.parse(path)).readAsBytes(),
-  //   contentType: MediaType('application', 'audio/wav'),
-  //   filename: 'blob',
-  // ));
-  // request.fields['characterid'] = '1';
-  // request.headers['Authorization'] = auth;
-  // log(request.files[0].length.toString());
-  // var streamedResponse = await request.send();
-  // var response = await http.Response.fromStream(streamedResponse);
-  // log(response.body);
-  // return response.body;
 }
 
-Future<Msg?> chatVoice(Msg msg, Tutor tutor) async {
+Future<Msg?> chatVoice(Msg msg, Tutor tutor, String? file) async {
   var r = await dio.post('$base/aiteacher/chatvoice',
       data: {
         "characterid": tutor.id.toString(),
@@ -66,6 +53,8 @@ Future<Msg?> chatVoice(Msg msg, Tutor tutor) async {
         'language': msg.lang,
         'speed': tutor.speed.toString(),
         'voiceid': tutor.voice,
+        // 'sessionid': 6,
+        // 'audiofile': file,
       },
       options: Options(headers: {'Authorization': auth}));
   if (r.statusCode != 200) return null;
@@ -119,4 +108,30 @@ class VoiceResponse {
       _$VoiceResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$VoiceResponseToJson(this);
+}
+
+@JsonSerializable()
+class TransResult {
+  String originaltext = '';
+  String? audiofile = '';
+
+  TransResult();
+
+  factory TransResult.fromJson(Map<String, dynamic> json) =>
+      _$TransResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TransResultToJson(this);
+}
+
+@JsonSerializable()
+class TransResponse {
+  String status = '';
+  TransResult result = TransResult();
+
+  TransResponse();
+
+  factory TransResponse.fromJson(Map<String, dynamic> json) =>
+      _$TransResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TransResponseToJson(this);
 }

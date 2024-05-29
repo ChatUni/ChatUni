@@ -41,3 +41,24 @@ Map<String, dynamic> _$VoiceResponseToJson(VoiceResponse instance) =>
       'status': instance.status,
       'result': instance.result,
     };
+
+TransResult _$TransResultFromJson(Map<String, dynamic> json) => TransResult()
+  ..originaltext = json['originaltext'] as String
+  ..audiofile = json['audiofile'] as String?;
+
+Map<String, dynamic> _$TransResultToJson(TransResult instance) =>
+    <String, dynamic>{
+      'originaltext': instance.originaltext,
+      'audiofile': instance.audiofile,
+    };
+
+TransResponse _$TransResponseFromJson(Map<String, dynamic> json) =>
+    TransResponse()
+      ..status = json['status'] as String
+      ..result = TransResult.fromJson(json['result'] as Map<String, dynamic>);
+
+Map<String, dynamic> _$TransResponseToJson(TransResponse instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'result': instance.result,
+    };

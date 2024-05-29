@@ -5,6 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobx/mobx.dart';
 import 'package:audioplayers/audioplayers.dart' as AP;
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -20,7 +21,8 @@ const useLocalRecognition = true;
 abstract class _Tutors with Store {
   SpeechToText stt = SpeechToText();
   AP.AudioPlayer player = AP.AudioPlayer();
-  FlutterSoundRecorder recorder = FlutterSoundRecorder();
+  //FlutterSoundRecorder recorder = FlutterSoundRecorder();
+  Record recorder = Record();
   String audioPath = '';
   bool speechEnabled = false;
   String lastMsg = '';
@@ -76,7 +78,8 @@ abstract class _Tutors with Store {
       await stt.listen(onResult: onSpeechResult, localeId: lang);
     } else {
       await requestMicPermission();
-      await recorder.startRecorder(toFile: audioPath, codec: Codec.pcm16WAV);
+      await recorder.start(path: audioPath, encoder: AudioEncoder.pcm16bit);
+      // await recorder.startRecorder(toFile: audioPath, codec: Codec.pcm16WAV);
     }
     isRecording = true;
   }
@@ -87,11 +90,12 @@ abstract class _Tutors with Store {
     if (useLocalRecognition) {
       await stt.stop();
       if (lastMsg != '') {
-        await voice(lastMsg);
+        await voice(TransResult()..originaltext = lastMsg);
         lastMsg = '';
       }
     } else {
-      await recorder.stopRecorder();
+      await recorder.stop();
+      // await recorder.stopRecorder();
       await trans();
     }
   }
@@ -103,9 +107,10 @@ abstract class _Tutors with Store {
       m.isReading = false;
     } else {
       if (m.url != '') {
-        await player.setSourceUrl(m.url);
+        await player.play(AP.UrlSource(m.url, mimeType: 'audio/mp3'));
+        // await player.setSourceUrl(m.url);
         m.isReading = true;
-        player.resume();
+        // player.resume();
       }
     }
   }
@@ -124,10 +129,10 @@ abstract class _Tutors with Store {
       ..isAI = isAI);
   }
 
-  Future<void> voice(String text) async {
-    Msg msg = addMsg(text);
+  Future<void> voice(TransResult result) async {
+    Msg msg = addMsg(result.originaltext);
     addLoadingMsg(true);
-    Msg? aiMsg = await chatVoice(msg, tutor!);
+    Msg? aiMsg = await chatVoice(msg, tutor!, result.audiofile);
     msgs.removeLast();
     if (aiMsg != null) {
       msgs.add(aiMsg);
@@ -137,9 +142,11 @@ abstract class _Tutors with Store {
 
   Future<void> trans() async {
     addLoadingMsg(false);
-    String recognized = await chatTrans(audioPath, tutor!.id);
+    TransResult? transResult = await chatTrans(audioPath, tutor!.id);
     msgs.removeLast();
-    if (recognized != '') await voice(recognized);
+    if (transResult != null && transResult.originaltext != '') {
+      await voice(transResult);
+    }
   }
 
   Future<void> initSpeech() async {
@@ -147,7 +154,7 @@ abstract class _Tutors with Store {
   }
 
   Future<void> initRecorder() async {
-    await recorder.openRecorder();
+    // await recorder.openRecorder();
     final tempDir = await getTemporaryDirectory();
     audioPath = '${tempDir.path}/temp.wav';
     await requestMicPermission();
@@ -184,8 +191,8 @@ abstract class _Tutors with Store {
 
   void dispose() {
     player.dispose();
-    //recorder.dispose();
-    recorder.closeRecorder();
+    recorder.dispose();
+    // recorder.closeRecorder();
   }
 }
 
