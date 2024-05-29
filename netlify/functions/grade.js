@@ -40,12 +40,13 @@ const safetySettings = [
 ]
 
 export default async (req, context) => {
+  const msg = new URL(req.url).searchParams.get('msg')
   const chatSession = model.startChat({
     generationConfig,
     safetySettings,
     history: [],
   })
 
-  const result = await chatSession.sendMessage(req.params.msg)
+  const result = await chatSession.sendMessage(msg)
   return new Resposnse(result.response.text())
 }
