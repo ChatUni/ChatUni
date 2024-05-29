@@ -46,6 +46,6 @@ export default async (req, context) => {
     history: [],
   })
 
-  const result = await chatSession.sendMessage(req.body.msg)
+  const result = await chatSession.sendMessage(req.params.msg)
   return new Resposnse(result.response.text())
 }
