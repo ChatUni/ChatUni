@@ -360,7 +360,7 @@ List<Widget> tutorBody(Tutor t, BuildContext context) => [
           'assets/images/${tutors.isReading ? 'gif' : 'tutoricons'}/${t.id}.${tutors.isReading ? 'gif' : 'png'}',
           width: MediaQuery.of(context).size.width,
           height: 400,
-          fit: BoxFit.fitWidth,
+          fit: BoxFit.fitHeight,
           alignment: Alignment.topLeft,
         ),
       ),
