@@ -22,6 +22,7 @@ class Player {
   }
 
   void dispose() {
+    _onPlayingController.close();
     _player.dispose();
   }
 }

@@ -351,22 +351,27 @@ List<Widget> tutorsBody() => [
       tutorList(2),
     ];
 
-List<Widget> tutorBody(Tutor t, BuildContext context) => [
-      Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-        ),
-        child: Image.asset(
-          'assets/images/${tutors.isReading ? 'gif' : 'tutoricons'}/${t.id}.${tutors.isReading ? 'gif' : 'png'}',
-          width: MediaQuery.of(context).size.width,
-          height: 400,
-          fit: BoxFit.fitHeight,
-          alignment: Alignment.center,
-        ),
+List<Widget> tutorBody(Tutor t, BuildContext context) {
+  final width = MediaQuery.of(context).size.width;
+  const height = 400.0;
+  final fit = width > 480 ? BoxFit.fitHeight : BoxFit.fitWidth;
+  return [
+    Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
       ),
-      msgList(context),
-      const SizedBox(height: 80)
-    ];
+      child: Image.asset(
+        'assets/images/${tutors.isReading ? 'gif' : 'tutoricons'}/${t.id}.${tutors.isReading ? 'gif' : 'png'}',
+        width: width,
+        height: height,
+        fit: fit,
+        alignment: Alignment.topCenter,
+      ),
+    ),
+    msgList(context),
+    const SizedBox(height: 80)
+  ];
+}
 
 Widget msgList(BuildContext context) => Observer(
       builder: (_) => Expanded(
