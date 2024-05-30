@@ -47,8 +47,17 @@ abstract class _Tutors with Store {
   }
 
   @action
-  void selectTutor(Tutor t) {
+  Future<void> selectTutor(Tutor t) async {
     tutor = t;
+    final msg = await loadMsg(
+      true,
+      () => greeting(t.id),
+    );
+    if (msg != null) {
+      await addAIMsg(Msg()
+        ..text = msg
+        ..isAI = true);
+    }
   }
 
   @action
@@ -109,27 +118,40 @@ abstract class _Tutors with Store {
     return msg;
   }
 
-  void addLoadingMsg(bool isAI) {
-    msgs.add(Msg()
-      ..isWaiting = true
-      ..isAI = isAI);
-  }
-
-  Future<void> voice(TransResult result) async {
-    Msg msg = addMsg(result.originaltext);
-    addLoadingMsg(true);
-    Msg? aiMsg = await chatVoice(msg, tutor!, result.audiofile);
-    msgs.removeLast();
+  Future<void> addAIMsg(Msg? aiMsg) async {
     if (aiMsg != null) {
       msgs.add(aiMsg);
       await read(aiMsg);
     }
   }
 
-  Future<void> trans() async {
-    addLoadingMsg(false);
-    TransResult? transResult = await chatTrans(_recorder.path, tutor!.id);
+  void addLoadingMsg(bool isAI) {
+    msgs.add(Msg()
+      ..isWaiting = true
+      ..isAI = isAI);
+  }
+
+  Future<T> loadMsg<T>(bool isAI, Future<T> Function() api) async {
+    addLoadingMsg(isAI);
+    final r = await api();
     msgs.removeLast();
+    return r;
+  }
+
+  Future<void> voice(TransResult result) async {
+    Msg msg = addMsg(result.originaltext);
+    Msg? aiMsg = await loadMsg(
+      true,
+      () => chatVoice(msg, tutor!, result.audiofile),
+    );
+    await addAIMsg(aiMsg);
+  }
+
+  Future<void> trans() async {
+    TransResult? transResult = await loadMsg(
+      false,
+      () => chatTrans(_recorder.path, tutor!.id),
+    );
     if (transResult != null && transResult.originaltext != '') {
       await voice(transResult);
     }

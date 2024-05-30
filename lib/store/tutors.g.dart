@@ -117,6 +117,14 @@ mixin _$Tutors on _Tutors, Store {
     return _$loadTutorsAsyncAction.run(() => super.loadTutors());
   }
 
+  late final _$selectTutorAsyncAction =
+      AsyncAction('_Tutors.selectTutor', context: context);
+
+  @override
+  Future<void> selectTutor(Tutor t) {
+    return _$selectTutorAsyncAction.run(() => super.selectTutor(t));
+  }
+
   late final _$startRecordingAsyncAction =
       AsyncAction('_Tutors.startRecording', context: context);
 
@@ -142,17 +150,6 @@ mixin _$Tutors on _Tutors, Store {
 
   late final _$_TutorsActionController =
       ActionController(name: '_Tutors', context: context);
-
-  @override
-  void selectTutor(Tutor t) {
-    final _$actionInfo =
-        _$_TutorsActionController.startAction(name: '_Tutors.selectTutor');
-    try {
-      return super.selectTutor(t);
-    } finally {
-      _$_TutorsActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   void clearTutor() {

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
@@ -23,6 +24,22 @@ Future<List<Tutor>> fetchTutors() async {
   final r = await dio.get('$base/aiteacher/foreignteacherlist');
   TutorsResponse tr = TutorsResponse.fromJson(r.data);
   return tr.result;
+}
+
+Future<String?> greeting(int tutorId) async {
+  try {
+    var r = await dio.post(
+      '$base/aiteacher/greeting',
+      data: jsonEncode({
+        'characterid': tutorId,
+      }),
+      options: Options(headers: {'Authorization': auth}),
+    );
+    return r.data['result'];
+  } catch (e) {
+    log(e.toString());
+    return null;
+  }
 }
 
 Future<TransResult?> chatTrans(String path, int tutorId) async {

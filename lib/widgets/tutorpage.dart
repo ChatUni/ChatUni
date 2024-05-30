@@ -361,7 +361,7 @@ List<Widget> tutorBody(Tutor t, BuildContext context) => [
           width: MediaQuery.of(context).size.width,
           height: 400,
           fit: BoxFit.fitHeight,
-          alignment: Alignment.topLeft,
+          alignment: Alignment.center,
         ),
       ),
       msgList(context),
