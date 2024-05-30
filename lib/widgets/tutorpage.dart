@@ -2,6 +2,8 @@ import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
+import '../models/tutor.dart';
+import '../models/msg.dart';
 import '../store/tutors.dart';
 import 'dart:developer';
 

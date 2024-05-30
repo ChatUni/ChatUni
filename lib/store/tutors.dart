@@ -1,31 +1,22 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mobx/mobx.dart';
-import 'package:audioplayers/audioplayers.dart' as AP;
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:record/record.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import '../models/tutor.dart';
+import '../models/msg.dart';
 import '../api.dart';
+import '../io/recorder.dart';
+import '../io/player.dart';
+import '../io/recognizer.dart';
 
 part 'tutors.g.dart';
 
 class Tutors = _Tutors with _$Tutors;
 
-const useLocalRecognition = true;
+const useLocalRecognition = kIsWeb;
 
 abstract class _Tutors with Store {
-  SpeechToText stt = SpeechToText();
-  AP.AudioPlayer player = AP.AudioPlayer();
-  //FlutterSoundRecorder recorder = FlutterSoundRecorder();
-  Record recorder = Record();
-  String audioPath = '';
-  bool speechEnabled = false;
-  String lastMsg = '';
+  final Recorder _recorder = Recorder();
+  final Player _player = Player();
+  final Recognizer _stt = Recognizer();
 
   @observable
   bool isRecording = false;
@@ -74,12 +65,9 @@ abstract class _Tutors with Store {
   @action
   Future<void> startRecording() async {
     if (useLocalRecognition) {
-      if (!speechEnabled) await initSpeech();
-      await stt.listen(onResult: onSpeechResult, localeId: lang);
+      await _stt.start(lang);
     } else {
-      await requestMicPermission();
-      await recorder.start(path: audioPath, encoder: AudioEncoder.pcm16bit);
-      // await recorder.startRecorder(toFile: audioPath, codec: Codec.pcm16WAV);
+      await _recorder.start();
     }
     isRecording = true;
   }
@@ -88,14 +76,14 @@ abstract class _Tutors with Store {
   Future<void> stopRecording() async {
     isRecording = false;
     if (useLocalRecognition) {
-      await stt.stop();
-      if (lastMsg != '') {
-        await voice(TransResult()..originaltext = lastMsg);
-        lastMsg = '';
+      await _stt.stop();
+      if (_stt.lastMsg != '') {
+        await voice(TransResult()..originaltext = _stt.lastMsg);
+        _stt.clear();
       }
     } else {
-      await recorder.stop();
-      // await recorder.stopRecorder();
+      await _recorder.stop();
+      await _player.play(_recorder.playPath);
       await trans();
     }
   }
@@ -103,14 +91,12 @@ abstract class _Tutors with Store {
   @action
   Future<void> read(Msg m) async {
     if (isReading) {
-      await player.stop();
+      await _player.stop();
       m.isReading = false;
     } else {
       if (m.url != '') {
-        await player.play(AP.UrlSource(m.url, mimeType: 'audio/mp3'));
-        // await player.setSourceUrl(m.url);
+        await _player.play(m.url);
         m.isReading = true;
-        // player.resume();
       }
     }
   }
@@ -142,96 +128,29 @@ abstract class _Tutors with Store {
 
   Future<void> trans() async {
     addLoadingMsg(false);
-    TransResult? transResult = await chatTrans(audioPath, tutor!.id);
+    TransResult? transResult = await chatTrans(_recorder.path, tutor!.id);
     msgs.removeLast();
     if (transResult != null && transResult.originaltext != '') {
       await voice(transResult);
     }
   }
 
-  Future<void> initSpeech() async {
-    speechEnabled = await stt.initialize();
-  }
-
-  Future<void> initRecorder() async {
-    // await recorder.openRecorder();
-    final tempDir = await getTemporaryDirectory();
-    audioPath = '${tempDir.path}/temp.wav';
-    await requestMicPermission();
-  }
-
-  Future<void> requestMicPermission() async {
-    PermissionStatus status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException("Microphone permission not granted");
+  void onPlaying(bool isPlaying) {
+    isReading = isPlaying;
+    if (!isPlaying) {
+      msgs.forEach((m) {
+        m.isReading = false;
+      });
     }
   }
 
-  void onSpeechResult(SpeechRecognitionResult result) {
-    var txt = result.recognizedWords;
-    if (txt != '') lastMsg = txt;
-  }
-
   _Tutors() {
-    initRecorder();
-
     loadTutors();
-
-    player.onPlayerStateChanged.listen((e) {
-      if (e == AP.PlayerState.playing) {
-        isReading = true;
-      } else {
-        isReading = false;
-        msgs.forEach((m) {
-          m.isReading = false;
-        });
-      }
-    });
+    _player.onPlaying.listen(onPlaying);
   }
 
   void dispose() {
-    player.dispose();
-    recorder.dispose();
-    // recorder.closeRecorder();
+    _player.dispose();
+    _recorder.dispose();
   }
-}
-
-@JsonSerializable()
-class Tutor {
-  int id = 0;
-  int type = 1;
-  int level = 1;
-  double speed = 1;
-  String speed2 = "";
-  String name = "";
-  String gender = "";
-  int icon = 0;
-  String voice = "";
-  String personality = "";
-  String skill = "";
-  String desc = "";
-
-  Tutor();
-
-  factory Tutor.fromJson(Map<String, dynamic> json) => _$TutorFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TutorToJson(this);
-}
-
-@JsonSerializable()
-class Msg {
-  int id = 0;
-  String text = '';
-  String lang = '';
-  bool isAI = false;
-  String voice = '';
-  String url = '';
-  bool isReading = false;
-  bool isWaiting = false;
-
-  Msg();
-
-  factory Msg.fromJson(Map<String, dynamic> json) => _$MsgFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MsgToJson(this);
 }

@@ -1,11 +1,12 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'store/tutors.dart';
+import 'models/tutor.dart';
+import 'models/msg.dart';
 
 part 'api.g.dart';
 
@@ -30,8 +31,8 @@ Future<TransResult?> chatTrans(String path, int tutorId) async {
       '$base/aiteacher/chattrans',
       data: FormData.fromMap({
         'characterid': tutorId,
-        'file': await MultipartFile.fromFile(
-          path,
+        'file': MultipartFile.fromBytes(
+          await readAsBytes(path),
           filename: 'blob',
           contentType: MediaType('audio', 'wav'),
         ),
@@ -67,6 +68,15 @@ Future<Msg?> chatVoice(Msg msg, Tutor tutor, String? file) async {
       ..url = vr.result.url;
   } catch (e) {
     return null;
+  }
+}
+
+Future<Uint8List> readAsBytes(String path) async {
+  if (path.startsWith('blob:')) {
+    final response = await http.get(Uri.parse(path));
+    return response.bodyBytes;
+  } else {
+    return await File.fromUri(Uri.parse(path)).readAsBytes();
   }
 }
 
