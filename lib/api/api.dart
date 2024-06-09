@@ -6,8 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'models/tutor.dart';
-import 'models/msg.dart';
+import '../models/tutor.dart';
+import '../models/msg.dart';
 
 part 'api.g.dart';
 
@@ -64,10 +64,13 @@ Future<TransResult?> chatTrans(String path, int tutorId) async {
 }
 
 Future<Msg?> chatVoice(Msg msg, Tutor tutor, String? file) async {
-  var r = await dio.post('$base/aiteacher/chatvoice',
+  var r = await dio.post(
+      // '$base/aiteacher/chatvoice',
+      'https://chatuni.netlify.app/.netlify/functions/tutor?type=chat',
       data: {
         "characterid": tutor.id.toString(),
         'file': msg.text,
+        'text': msg.text,
         'language': msg.lang,
         'speed': tutor.speed.toString(),
         'voiceid': tutor.voice,
@@ -77,12 +80,13 @@ Future<Msg?> chatVoice(Msg msg, Tutor tutor, String? file) async {
       options: Options(headers: {'Authorization': auth}));
   if (r.statusCode != 200) return null;
   try {
-    var vr = VoiceResponse.fromJson(r.data);
+    // var vr = VoiceResponse.fromJson(r.data);
     return Msg()
       ..isAI = true
-      ..text = vr.result.text
-      ..voice = vr.result.voice
-      ..url = vr.result.url;
+      ..text = r.data;
+    // ..text = vr.result.text
+    // ..voice = vr.result.voice
+    // ..url = vr.result.url;
   } catch (e) {
     return null;
   }
@@ -161,4 +165,13 @@ class TransResponse {
       _$TransResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$TransResponseToJson(this);
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }

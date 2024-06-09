@@ -1,14 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tutorpage.dart';
+part of 'tutors_body.dart';
 
 // **************************************************************************
 // FunctionalWidgetGenerator
 // **************************************************************************
 
-class TutorsPage extends StatelessWidget {
-  const TutorsPage({Key? key}) : super(key: key);
+class TutorsBody extends StatelessWidget {
+  const TutorsBody({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext _context) => tutorsPage(_context);
+  Widget build(BuildContext _context) => tutorsBody(_context);
 }

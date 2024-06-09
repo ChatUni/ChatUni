@@ -1,22 +1,27 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mobx/mobx.dart';
 import '../models/tutor.dart';
 import '../models/msg.dart';
-import '../api.dart';
+import '../api/api.dart';
 import '../io/recorder.dart';
 import '../io/player.dart';
 import '../io/recognizer.dart';
+import '../io/tts.dart';
 
 part 'tutors.g.dart';
 
 class Tutors = _Tutors with _$Tutors;
 
-const useLocalRecognition = kIsWeb;
+const useLocalRecognition = true;
+const useLocalTextToSpeech = true;
 
 abstract class _Tutors with Store {
   final Recorder _recorder = Recorder();
   final Player _player = Player();
   final Recognizer _stt = Recognizer();
+  final TextToSpeech _tts = TextToSpeech();
 
   @observable
   bool isRecording = false;
@@ -92,18 +97,22 @@ abstract class _Tutors with Store {
       }
     } else {
       await _recorder.stop();
-      await _player.play(_recorder.playPath);
+      //await _player.play(_recorder.playPath);
       await trans();
     }
   }
 
   @action
   Future<void> read(Msg m) async {
+    if (!m.isAI) return;
     if (isReading) {
-      await _player.stop();
+      useLocalTextToSpeech ? await _tts.stop() : await _player.stop();
       m.isReading = false;
     } else {
-      if (m.url != '') {
+      if (useLocalTextToSpeech && m.text != '') {
+        await _tts.speak(m.text);
+        m.isReading = true;
+      } else if (!useLocalTextToSpeech && m.url != '') {
         await _player.play(m.url);
         m.isReading = true;
       }
@@ -166,9 +175,19 @@ abstract class _Tutors with Store {
     }
   }
 
+  void onTtsState(TtsState state) {
+    isReading = state == TtsState.playing;
+    if (!isReading) {
+      msgs.forEach((m) {
+        m.isReading = false;
+      });
+    }
+  }
+
   _Tutors() {
     loadTutors();
     _player.onPlaying.listen(onPlaying);
+    _tts.onTtsState.listen(onTtsState);
   }
 
   void dispose() {
