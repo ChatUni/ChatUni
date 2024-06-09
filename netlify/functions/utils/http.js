@@ -34,10 +34,9 @@ export const res = (body, code, nocache) => ({
 export const makeApi =
   ({ handlers, connectDB, initAI, nocache }) =>
   async (event, context) => {
-    //console.log(event)
     context.callbackWaitsForEmptyEventLoop = false
     const q = event.queryStringParameters
-    const method = 'get' //event.httpMethod.toLowerCase()
+    const method = event.httpMethod.toLowerCase()
     const body = method === 'post' && tryc(() => JSON.parse(event.body))
     origin = event.rawUrl.slice(0, event.rawUrl.indexOf(FUNC) + FUNC.length)
 
