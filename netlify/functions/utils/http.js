@@ -34,6 +34,7 @@ export const res = (body, code, nocache) => ({
 export const makeApi =
   ({ handlers, connectDB, initAI, nocache }) =>
   async (event, context) => {
+    console.log(event)
     context.callbackWaitsForEmptyEventLoop = false
     const q = event.queryStringParameters
     const method = event.httpMethod.toLowerCase()
