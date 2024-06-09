@@ -10,25 +10,12 @@ import 'api.dart';
 import 'tutor.response.dart';
 
 Future<List<Tutor>> fetchTutors() async {
-  final r = await get<String>('tutor', 'tutors');
-  return r == null ? [] : json.decode(r).map((t) => Tutor.fromJson(t));
+  final r = await get('tutor', 'tutors');
+  return (r as List).map((t) => Tutor.fromJson(t)).toList();
 }
 
-Future<String?> greeting(int tutorId) async {
-  try {
-    var r = await dio.post(
-      '$base/aiteacher/greeting',
-      data: jsonEncode({
-        'characterid': tutorId,
-      }),
-      // options: Options(headers: {'Authorization': auth}),
-    );
-    return r.data['result'];
-  } catch (e) {
-    log(e.toString());
-    return null;
-  }
-}
+Future<String?> greeting(int id) async =>
+    await get('tutor', 'greeting', {'id': id.toString()});
 
 Future<TransResult?> chatTrans(String path, int tutorId) async {
   try {

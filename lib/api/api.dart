@@ -13,8 +13,10 @@ String base = 'https://chatuni.netlify.app/.netlify/functions';
 
 final dio = Dio();
 
-Future<R?> get<R>(String func, String type) async {
-  final r = await dio.get<R>('$base/$func?type=$type');
+Future<dynamic> get(String func, String type,
+    [Map<String, String> params = const {}]) async {
+  final r = await dio.get(
+      '$base/$func?type=$type${params.entries.map((e) => '&${e.key}=${e.value}').join('')}');
   return r.data;
 }
 
