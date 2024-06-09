@@ -2,9 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mobx/mobx.dart';
+import '../api/tutor.dart';
+import '../api/tutor.response.dart';
 import '../models/tutor.dart';
 import '../models/msg.dart';
-import '../api/api.dart';
 import '../io/recorder.dart';
 import '../io/player.dart';
 import '../io/recognizer.dart';
@@ -92,7 +93,7 @@ abstract class _Tutors with Store {
     if (useLocalRecognition) {
       await _stt.stop();
       if (_stt.lastMsg != '') {
-        await voice(TransResult()..originaltext = _stt.lastMsg);
+        // await voice(TransResult()..originaltext = _stt.lastMsg);
         _stt.clear();
       }
     } else {
@@ -147,11 +148,11 @@ abstract class _Tutors with Store {
     return r;
   }
 
-  Future<void> voice(TransResult result) async {
-    Msg msg = addMsg(result.originaltext);
+  Future<void> voice(String text) async {
+    Msg msg = addMsg(text);
     Msg? aiMsg = await loadMsg(
       true,
-      () => chatVoice(msg, tutor!, result.audiofile),
+      () => chatVoice(msg, tutor!),
     );
     await addAIMsg(aiMsg);
   }
@@ -162,7 +163,7 @@ abstract class _Tutors with Store {
       () => chatTrans(_recorder.path, tutor!.id),
     );
     if (transResult != null && transResult.originaltext != '') {
-      await voice(transResult);
+      await voice(transResult.originaltext);
     }
   }
 
