@@ -1,15 +1,13 @@
-import 'dart:developer';
-
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:chatuni/api/openai.dart';
 import 'package:mobx/mobx.dart';
+
 import '../api/tutor.dart';
-import '../api/tutor.response.dart';
-import '../models/tutor.dart';
-import '../models/msg.dart';
-import '../io/recorder.dart';
 import '../io/player.dart';
 import '../io/recognizer.dart';
+import '../io/recorder.dart';
 import '../io/tts.dart';
+import '../models/msg.dart';
+import '../models/tutor.dart';
 
 part 'tutors.g.dart';
 
@@ -55,14 +53,17 @@ abstract class _Tutors with Store {
   @action
   Future<void> selectTutor(Tutor t) async {
     tutor = t;
+    await _tts.setVoice(t.voice, t.locale ?? 'en-US', t.speed);
     final msg = await loadMsg(
       true,
       () => greeting(t.id),
     );
     if (msg != null) {
-      await addAIMsg(Msg()
-        ..text = msg
-        ..isAI = true);
+      await addAIMsg(
+        Msg()
+          ..text = msg
+          ..isAI = true,
+      );
     }
   }
 
@@ -93,13 +94,13 @@ abstract class _Tutors with Store {
     if (useLocalRecognition) {
       await _stt.stop();
       if (_stt.lastMsg != '') {
-        // await voice(TransResult()..originaltext = _stt.lastMsg);
+        await voice(_stt.lastMsg);
         _stt.clear();
       }
     } else {
       await _recorder.stop();
       //await _player.play(_recorder.playPath);
-      await trans();
+      //await trans();
     }
   }
 
@@ -136,9 +137,11 @@ abstract class _Tutors with Store {
   }
 
   void addLoadingMsg(bool isAI) {
-    msgs.add(Msg()
-      ..isWaiting = true
-      ..isAI = isAI);
+    msgs.add(
+      Msg()
+        ..isWaiting = true
+        ..isAI = isAI,
+    );
   }
 
   Future<T> loadMsg<T>(bool isAI, Future<T> Function() api) async {
@@ -152,36 +155,36 @@ abstract class _Tutors with Store {
     Msg msg = addMsg(text);
     Msg? aiMsg = await loadMsg(
       true,
-      () => chatVoice(msg, tutor!),
+      () => chatComplete(msgs), // chat(msg, tutor!),
     );
     await addAIMsg(aiMsg);
   }
 
-  Future<void> trans() async {
-    TransResult? transResult = await loadMsg(
-      false,
-      () => chatTrans(_recorder.path, tutor!.id),
-    );
-    if (transResult != null && transResult.originaltext != '') {
-      await voice(transResult.originaltext);
-    }
-  }
+  // Future<void> trans() async {
+  //   TransResult? transResult = await loadMsg(
+  //     false,
+  //     () => chatTrans(_recorder.path, tutor!.id),
+  //   );
+  //   if (transResult != null && transResult.originaltext != '') {
+  //     await voice(transResult.originaltext);
+  //   }
+  // }
 
   void onPlaying(bool isPlaying) {
     isReading = isPlaying;
     if (!isPlaying) {
-      msgs.forEach((m) {
+      for (var m in msgs) {
         m.isReading = false;
-      });
+      }
     }
   }
 
   void onTtsState(TtsState state) {
     isReading = state == TtsState.playing;
     if (!isReading) {
-      msgs.forEach((m) {
+      for (var m in msgs) {
         m.isReading = false;
-      });
+      }
     }
   }
 

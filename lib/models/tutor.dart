@@ -8,14 +8,15 @@ class Tutor {
   int type = 1;
   int level = 1;
   double speed = 1;
-  String speed2 = "";
-  String name = "";
-  String gender = "";
+  String speed2 = '';
+  String name = '';
+  String gender = '';
   int icon = 0;
-  String voice = "";
-  String personality = "";
-  String skill = "";
-  String desc = "";
+  String voice = '';
+  String personality = '';
+  String skill = '';
+  String desc = '';
+  String? locale = '';
 
   Tutor();
 

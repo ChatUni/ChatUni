@@ -36,6 +36,7 @@ dependencies:
   audioplayers: ^6.0.0
   cupertino_icons: ^1.0.6
   dio: ^5.4.3+1
+  envied: ^0.5.4+1
   flutter_mobx: ^2.2.1+1
   flutter_tts: ^4.0.2
   functional_widget_annotation: ^0.10.0
@@ -60,6 +61,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   build_runner: ^2.4.9
+  envied_generator: ^0.5.4+1
   flutter_lints: ^3.0.0
   functional_widget: ^0.10.2
   json_serializable: ^6.8.0

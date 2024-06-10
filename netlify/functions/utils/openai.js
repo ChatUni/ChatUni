@@ -1,5 +1,4 @@
 import OpenAI from 'openai'
-import { decrypt } from './crypto'
 
 let openai
 let assistant
@@ -8,7 +7,7 @@ let thread
 export const initAI = async () => {
   if (!openai) {
     openai = new OpenAI({
-      apiKey: decrypt(process.env.OPENAI_API_KEY),
+      apiKey: process.env.OPENAI_API_KEY,
     })
   }
 
