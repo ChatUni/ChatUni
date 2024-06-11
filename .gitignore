@@ -41,4 +41,3 @@ app.*.map.json
 node_modules
 .env
 .netlify
-env.g.dart
