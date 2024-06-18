@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -8,13 +9,14 @@ class TextToSpeech {
   final FlutterTts _tts = FlutterTts();
   final StreamController<TtsState> _onTtsStateController =
       StreamController<TtsState>();
+  var voices = [];
 
   Stream<TtsState> get onTtsState => _onTtsStateController.stream;
 
   Future<void> _init() async {
     await _tts.setSharedInstance(true);
-    //final voices = await _tts.getVoices;
-    //print(json.encode(voices));
+    voices = await _tts.getVoices;
+    print(json.encode(voices));
   }
 
   Future<void> speak(String text) async {
@@ -31,7 +33,17 @@ class TextToSpeech {
     double rate = 0.5,
     double pitch = 1.0,
   ]) async {
-    await _tts.setVoice({'name': name, 'locale': locale});
+    final names = name.split(',');
+    final n = names.firstWhere(
+      (x) => voices.map((y) => y['name']).contains(x),
+      orElse: () => voices[0]['name'],
+    );
+    final locales = locale.split(',');
+    final l = locales.firstWhere(
+      (x) => voices.map((y) => y['locale']).contains(x),
+      orElse: () => voices[0]['locale'],
+    );
+    await _tts.setVoice({'name': n, 'locale': l});
     await _tts.setSpeechRate(rate);
     await _tts.setPitch(pitch);
   }

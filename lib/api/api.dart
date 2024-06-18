@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 const cuBase =
 //'https://chatuni.netlify.app/.netlify/functions';
-    'http://10.0.0.42:701/.netlify/functions';
+    'http://10.0.0.72:701/.netlify/functions';
 
 final _dio = Dio();
 

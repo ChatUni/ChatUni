@@ -3,9 +3,11 @@ import {
   HarmCategory,
   HarmBlockThreshold,
 } from '@google/generative-ai'
+import { GoogleAIFileManager } from "@google/generative-ai/files";
 
 const apiKey = process.env.GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(apiKey)
+const fileManager = new GoogleAIFileManager(apiKey);
 
 const model = genAI.getGenerativeModel({
   model: 'gemini-1.5-flash',
@@ -51,3 +53,80 @@ export const score = async msg => {
 
   return result.response.text()
 }
+
+/*
+ * Install the Generative AI SDK
+ *
+ * $ npm install @google/generative-ai
+ *
+ * See the getting started guide for more information
+ * https://ai.google.dev/gemini-api/docs/get-started/node
+ */
+
+/**
+ * Uploads the given file to Gemini.
+ *
+ * See https://ai.google.dev/gemini-api/docs/prompting_with_media
+ */
+
+
+// async function uploadToGemini(path, mimeType) {
+//   const uploadResult = await fileManager.uploadFile(path, {
+//     mimeType,
+//     displayName: path,
+//   });
+//   const file = uploadResult.file;
+//   console.log(`Uploaded file ${file.displayName} as: ${file.name}`);
+//   return file;
+// }
+
+// const model = genAI.getGenerativeModel({
+//   model: "gemini-1.5-pro",
+//   systemInstruction: "Listen to the audio input and give feed back based on pronunciation. The words the user will speak are  in order Rural, Mischievous, Colonel, Epitome, Hyperbole, Worcestershire sauce. If there are mis pronounced words, give them the phonic way of speaking. Calculate the speaking speed in words per minute and the number of unique words. Also if there are challenging words, give suggestions on how to pronounce them properly. Give a score from 1 to 5 with 1 being bad pronunciations and 5 being fluent perfect speaker. Output the result in a chart in json. ",
+// });
+
+// const generationConfig = {
+//   temperature: 1,
+//   topP: 0.95,
+//   topK: 64,
+//   maxOutputTokens: 8192,
+//   responseMimeType: "application/json",
+// };
+
+// async function run() {
+//   // TODO Make these files available on the local file system
+//   // You may need to update the file paths
+//   const files = [
+//     await uploadToGemini("Vocaroo 14luO8JyM7fs.mp3", "audio/mpeg"),
+//   ];
+
+//   const chatSession = model.startChat({
+//     generationConfig,
+//  // safetySettings: Adjust safety settings
+//  // See https://ai.google.dev/gemini-api/docs/safety-settings
+//     history: [
+//       {
+//         role: "user",
+//         parts: [
+//           {
+//             fileData: {
+//               mimeType: files[0].mimeType,
+//               fileUri: files[0].uri,
+//             },
+//           },
+//         ],
+//       },
+//       {
+//         role: "model",
+//         parts: [
+//           {text: "{\"Rural\": \"Correct\", \"Mischievous\": \"Mispronounced as Miss Cheevous, Correct pronunciation Mis-chuh-vuhs\", \"Colonel\": \"Correct\", \"Epitome\": \"Correct\", \"Hyperbole\": \"Correct\", \"Worcestershire sauce\": \"Correct\", \"Anemone\": \"Correct\", \"Choir\": \"Correct\", \"Onomatopoeia\": \"Correct\", \"Squirrel\": \"Correct\", \"Asterisk\": \"Correct\", \"Defibrillator\": \"Mispronounced as Defib-uhlator, Correct pronunciation  Dee-fib-ruh-lay-ter \", \"Exponentially\": \"Correct\", \"Massachusetts\": \"Correct\", \"Supercalifragilisticexpialidocious\": \"Mispronounced as Super-cally-fragi-listic-ex-pee-alli-docious, Correct pronunciation Soo-per-kal-ih-fraj-ih-lis-tik-ek-spee-al-ih-doh-shuhs\", \"Score\": \"3\", \"Feedback\": \"You pronounced most of the words correctly, indicating a good vocabulary and understanding of pronunciation. However, there were a couple of mispronunciations. To improve, try practicing the words you mispronounced, focusing on breaking them down into syllables. Pay attention to the correct vowel sounds and stress patterns. For more complex words, consider listening to audio pronunciations or consulting phonetic transcriptions. With consistent practice, you can enhance your pronunciation skills even further.\"}\n"},
+//         ],
+//       },
+//     ],
+//   });
+
+//   const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
+//   console.log(result.response.text());
+// }
+
+// run();
