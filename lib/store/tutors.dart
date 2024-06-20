@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:chatuni/api/openai.dart';
-import 'package:chatuni/api/payment.dart';
 import 'package:mobx/mobx.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../api/tutor.dart';
 import '../io/player.dart';
@@ -52,11 +50,11 @@ abstract class _Tutors with Store {
     tutors.clear();
     var ts = await fetchTutors();
     tutors.addAll(ts);
-    var t = await getPriceList();
-    print(t);
-    t = await createPayorder();
-    print(t['payurl']);
-    await launchUrl(Uri.parse(t['payurl']));
+    // var t = await getPriceList();
+    // print(t);
+    // t = await createPayorder();
+    // print(t['payurl']);
+    // await launchUrl(Uri.parse(t['payurl']));
   }
 
   @action
