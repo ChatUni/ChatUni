@@ -1,5 +1,5 @@
-import '../models/msg.dart';
-import '../models/tutor.dart';
+import '/models/msg.dart';
+import '/models/tutor.dart';
 import 'api.dart';
 
 final get = dioGet(cuBase);

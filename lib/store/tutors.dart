@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:chatuni/api/openai.dart';
 import 'package:mobx/mobx.dart';
 
-import '../api/tutor.dart';
-import '../io/player.dart';
-import '../io/recognizer.dart';
-import '../io/recorder.dart';
-import '../io/tts.dart';
-import '../models/msg.dart';
-import '../models/tutor.dart';
+import '/api/tutor.dart';
+import '/io/player.dart';
+import '/io/recognizer.dart';
+import '/io/recorder.dart';
+import '/io/tts.dart';
+import '/models/msg.dart';
+import '/models/tutor.dart';
 
 part 'tutors.g.dart';
 
@@ -50,11 +50,6 @@ abstract class _Tutors with Store {
     tutors.clear();
     var ts = await fetchTutors();
     tutors.addAll(ts);
-    // var t = await getPriceList();
-    // print(t);
-    // t = await createPayorder();
-    // print(t['payurl']);
-    // await launchUrl(Uri.parse(t['payurl']));
   }
 
   @action

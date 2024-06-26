@@ -1,30 +1,29 @@
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import '../scaffold/scaffold.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+
+import '/widgets/scaffold/scaffold.dart';
 import 'list.dart';
 
 part 'tutors_body.g.dart';
 
 @swidget
-Widget tutorsBody(BuildContext context) {
-  return scaffold(
-    Observer(
-      builder: (_) => Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          levelText(1),
-          const TutorList(1),
-          const SizedBox(height: 10),
-          levelText(2),
-          const TutorList(2),
-        ],
+Widget tutorsBody(BuildContext context) => scaffold(
+      Observer(
+        builder: (_) => Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            levelText(1),
+            const TutorList(1),
+            const SizedBox(height: 10),
+            levelText(2),
+            const TutorList(2),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
 
 Container levelText(int level) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -44,7 +43,9 @@ Container levelText(int level) => Container(
                 TextSpan(
                   text: 'Level $level',
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.blue),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
                 ),
               ],
             ),

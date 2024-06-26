@@ -1,8 +1,7 @@
 import 'api.dart';
 
-const base = 'http://52.37.231.249:9010';
-final get = dioGet(base);
-final post = dioPost(base);
+final get = dioGet(vipBase);
+final post = dioPost(vipBase);
 final headers = {
   'Content-Type': 'application/json',
   'Authorization':

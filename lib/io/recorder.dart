@@ -1,15 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:record/record.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:flutter_sound/flutter_sound.dart';
+import 'package:record/record.dart';
 
 const tempFile = 'temp.wav';
 const prefix = 'file:///private';
 
 class Recorder {
-  //FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   final Record _recorder = Record();
   String path = '';
 
@@ -25,12 +23,12 @@ class Recorder {
     path = '${tempDir.path}/$tempFile';
   }
 
-  Future<void> _requestMicPermission() async {
-    PermissionStatus status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw Exception("Microphone permission not granted");
-    }
-  }
+  // Future<void> _requestMicPermission() async {
+  //   PermissionStatus status = await Permission.microphone.request();
+  //   if (status != PermissionStatus.granted) {
+  //     throw Exception("Microphone permission not granted");
+  //   }
+  // }
 
   Future<void> start() async {
     // await _requestMicPermission();

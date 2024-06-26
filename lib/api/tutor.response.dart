@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../models/tutor.dart';
+
+import '/models/tutor.dart';
 
 part 'tutor.response.g.dart';
 

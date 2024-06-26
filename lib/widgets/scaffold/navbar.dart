@@ -3,7 +3,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../store/tutors.dart';
+
+import '/store/tutors.dart';
 
 part 'navbar.g.dart';
 
@@ -39,12 +40,14 @@ InkWell menuIcon(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon,
-              color: isPlaceholder
-                  ? Colors.transparent
-                  : isSelected
-                      ? selectedColor
-                      : nonSelectedColor),
+          Icon(
+            icon,
+            color: isPlaceholder
+                ? Colors.transparent
+                : isSelected
+                    ? selectedColor
+                    : nonSelectedColor,
+          ),
           Text(text, style: const TextStyle(fontSize: 12)),
         ],
       ),
@@ -53,13 +56,20 @@ InkWell menuIcon(
 List<InkWell> buildIcons(BuildContext context, Tutors tutors) {
   List<InkWell> menuIcons = [];
 
-  InkWell tutorIcon = menuIcon(Icons.school, '外教', () {
-    tutors.clearTutor();
-    context.go('/');
-  }, isSelected: true);
+  InkWell tutorIcon = menuIcon(
+    Icons.school,
+    '外教',
+    () {
+      tutors.clearTutor();
+      context.go('/');
+    },
+    isSelected: true,
+  );
   InkWell courseIcon = menuIcon(Icons.menu_book_rounded, '课程', () {});
   InkWell metaIcon = menuIcon(Icons.language, '元宇宙', () {});
-  InkWell accountIcon = menuIcon(Icons.person, '我的', () {});
+  InkWell accountIcon = menuIcon(Icons.person, '我的', () {
+    context.go('/my');
+  });
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);
 
   menuIcons.add(tutorIcon);

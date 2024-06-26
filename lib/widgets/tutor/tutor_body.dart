@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 
-import '../scaffold/scaffold.dart';
+import '/widgets/scaffold/scaffold.dart';
 import 'chat.dart';
 import 'face.dart';
 

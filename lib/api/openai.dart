@@ -1,5 +1,5 @@
-import '../env.dart';
-import '../models/msg.dart';
+import '/env.dart';
+import '/models/msg.dart';
 import 'api.dart';
 
 const base = 'https://api.openai.com/v1';

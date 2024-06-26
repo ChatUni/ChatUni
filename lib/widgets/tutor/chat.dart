@@ -3,8 +3,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
-import '../../store/tutors.dart';
-import '../../models/msg.dart';
+
+import '/models/msg.dart';
+import '/store/tutors.dart';
 
 part 'chat.g.dart';
 
@@ -61,10 +62,10 @@ Widget msgRow(BuildContext context, Msg m) {
                 child: Text(
                   ' ${m.text}',
                   style: TextStyle(
-                      fontSize: 16,
-                      fontWeight:
-                          m.isReading ? FontWeight.w800 : FontWeight.w500,
-                      color: m.isAI ? Colors.black : Colors.indigo),
+                    fontSize: 16,
+                    fontWeight: m.isReading ? FontWeight.w800 : FontWeight.w500,
+                    color: m.isAI ? Colors.black : Colors.indigo,
+                  ),
                   textAlign: m.isAI ? TextAlign.start : TextAlign.end,
                 ),
               ),

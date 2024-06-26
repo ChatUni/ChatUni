@@ -6,9 +6,8 @@ import 'package:http/http.dart' as http;
 
 const cuBase = 'https://chatuni.netlify.app/.netlify/functions';
 //  'http://10.0.0.72:701/.netlify/functions';
-const vipBase =
-//  'https://chat.smartkit.vip';
-    'http://52.37.231.249:9010';
+const vipBase = 'https://chat.smartkit.vip';
+//    'http://52.37.231.249:9010';
 
 final _dio = Dio();
 

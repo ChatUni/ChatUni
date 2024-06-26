@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:provider/provider.dart';
-import '../../store/tutors.dart';
+
+import '/store/tutors.dart';
 
 part 'topbar.g.dart';
 
@@ -16,7 +17,7 @@ Widget topBar(BuildContext context) {
       title: Row(
         children: [
           Image.asset(
-            "assets/images/logo.png",
+            'assets/images/logo.png',
             fit: BoxFit.cover,
             width: 80,
           ),
@@ -25,15 +26,16 @@ Widget topBar(BuildContext context) {
               tutors.isTutorSelected ? tutors.tutor!.name : 'Tutors',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 28,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black45,
-                      offset: Offset(5, 5),
-                      blurRadius: 5,
-                    )
-                  ]),
+                fontWeight: FontWeight.bold,
+                fontSize: 28,
+                shadows: [
+                  Shadow(
+                    color: Colors.black45,
+                    offset: Offset(5, 5),
+                    blurRadius: 5,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -48,7 +50,7 @@ Widget topBar(BuildContext context) {
 
 BoxDecoration headerImg() => const BoxDecoration(
       image: DecorationImage(
-        image: AssetImage("assets/images/header.png"),
+        image: AssetImage('assets/images/header.png'),
         fit: BoxFit.cover,
       ),
     );
@@ -61,7 +63,7 @@ List<Widget> tutorsActions() => const [
       IconButton(
         onPressed: null,
         icon: Icon(Icons.bookmark, color: Colors.white),
-      )
+      ),
     ];
 
 List<Widget> tutorActions(Tutors tutors) => [
@@ -69,7 +71,9 @@ List<Widget> tutorActions(Tutors tutors) => [
         margin: const EdgeInsets.all(12),
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(5)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+        ),
         child: DropdownButton(
           value: tutors.lang,
           items: langs
