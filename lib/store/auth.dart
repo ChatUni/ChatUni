@@ -12,7 +12,7 @@ class Auth = _Auth with _$Auth;
 
 abstract class _Auth with Store {
   @observable
-  bool isLoggedIn = true;
+  bool isLoggedIn = false;
 
   @observable
   String phone = '';
