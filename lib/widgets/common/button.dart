@@ -1,36 +1,35 @@
 import 'package:flutter/material.dart';
 
+import '/widgets/common/container.dart';
+import 'text.dart';
+
 FilledButton button(
   void Function()? onPressed, {
   IconData? icon,
   String text = '',
+  Color bgColor = Colors.blue,
 }) {
   final List<Widget> children = [];
+
   if (icon != null) {
-    children.add(
-      Icon(
-        icon,
-        color: Colors.white,
-      ),
-    );
+    children.addAll([
+      Icon(icon, color: Colors.white),
+      hSpacer(10),
+    ]);
   }
+
   children.add(
-    Text(
-      text,
-      style: const TextStyle(color: Colors.white),
-    ),
+    txt(text, color: Colors.white),
   );
+
   return FilledButton(
     onPressed: onPressed,
     style: FilledButton.styleFrom(
-      backgroundColor: Colors.blue[500],
+      backgroundColor: bgColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
     ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: children,
-    ),
+    child: ccRow(children),
   );
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '/widgets/common/container.dart';
+import '/widgets/common/text.dart';
 import 'button.dart';
 
 Widget personTile(
@@ -9,75 +11,39 @@ Widget personTile(
   bool hasFav = false,
   String desc = '',
   void Function()? action,
-  double? bottomMargin,
-}) {
-  final header = [
-    image,
-    const SizedBox(width: 15),
-    Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        ...props.map((x) => Text(x)),
-      ],
-    ),
-  ];
-  if (hasFav) {
-    header.addAll([
-      const Spacer(),
-      const Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.favorite, color: Colors.red),
-          Text(
-            '19,999',
-            style: TextStyle(fontSize: 8),
-          ),
-        ],
-      ),
-    ]);
-  }
-  List<Widget> col = [
-    Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: header,
-    ),
-  ];
-  if (desc != '') {
-    col.addAll([
-      const Divider(),
-      Text(desc, maxLines: 2, overflow: TextOverflow.ellipsis),
-    ]);
-  }
-  if (action != null) {
-    col.addAll([
-      const SizedBox(height: 10),
-      button(
-        action,
-        icon: Icons.chat,
-        text: 'Chat',
-      ),
-    ]);
-  }
-  return Container(
-    padding: const EdgeInsets.all(4),
-    child: Card(
+}) =>
+    Card(
       child: Container(
-        padding: EdgeInsets.fromLTRB(12, 12, 12, bottomMargin ?? 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: col,
-        ),
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+        child: ssCol([
+          _header(image, title, props),
+          const Divider(),
+          _desc(desc),
+          vSpacer(10),
+          _action(action),
+        ]),
       ),
-    ),
-  );
-}
+    );
+
+Row _header(Widget image, String title, List<String> props) => ssRow([
+      image,
+      hSpacer(15),
+      ssCol([
+        txt(title, bold: true),
+        vSpacer(5),
+        ...props.map((x) => Text(x)),
+      ]),
+      const Spacer(),
+      _fav,
+    ]);
+
+Column _fav = scCol([
+  const Icon(Icons.favorite, color: Colors.red),
+  txt('19,999', size: 8),
+]);
+
+Text _desc(String desc) =>
+    Text(desc, maxLines: 2, overflow: TextOverflow.ellipsis);
+
+FilledButton _action(void Function()? action) =>
+    button(action, icon: Icons.chat, text: 'Chat');

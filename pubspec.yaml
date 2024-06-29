@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   dio: ^5.4.3+1
   envied: ^0.5.4+1
+  flutter_layout_grid: ^2.0.7
   flutter_mobx: ^2.2.1+1
   flutter_tts: ^4.0.2
   functional_widget_annotation: ^0.10.0

@@ -1,22 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+
+import '/store/app.dart';
+import '/widgets/common/hoc.dart';
 import 'fab.dart';
 import 'navbar.dart';
 import 'topbar.dart';
 
-Scaffold scaffold(Widget body) => Scaffold(
-      extendBody: true,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(50),
-        child: TopBar(),
-      ),
-      body: Container(
-        decoration: background(),
-        child: body,
-      ),
-      floatingActionButton: const FabMic(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: const NavBar(),
-    );
+Observer scaffold(
+  Widget body, {
+  String title = '',
+  bool showMic = false,
+  RouteGroup routeGroup = RouteGroup.tutor,
+}) =>
+    obsc<App>((app, context) {
+      app.setTitle(title);
+      app.setShowMic(showMic);
+      app.setRouteGroup(routeGroup);
+
+      return Scaffold(
+        extendBody: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: topBar(),
+        ),
+        body: Container(
+          decoration: background(),
+          child: body,
+        ),
+        floatingActionButton: fabMic(context),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: navBar(),
+      );
+    });
 
 BoxDecoration background() => const BoxDecoration(
       // image: DecorationImage(
@@ -32,9 +48,3 @@ BoxDecoration background() => const BoxDecoration(
         ],
       ),
     );
-
-
-// Column(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children

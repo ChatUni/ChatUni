@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'globals.dart' as globals;
 import 'router.dart';
+import 'store/app.dart';
 import 'store/auth.dart';
 import 'store/tutors.dart';
 
@@ -11,8 +12,9 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider<Tutors>(create: (_) => Tutors()),
+        Provider<App>(create: (_) => App()),
         Provider<Auth>(create: (_) => Auth()),
+        Provider<Tutors>(create: (_) => Tutors()),
       ],
       child: MaterialApp.router(
         title: 'ChatUni',

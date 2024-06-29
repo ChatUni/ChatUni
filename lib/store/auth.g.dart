@@ -116,6 +116,21 @@ mixin _$Auth on _Auth, Store {
     });
   }
 
+  late final _$priceListAtom = Atom(name: '_Auth.priceList', context: context);
+
+  @override
+  List<Pricing> get priceList {
+    _$priceListAtom.reportRead();
+    return super.priceList;
+  }
+
+  @override
+  set priceList(List<Pricing> value) {
+    _$priceListAtom.reportWrite(value, super.priceList, () {
+      super.priceList = value;
+    });
+  }
+
   late final _$loginAsyncAction = AsyncAction('_Auth.login', context: context);
 
   @override
@@ -129,6 +144,14 @@ mixin _$Auth on _Auth, Store {
   @override
   Future<void> sendCode() {
     return _$sendCodeAsyncAction.run(() => super.sendCode());
+  }
+
+  late final _$getPricesAsyncAction =
+      AsyncAction('_Auth.getPrices', context: context);
+
+  @override
+  Future<void> getPrices() {
+    return _$getPricesAsyncAction.run(() => super.getPrices());
   }
 
   late final _$_AuthActionController =
@@ -176,6 +199,7 @@ code: ${code},
 isSendingCode: ${isSendingCode},
 isLoggingIn: ${isLoggingIn},
 user: ${user},
+priceList: ${priceList},
 isPhoneValid: ${isPhoneValid},
 isLoginEnabled: ${isLoginEnabled}
     ''';

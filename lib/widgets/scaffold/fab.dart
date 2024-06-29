@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:provider/provider.dart';
 
+import '/store/app.dart';
 import '/store/tutors.dart';
 
-part 'fab.g.dart';
-
-@swidget
 Widget fabMic(BuildContext context) {
   final tutors = Provider.of<Tutors>(context);
+  final app = Provider.of<App>(context);
+
   return Observer(
-    builder: (_) => tutors.isTutorSelected
+    builder: (_) => app.showMic
         ? SizedBox(
             height: 80,
             width: 80,

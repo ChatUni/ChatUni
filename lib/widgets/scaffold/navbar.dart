@@ -1,32 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-import '/store/tutors.dart';
-
-part 'navbar.g.dart';
+import '/store/app.dart';
+import '/widgets/common/container.dart';
+import '/widgets/common/hoc.dart';
+import '/widgets/common/text.dart';
 
 Color selectedColor = Colors.blue;
 Color nonSelectedColor = Colors.black45;
 
-@swidget
-Widget navBar(BuildContext context) {
-  final tutors = Provider.of<Tutors>(context);
-  return Observer(
-    builder: (_) => BottomAppBar(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      height: 50,
-      shape: tutors.isTutorSelected ? const CircularNotchedRectangle() : null,
-      notchMargin: 5,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: buildIcons(context, tutors),
+Widget navBar() => obsc<App>(
+      (app, context) => BottomAppBar(
+        padding: hEdge(30),
+        height: 50,
+        shape: app.showMic ? const CircularNotchedRectangle() : null,
+        notchMargin: 5,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: buildIcons(app, context),
+        ),
       ),
-    ),
-  );
-}
+    );
 
 InkWell menuIcon(
   IconData icon,
@@ -48,33 +42,43 @@ InkWell menuIcon(
                     ? selectedColor
                     : nonSelectedColor,
           ),
-          Text(text, style: const TextStyle(fontSize: 12)),
+          txt(text, size: 12),
         ],
       ),
     );
 
-List<InkWell> buildIcons(BuildContext context, Tutors tutors) {
+List<InkWell> buildIcons(App app, BuildContext context) {
   List<InkWell> menuIcons = [];
 
   InkWell tutorIcon = menuIcon(
     Icons.school,
     '外教',
-    () {
-      tutors.clearTutor();
-      context.go('/');
-    },
-    isSelected: true,
+    () => context.go('/'),
+    isSelected: app.routeGroup == RouteGroup.tutor,
   );
-  InkWell courseIcon = menuIcon(Icons.menu_book_rounded, '课程', () {});
-  InkWell metaIcon = menuIcon(Icons.language, '元宇宙', () {});
-  InkWell accountIcon = menuIcon(Icons.person, '我的', () {
-    context.go('/my');
-  });
+  InkWell courseIcon = menuIcon(
+    Icons.menu_book_rounded,
+    '课程',
+    () {},
+    isSelected: app.routeGroup == RouteGroup.course,
+  );
+  InkWell metaIcon = menuIcon(
+    Icons.language,
+    '元宇宙',
+    () {},
+    isSelected: app.routeGroup == RouteGroup.meta,
+  );
+  InkWell accountIcon = menuIcon(
+    Icons.person,
+    '我的',
+    () => context.go('/my'),
+    isSelected: app.routeGroup == RouteGroup.my,
+  );
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);
 
   menuIcons.add(tutorIcon);
   menuIcons.add(courseIcon);
-  if (tutors.isTutorSelected) menuIcons.add(invisibleIcon);
+  if (app.showMic) menuIcons.add(invisibleIcon);
   menuIcons.add(metaIcon);
   menuIcons.add(accountIcon);
 
