@@ -14,7 +14,7 @@ Future createPayorder(int id) async {
     'pay/createpayorder',
     headers: headers,
     data: {
-      'method': 'Wechat',
+      'method': 'Alipay', // 'Wechat',
       'scenariocode': 'ONLINE_WAP',
       'id': id,
     },
