@@ -73,7 +73,10 @@ List<InkWell> buildIcons(App app, BuildContext context) {
   InkWell accountIcon = menuIcon(
     Icons.person,
     '我的',
-    () => context.go('/my'),
+    () => launch(
+      'https://chatuni.netlify.app/payment.html',
+      isNewTab: true,
+    ), // context.go('/my'),
     isSelected: app.routeGroup == RouteGroup.my,
   );
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);
