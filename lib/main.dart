@@ -9,6 +9,7 @@ import 'store/tutors.dart';
 
 void main() {
   // HttpOverrides.global = MyHttpOverrides();
+  globals.initListeners();
   runApp(
     MultiProvider(
       providers: [

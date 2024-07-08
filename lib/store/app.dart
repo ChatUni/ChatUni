@@ -1,4 +1,3 @@
-import 'package:app_links/app_links.dart';
 import 'package:mobx/mobx.dart';
 
 part 'app.g.dart';
@@ -6,8 +5,6 @@ part 'app.g.dart';
 class App = _App with _$App;
 
 enum RouteGroup { tutor, course, meta, my }
-
-final _appLinks = AppLinks();
 
 abstract class _App with Store {
   @observable
@@ -32,11 +29,5 @@ abstract class _App with Store {
   @action
   void setRouteGroup(RouteGroup value) {
     routeGroup = value;
-  }
-
-  _App() {
-    _appLinks.uriLinkStream.listen((uri) {
-      print('deeplink - ${uri.pathSegments.join('-')}');
-    });
   }
 }
