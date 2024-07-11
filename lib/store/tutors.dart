@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/utils/event.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
 
 import '/api/tutor.dart';
@@ -95,7 +96,9 @@ abstract class _Tutors with Store {
   Future<void> stopRecording() async {
     isRecording = false;
     if (useLocalRecognition) {
-      if (Platform.isAndroid) await Future.delayed(const Duration(seconds: 1));
+      if (!kIsWeb && Platform.isAndroid) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
       await _stt.stop();
       if (_stt.lastMsg != '') {
         await voice(_stt.lastMsg);

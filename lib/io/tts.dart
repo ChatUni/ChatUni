@@ -43,19 +43,21 @@ class TextToSpeech {
     double pitch = 1.0,
   ]) async {
     _initVoice();
-    final names = name.split(',');
-    final n = names.firstWhere(
-      (x) => voices.map((y) => y['name']).contains(x),
-      orElse: () => voices[0]['name'],
-    );
-    final locales = locale.split(',');
-    final l = locales.firstWhere(
-      (x) => voices.map((y) => y['locale']).contains(x),
-      orElse: () => voices[0]['locale'],
-    );
-    await _tts.setVoice({'name': n, 'locale': l});
-    await _tts.setSpeechRate(rate);
-    await _tts.setPitch(pitch);
+    if (voices.isNotEmpty) {
+      final names = name.split(',');
+      final n = names.firstWhere(
+        (x) => voices.map((y) => y['name']).contains(x),
+        orElse: () => voices[0]['name'],
+      );
+      final locales = locale.split(',');
+      final l = locales.firstWhere(
+        (x) => voices.map((y) => y['locale']).contains(x),
+        orElse: () => voices[0]['locale'],
+      );
+      await _tts.setVoice({'name': n, 'locale': l});
+      await _tts.setSpeechRate(rate);
+      await _tts.setPitch(pitch);
+    }
   }
 
   TextToSpeech() {
