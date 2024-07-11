@@ -1,11 +1,12 @@
 import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
+import 'package:chatuni/utils/event.dart';
+
+const onPlayingEvent = 'AudioPlayer_Playing';
 
 class Player {
   final AudioPlayer _player = AudioPlayer();
-  final StreamController<bool> _onPlayingController = StreamController<bool>();
-
-  Stream<bool> get onPlaying => _onPlayingController.stream;
 
   Future<void> play(String url) async {
     await _player.play(UrlSource(url));
@@ -16,13 +17,12 @@ class Player {
   }
 
   Player() {
-    _player.onPlayerStateChanged.listen((e) {
-      _onPlayingController.add(e == PlayerState.playing);
-    });
+    _player.onPlayerStateChanged
+        .listen((e) => raiseEvent(onPlayingEvent, e == PlayerState.playing));
   }
 
   void dispose() {
-    _onPlayingController.close();
+    disposeEvent(onPlayingEvent);
     _player.dispose();
   }
 }

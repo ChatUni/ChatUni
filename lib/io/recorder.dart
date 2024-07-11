@@ -19,8 +19,9 @@ class Recorder {
   Future<void> _init() async {
     // await _recorder.openRecorder();
     // await _requestMicPermission();
-    final tempDir = await getTemporaryDirectory();
-    path = '${tempDir.path}/$tempFile';
+    final tempDir =
+        kIsWeb ? '/' : await getTemporaryDirectory().then((r) => r.path);
+    path = '$tempDir/$tempFile';
   }
 
   // Future<void> _requestMicPermission() async {

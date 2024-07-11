@@ -1,4 +1,4 @@
-import 'package:chatuni/utils.dart';
+import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 

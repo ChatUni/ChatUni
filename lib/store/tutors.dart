@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chatuni/api/openai.dart';
+import 'package:chatuni/utils/event.dart';
 import 'package:mobx/mobx.dart';
 
 import '/api/tutor.dart';
@@ -173,7 +174,7 @@ abstract class _Tutors with Store {
   //   }
   // }
 
-  void onPlaying(bool isPlaying) {
+  void _onPlaying(bool isPlaying) {
     isReading = isPlaying;
     if (!isPlaying) {
       for (var m in msgs) {
@@ -182,7 +183,7 @@ abstract class _Tutors with Store {
     }
   }
 
-  void onTtsState(TtsState state) {
+  void _onTtsState(TtsState state) {
     isReading = state == TtsState.playing;
     if (!isReading) {
       for (var m in msgs) {
@@ -193,8 +194,8 @@ abstract class _Tutors with Store {
 
   _Tutors() {
     loadTutors();
-    _player.onPlaying.listen(onPlaying);
-    _tts.onTtsState.listen(onTtsState);
+    listenToEvent(onPlayingEvent, _onPlaying);
+    _tts.onTtsState.listen(_onTtsState);
   }
 
   void dispose() {

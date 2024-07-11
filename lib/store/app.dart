@@ -1,3 +1,5 @@
+import 'package:app_links/app_links.dart';
+import 'package:chatuni/utils/event.dart';
 import 'package:mobx/mobx.dart';
 
 part 'app.g.dart';
@@ -5,6 +7,10 @@ part 'app.g.dart';
 class App = _App with _$App;
 
 enum RouteGroup { tutor, course, meta, my }
+
+const onPaymentRedirectEvent = 'Payment_Redirect';
+
+final _appLinks = AppLinks();
 
 abstract class _App with Store {
   @observable
@@ -29,5 +35,17 @@ abstract class _App with Store {
   @action
   void setRouteGroup(RouteGroup value) {
     routeGroup = value;
+  }
+
+  _App() {
+    _initAppListeners();
+  }
+
+  void _initAppListeners() {
+    _appLinks.uriLinkStream.listen((uri) {
+      if (uri.path.contains('/payment')) {
+        raiseEvent(onPaymentRedirectEvent, uri);
+      }
+    });
   }
 }

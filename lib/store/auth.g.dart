@@ -154,6 +154,14 @@ mixin _$Auth on _Auth, Store {
     return _$getPricesAsyncAction.run(() => super.getPrices());
   }
 
+  late final _$createPaymentAsyncAction =
+      AsyncAction('_Auth.createPayment', context: context);
+
+  @override
+  Future<void> createPayment(int id) {
+    return _$createPaymentAsyncAction.run(() => super.createPayment(id));
+  }
+
   late final _$_AuthActionController =
       ActionController(name: '_Auth', context: context);
 

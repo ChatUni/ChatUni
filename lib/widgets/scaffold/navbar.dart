@@ -1,4 +1,5 @@
-import 'package:chatuni/utils.dart';
+import 'package:chatuni/utils/event.dart';
+import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,16 +12,22 @@ Color selectedColor = Colors.blue;
 Color nonSelectedColor = Colors.black45;
 
 Widget navBar() => obsc<App>(
-      (app, context) => BottomAppBar(
-        padding: hEdge(30),
-        height: 50,
-        shape: app.showMic ? const CircularNotchedRectangle() : null,
-        notchMargin: 5,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: buildIcons(app, context),
-        ),
-      ),
+      (app, context) {
+        listenToEvent(onPaymentRedirectEvent, (_) {
+          context.go('/my');
+        });
+
+        return BottomAppBar(
+          padding: hEdge(30),
+          height: 50,
+          shape: app.showMic ? const CircularNotchedRectangle() : null,
+          notchMargin: 5,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: buildIcons(app, context),
+          ),
+        );
+      },
     );
 
 InkWell menuIcon(
@@ -73,10 +80,7 @@ List<InkWell> buildIcons(App app, BuildContext context) {
   InkWell accountIcon = menuIcon(
     Icons.person,
     '我的',
-    () => launch(
-      'https://chatuni.netlify.app/payment.html',
-      isNewTab: true,
-    ), // context.go('/my'),
+    () => context.go('/my'),
     isSelected: app.routeGroup == RouteGroup.my,
   );
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 enum TtsState { playing, stopped, paused, continued }
@@ -14,9 +15,17 @@ class TextToSpeech {
   Stream<TtsState> get onTtsState => _onTtsStateController.stream;
 
   Future<void> _init() async {
-    await _tts.setSharedInstance(true);
-    voices = await _tts.getVoices;
-    print(json.encode(voices));
+    if (!kIsWeb) {
+      await _tts.setSharedInstance(true);
+    }
+    await _initVoice();
+  }
+
+  Future<void> _initVoice() async {
+    if (voices.isEmpty) {
+      voices = await _tts.getVoices;
+      print(json.encode(voices));
+    }
   }
 
   Future<void> speak(String text) async {
@@ -33,6 +42,7 @@ class TextToSpeech {
     double rate = 0.5,
     double pitch = 1.0,
   ]) async {
+    _initVoice();
     final names = name.split(',');
     final n = names.firstWhere(
       (x) => voices.map((y) => y['name']).contains(x),
