@@ -25,6 +25,7 @@ void main() {
         ),
         routerConfig: router,
         scaffoldMessengerKey: globals.scaffoldMessengerKey,
+        debugShowCheckedModeBanner: false,
       ),
     ),
   );

@@ -1,4 +1,3 @@
-import 'package:chatuni/utils/event.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,22 +11,16 @@ Color selectedColor = Colors.blue;
 Color nonSelectedColor = Colors.black45;
 
 Widget navBar() => obsc<App>(
-      (app, context) {
-        listenToEvent(onPaymentRedirectEvent, (_) {
-          context.go('/my');
-        });
-
-        return BottomAppBar(
-          padding: hEdge(30),
-          height: 50,
-          shape: app.showMic ? const CircularNotchedRectangle() : null,
-          notchMargin: 5,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: buildIcons(app, context),
-          ),
-        );
-      },
+      (app, context) => BottomAppBar(
+        padding: hEdge(30),
+        height: 50,
+        shape: app.showMic ? const CircularNotchedRectangle() : null,
+        notchMargin: 5,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: buildIcons(app, context),
+        ),
+      ),
     );
 
 InkWell menuIcon(

@@ -61,25 +61,28 @@ List<Widget> _actions = [
   ),
 ];
 
-List<Widget> tutorActions(Tutors tutors) => [
-      Container(
-        margin: aEdge(12),
-        padding: hEdge(8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: DropdownButton(
-          value: tutors.lang,
-          items: langs
-              .map(
-                (e) => DropdownMenuItem(value: e, child: Text(e.toUpperCase())),
-              )
-              .toList(),
-          onChanged: (l) {
-            if (l != null) tutors.setLang(l);
-          },
-          underline: null,
+List<Widget> tutorActions() => [
+      obs<Tutors>(
+        (tutors) => Container(
+          margin: aEdge(12),
+          padding: hEdge(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: DropdownButton(
+            value: tutors.lang,
+            items: langs
+                .map(
+                  (e) =>
+                      DropdownMenuItem(value: e, child: Text(e.toUpperCase())),
+                )
+                .toList(),
+            onChanged: (l) {
+              if (l != null) tutors.setLang(l);
+            },
+            underline: null,
+          ),
         ),
       ),
     ];

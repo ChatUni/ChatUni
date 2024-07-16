@@ -54,6 +54,22 @@ mixin _$Auth on _Auth, Store {
     });
   }
 
+  late final _$countryCodeAtom =
+      Atom(name: '_Auth.countryCode', context: context);
+
+  @override
+  String get countryCode {
+    _$countryCodeAtom.reportRead();
+    return super.countryCode;
+  }
+
+  @override
+  set countryCode(String value) {
+    _$countryCodeAtom.reportWrite(value, super.countryCode, () {
+      super.countryCode = value;
+    });
+  }
+
   late final _$codeAtom = Atom(name: '_Auth.code', context: context);
 
   @override
@@ -131,6 +147,22 @@ mixin _$Auth on _Auth, Store {
     });
   }
 
+  late final _$paymentMethodAtom =
+      Atom(name: '_Auth.paymentMethod', context: context);
+
+  @override
+  String get paymentMethod {
+    _$paymentMethodAtom.reportRead();
+    return super.paymentMethod;
+  }
+
+  @override
+  set paymentMethod(String value) {
+    _$paymentMethodAtom.reportWrite(value, super.paymentMethod, () {
+      super.paymentMethod = value;
+    });
+  }
+
   late final _$loginAsyncAction = AsyncAction('_Auth.login', context: context);
 
   @override
@@ -177,11 +209,33 @@ mixin _$Auth on _Auth, Store {
   }
 
   @override
+  void setCountryCode(String value) {
+    final _$actionInfo =
+        _$_AuthActionController.startAction(name: '_Auth.setCountryCode');
+    try {
+      return super.setCountryCode(value);
+    } finally {
+      _$_AuthActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setCode(String value) {
     final _$actionInfo =
         _$_AuthActionController.startAction(name: '_Auth.setCode');
     try {
       return super.setCode(value);
+    } finally {
+      _$_AuthActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPaymentMethod(String value) {
+    final _$actionInfo =
+        _$_AuthActionController.startAction(name: '_Auth.setPaymentMethod');
+    try {
+      return super.setPaymentMethod(value);
     } finally {
       _$_AuthActionController.endAction(_$actionInfo);
     }
@@ -203,11 +257,13 @@ mixin _$Auth on _Auth, Store {
     return '''
 isLoggedIn: ${isLoggedIn},
 phone: ${phone},
+countryCode: ${countryCode},
 code: ${code},
 isSendingCode: ${isSendingCode},
 isLoggingIn: ${isLoggingIn},
 user: ${user},
 priceList: ${priceList},
+paymentMethod: ${paymentMethod},
 isPhoneValid: ${isPhoneValid},
 isLoginEnabled: ${isLoginEnabled}
     ''';

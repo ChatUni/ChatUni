@@ -1,3 +1,5 @@
+import 'package:chatuni/widgets/common/dialog.dart';
+import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -63,14 +65,14 @@ Text _special(int price) => Text(
       style: _whiteTitleStyle,
     );
 
-Observer _priceGrid = obs<Auth>(
-  (auth) => vGrid(
+Observer _priceGrid = obsc<Auth>(
+  (auth, context) => vGrid(
     2,
     2,
     auth.priceList
         .map(
           (x) => tap(
-            () => auth.createPayment(x.id),
+            () => dialog(context, paymentMethodDialog(x.id)),
             v2Card(
               _priceDesc(x.description),
               _special(x.special),
@@ -110,3 +112,20 @@ Card _benefit = tCard(
   [_benefitItem, _benefitItem],
   color: Colors.lightGreenAccent,
 );
+
+Observer paymentMethodDialog(int id) => obs<Auth>(
+      (auth) => confirmDialog(
+        '选择付款方式',
+        [
+          ccRow([
+            Expanded(
+              child: dropdown(
+                paymentMethods,
+                auth.setPaymentMethod,
+              ),
+            ),
+          ]),
+        ],
+        () => auth.createPayment(id),
+      ),
+    );

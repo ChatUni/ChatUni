@@ -7,3 +7,9 @@ Future<void> launch(String url, {bool isNewTab = true}) => launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
     );
+
+T log<T>(T t, [String msg = '']) {
+  print(msg);
+  print(t);
+  return t;
+}

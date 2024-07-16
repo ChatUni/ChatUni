@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 TextField input(
   void Function(String) onChanged, {
-  IconData? prefixIcon,
+  Widget? prefixIcon,
   Widget? suffixIcon,
   void Function()? suffixAction,
   String? labelText,
@@ -19,7 +19,7 @@ TextField input(
         filled: true,
         fillColor: Colors.white,
         hintText: labelText,
-        prefixIcon: Icon(prefixIcon),
+        prefixIcon: prefixIcon, // Icon(prefixIcon),
         suffixIcon: suffixIcon is Icon
             ? IconButton(
                 color: Colors.green,

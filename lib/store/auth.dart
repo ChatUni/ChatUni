@@ -8,6 +8,9 @@ import '/models/user.dart';
 
 part 'auth.g.dart';
 
+final countryCodes = ['+86', '+1'];
+final paymentMethods = ['Wechat', 'Alipay'];
+
 class Auth = _Auth with _$Auth;
 
 abstract class _Auth with Store {
@@ -16,6 +19,9 @@ abstract class _Auth with Store {
 
   @observable
   String phone = '';
+
+  @observable
+  String countryCode = countryCodes.first;
 
   @observable
   String code = '';
@@ -32,6 +38,9 @@ abstract class _Auth with Store {
   @observable
   List<Pricing> priceList = [];
 
+  @observable
+  String paymentMethod = paymentMethods.first;
+
   @computed
   bool get isPhoneValid => phone != '';
 
@@ -44,8 +53,18 @@ abstract class _Auth with Store {
   }
 
   @action
+  void setCountryCode(String value) {
+    countryCode = value;
+  }
+
+  @action
   void setCode(String value) {
     code = value;
+  }
+
+  @action
+  void setPaymentMethod(String value) {
+    paymentMethod = value;
   }
 
   @action
@@ -75,7 +94,7 @@ abstract class _Auth with Store {
 
   @action
   Future<void> createPayment(int id) async {
-    final r = await createPayorder(id);
+    final r = await createPayorder(id, paymentMethod);
     await launchUrl(Uri.parse(r['payurl']));
   }
 }

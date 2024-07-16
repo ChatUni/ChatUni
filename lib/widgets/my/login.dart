@@ -1,3 +1,4 @@
+import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -37,7 +38,9 @@ Observer _phoneInput = obs<Auth>(
   (auth) => input(
     auth.setPhone,
     labelText: 'Phone Number',
-    prefixIcon: Icons.phone,
+    prefixIcon: pBox(lEdge(10))(
+      dropdownButton(auth.countryCode, countryCodes, auth.setCountryCode),
+    ), // Icons.phone,
     //keyboardType: TextInputType.phone,
   ),
 );
@@ -46,7 +49,7 @@ Observer _codeInput = obs<Auth>(
   (auth) => input(
     auth.setCode,
     labelText: 'Verification Code',
-    prefixIcon: Icons.security,
+    prefixIcon: const Icon(Icons.security),
     suffixIcon: auth.isPhoneValid
         ? auth.isSendingCode
             ? Image.asset(
