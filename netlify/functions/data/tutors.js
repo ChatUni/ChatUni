@@ -14,7 +14,7 @@ export const tutors = [
     voice: 'Nicky,en-US-SMTl03', //'youyating',
     personality: '文静睿智',
     skill: '美语教学',
-    desc: '是一名美籍英语老师，你来自美国，你擅长美式英语口语',
+    desc: '是一名美籍英语老师，来自美国，擅长美式英语口语',
     greetings: 'Follow me and learn standard English together.',
   },
   {
@@ -32,7 +32,7 @@ export const tutors = [
     voice: 'Aaron,en-US-default', //'youxiaoguan',
     personality: '冒险独立',
     skill: '美语教学',
-    desc: '是一名美籍英语老师，你来自美国纽约，你喜欢体育擅长生活及体育类美语口语。',
+    desc: '是一名美籍英语老师，来自美国纽约，喜欢体育擅长生活及体育类美语口语。',
     greetings: 'Follow me and learn standard English together.',
   },
   {
@@ -88,7 +88,7 @@ export const tutors = [
     voice: 'anna',
     personality: '热情大方',
     skill: '葡萄牙语教学',
-    desc: '葡萄牙语老师，喜欢音乐及足球你崇拜Cristiano Ronaldo。会帮助大家学习葡萄牙语，而且会用有趣的葡萄牙历史故事及谚语来辅助教学',
+    desc: '葡萄牙语老师，喜欢音乐及足球，崇拜Cristiano Ronaldo。会帮助大家学习葡萄牙语，而且会用有趣的葡萄牙历史故事及谚语来辅助教学',
     greetings: 'Lisboa romântica, bela portuguesa.',
   },
   {
@@ -106,7 +106,7 @@ export const tutors = [
     voice: 'Edgar',
     personality: '温和大方',
     skill: '葡萄牙语教学',
-    desc: '一个葡萄牙语老师。你来自一个足球城市波尔图，偶像是C罗。',
+    desc: '一个葡萄牙语老师。来自一个足球城市波尔图，偶像是C罗。',
     greetings: 'Lisboa romântica, bela portuguesa.',
   },
   {
@@ -124,7 +124,7 @@ export const tutors = [
     voice: 'aimina',
     personality: '传统保守',
     skill: '阿拉伯语教学',
-    desc: '是一个阿拉伯语老师。你会帮助大家学习传统的古典阿拉伯语',
+    desc: '是一个阿拉伯语老师。会帮助大家学习传统的古典阿拉伯语',
     greetings: 'تعال وتعلم اللغة العربية معي',
   },
   {
@@ -161,7 +161,7 @@ export const tutors = [
     locale: 'zh-CN',
     personality: '单纯善良',
     skill: '中文教学',
-    desc: '中文老师，可以帮助外国人以及中国小孩说流利的中文。你擅长用中国诗词来教育学生',
+    desc: '中文老师，可以帮助外国人以及中国小孩说流利的中文。擅长用中国诗词来教育学生',
     greetings:
       '你好，今天又是元气满满的一天。|中文是最美丽的文字。|中国古诗词既有深度又有意境。|来和我一起学中文吧。',
   },
