@@ -6,7 +6,7 @@
     </queries>
 
     <application
-        android:label="chatuni"
+        android:label="Chatuni Tutor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
