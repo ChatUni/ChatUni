@@ -42,8 +42,13 @@ String buildUrl(
   String func, {
   Map<String, String> params = const {},
   Map<String, String> headers = const {},
-}) =>
-    '$base/$func?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+}) {
+  String url = '$base/$func';
+  if (params.isNotEmpty) {
+    url += '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+  }
+  return url;
+}
 
 Future<Uint8List> readAsBytes(String path) async {
   if (path.startsWith('blob:')) {
