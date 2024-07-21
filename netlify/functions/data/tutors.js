@@ -29,7 +29,7 @@ export const tutors = [
     gender: '男',
     icon: 2,
     gif: 2,
-    voice: 'Aaron,en-US-default', //'youxiaoguan',
+    voice: 'Aaron,Fred,en-US-default', //'youxiaoguan',
     personality: '冒险独立',
     skill: '美语教学',
     desc: '是一名美籍英语老师，来自美国纽约，喜欢体育擅长生活及体育类美语口语。',

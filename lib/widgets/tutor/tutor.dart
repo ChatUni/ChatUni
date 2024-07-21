@@ -39,6 +39,7 @@ Widget tutors() => obs<Tutors>((tutors) {
           ],
           hAlign: CrossAxisAlignment.start,
           padding: 0,
+          scroll: true,
         ),
         title: 'Tutors',
         routeGroup: RouteGroup.tutor,
