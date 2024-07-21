@@ -177,6 +177,8 @@ abstract class _Tutors with Store {
   //   }
   // }
 
+  getVoices() => _tts.voices;
+
   void _onPlaying(bool isPlaying) {
     isReading = isPlaying;
     if (!isPlaying) {

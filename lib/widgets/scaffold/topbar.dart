@@ -1,4 +1,5 @@
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/common/dialog.dart';
 import 'package:flutter/material.dart';
 
 import '/store/app.dart';
@@ -51,9 +52,11 @@ BoxDecoration _headerImg = const BoxDecoration(
 );
 
 List<Widget> _actions = [
-  const IconButton(
-    onPressed: null,
-    icon: Icon(Icons.search, color: Colors.white),
+  obsc<Tutors>(
+    (tutors, context) => IconButton(
+      onPressed: () => dialog(context, alert(tutors.getVoices().toString())),
+      icon: const Icon(Icons.search, color: Colors.white),
+    ),
   ),
   const IconButton(
     onPressed: null,

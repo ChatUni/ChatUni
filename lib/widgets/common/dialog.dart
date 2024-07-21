@@ -36,3 +36,5 @@ SimpleDialog confirmDialog(
         ]),
       ],
     );
+
+AlertDialog alert(String msg) => AlertDialog(content: Text(msg));
