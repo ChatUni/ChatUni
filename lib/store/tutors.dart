@@ -177,7 +177,7 @@ abstract class _Tutors with Store {
   //   }
   // }
 
-  getVoices() => _tts.voices;
+  getVoices() => _tts.voices.where((v) => v.locale == 'en-US');
 
   void _onPlaying(bool isPlaying) {
     isReading = isPlaying;
