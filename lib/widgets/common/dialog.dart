@@ -37,4 +37,9 @@ SimpleDialog confirmDialog(
       ],
     );
 
-AlertDialog alert(String msg) => AlertDialog(content: Text(msg));
+AlertDialog alert(String msg) => AlertDialog(
+      content: SingleChildScrollView(
+        scrollDirection: Axis.vertical, //.horizontal
+        child: Text(msg),
+      ),
+    );

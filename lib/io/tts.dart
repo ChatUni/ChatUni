@@ -39,22 +39,21 @@ class TextToSpeech {
   Future<void> setVoice(
     String name,
     String locale, [
-    double rate = 0.5,
+    double rate = 1,
     double pitch = 1.0,
   ]) async {
     _initVoice();
     if (voices.isNotEmpty) {
       final names = name.split(',');
-      final n = names.firstWhere(
-        (x) => voices.map((y) => y['name']).contains(x),
-        orElse: () => voices[0]['name'],
-      );
       final locales = locale.split(',');
-      final l = locales.firstWhere(
-        (x) => voices.map((y) => y['locale']).contains(x),
-        orElse: () => voices[0]['locale'],
+      final voice = voices.firstWhere(
+        (v) =>
+            names.any((n) => v['name'].contains(n)) &&
+            locales.any((l) => v['locale'].contains(l)),
+        orElse: () => voices[0],
       );
-      await _tts.setVoice({'name': n, 'locale': l});
+      print(voice);
+      await _tts.setVoice({'name': voice['name'], 'locale': voice['locale']});
       await _tts.setSpeechRate(rate);
       await _tts.setPitch(pitch);
     }

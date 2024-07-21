@@ -57,7 +57,7 @@ abstract class _Tutors with Store {
   @action
   Future<void> selectTutor(Tutor t) async {
     tutor = t;
-    await _tts.setVoice(t.voice, t.locale ?? 'en-US', t.speed);
+    await _tts.setVoice('Fred', t.locale ?? 'en-US', t.speed);
     final msg = await loadMsg(
       true,
       () => greeting(t.id),
