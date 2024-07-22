@@ -39,7 +39,12 @@ SimpleDialog confirmDialog(
 
 AlertDialog alert(String msg) => AlertDialog(
       content: SingleChildScrollView(
-        scrollDirection: Axis.vertical, //.horizontal
-        child: Text(msg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(msg),
+          ],
+        ),
       ),
     );
