@@ -11,7 +11,7 @@ export const tutors = [
     gender: '女',
     icon: 1,
     gif: 1,
-    voice: 'Nicky,en-US-SMTl03,Microsoft Zira - English (United States)', //'youyating',
+    voice: 'Nicky,Kathy,en-US-SMTl03,Microsoft Zira - English (United States)', //'youyating',
     personality: '文静睿智',
     skill: '美语教学',
     desc: '是一名美籍英语老师，来自美国，擅长美式英语口语',
