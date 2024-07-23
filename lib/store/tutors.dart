@@ -133,8 +133,11 @@ abstract class _Tutors with Store {
           await _player.play(m.url);
           m.isReading = true;
         } else {
+          addLoadingMsg(true);
           final bytes = await tts11(m.text, tutor!.voice);
+          msgs.removeLast();
           await _player.playBytes(bytes);
+          m.isReading = true;
         }
       }
     }

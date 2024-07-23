@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
@@ -11,8 +12,11 @@ final ScrollController msgsScrollController = ScrollController();
 Widget chat() => obs<Tutors>(
       (tutors) {
         reaction((_) => tutors.msgs.length, (_) {
-          msgsScrollController
-              .jumpTo(msgsScrollController.position.maxScrollExtent + 100);
+          if (tutors.msgs.length > 8 ||
+              tutors.msgs.map((m) => m.text.length).sum > 300) {
+            msgsScrollController
+                .jumpTo(msgsScrollController.position.maxScrollExtent + 100);
+          }
           // msgsScrollController.animateTo(
           //   msgsScrollController.position.maxScrollExtent + 100,
           //   duration: const Duration(milliseconds: 200),
