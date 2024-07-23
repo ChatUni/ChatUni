@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/utils/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
@@ -18,7 +17,7 @@ part 'tutors.g.dart';
 class Tutors = _Tutors with _$Tutors;
 
 const useLocalRecognition = true;
-const useLocalTextToSpeech = true;
+const useLocalTextToSpeech = false;
 
 abstract class _Tutors with Store {
   final Recorder _recorder = Recorder();
@@ -162,7 +161,7 @@ abstract class _Tutors with Store {
     Msg msg = addMsg(text);
     Msg? aiMsg = await loadMsg(
       true,
-      () => chatComplete(msgs), // chat(msg, tutor!),
+      () => chatVoice(msg, tutor!), // chatComplete(msgs),
     );
     await addAIMsg(aiMsg);
   }

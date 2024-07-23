@@ -2,11 +2,6 @@ import '/models/user.dart';
 import 'api.dart';
 
 final post = dioPost(vipBase);
-final headers = {
-  'Content-Type': 'application/json',
-  // 'Authorization':
-  //    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjksInBob25lIjoiMTcxMDE4MzI3MjIiLCJpYXQiOjE3MTg2MTY4ODYsImV4cCI6MTcyMTIwODg4Nn0.gPZYtavTYIOSo_Dhpkcup1ae_3grI3RiZs_IpjI-3NM',
-};
 
 // Future<List<Tutor>> getToken() async {
 //   final r = await get('tutor', params: {'type': 'tutors'});

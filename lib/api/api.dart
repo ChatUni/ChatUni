@@ -6,8 +6,14 @@ import 'package:http/http.dart' as http;
 
 const cuBase = 'https://chatuni.netlify.app/.netlify/functions';
 //  'http://10.0.0.72:701/.netlify/functions';
-const vipBase = 'https://chat.smartkit.vip';
+const vipBase = 'https://chat.smartgo.fun'; // 'https://chat.smartkit.vip';
 const vipBase2 = 'http://52.37.231.249:9010';
+
+final headers = {
+  'Content-Type': 'application/json',
+  'Authorization':
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjE4LCJwaG9uZSI6IjEiLCJpYXQiOjE3MjEwOTQzMzAsImV4cCI6MTcyMzY4NjMzMH0.hhFhcMvCFr752WUj94dwbfXIwLKG73390Bm_CkAFf44',
+};
 
 final _dio = Dio();
 

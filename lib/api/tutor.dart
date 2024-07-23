@@ -4,6 +4,7 @@ import 'api.dart';
 
 final get = dioGet(cuBase);
 final post = dioPost(cuBase);
+final vipPost = dioPost(vipBase);
 
 Future<List<Tutor>> fetchTutors() async {
   final r = await get('tutor', params: {'type': 'tutors'});
@@ -47,29 +48,29 @@ Future<Msg?> chat(Msg msg, Tutor tutor) async {
 //   }
 // }
 
-// Future<Msg?> chatVoice(Msg msg, Tutor tutor) async {
-//   var r = await dio.post(
-//     '$base/aiteacher/chatvoice',
-//     data: {
-//       'characterid': tutor.id.toString(),
-//       'file': msg.text,
-//       'language': msg.lang,
-//       'speed': tutor.speed.toString(),
-//       'voiceid': tutor.voice,
-//       // 'sessionid': 6,
-//       // 'audiofile': file,
-//     },
-//     // options: Options(headers: {'Authorization': auth}),
-//   );
-//   if (r.statusCode != 200) return null;
-//   try {
-//     var vr = VoiceResponse.fromJson(r.data);
-//     return Msg()
-//       ..isAI = true
-//       ..text = vr.result.text
-//       ..voice = vr.result.voice
-//       ..url = vr.result.url;
-//   } catch (e) {
-//     return null;
-//   }
-// }
+Future<Msg?> chatVoice(Msg msg, Tutor tutor) async {
+  var r = await vipPost(
+    'aiteacher/chatvoice',
+    data: {
+      'characterid': tutor.id,
+      'file': msg.text,
+      'language': 'zh', // msg.lang,
+      'speed': tutor.speed,
+      'voiceid': tutor.voice,
+      // 'sessionid': 6,
+      // 'audiofile': file,
+    },
+    headers: headers,
+  );
+  if (r.statusCode != 200) return null;
+  try {
+    var vr = r.data['result'];
+    return Msg()
+      ..isAI = true
+      ..text = vr['text']
+      ..voice = vr['voice']
+      ..url = vr['url'];
+  } catch (e) {
+    return null;
+  }
+}
