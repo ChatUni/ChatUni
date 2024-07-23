@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chatuni/utils/event.dart';
+import 'package:flutter/foundation.dart';
 
 const onPlayingEvent = 'AudioPlayer_Playing';
 
@@ -10,6 +11,10 @@ class Player {
 
   Future<void> play(String url) async {
     await _player.play(UrlSource(url));
+  }
+
+  Future<void> playBytes(Uint8List bytes) async {
+    await _player.play(BytesSource(bytes));
   }
 
   Future<void> stop() async {

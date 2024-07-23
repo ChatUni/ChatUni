@@ -1,10 +1,12 @@
+import 'package:chatuni/env.dart';
+
 import 'api.dart';
 
 const base = 'https://api.heygen.com/v1';
 final post = dioPost(base);
 final headers = {
   'Content-Type': 'application/json',
-  'x-api-key': 'MjRhM2QyMGYxMzEzNDg2NDljZGU0ZWY1ZmEyMjc5ZGEtMTcxNzExNjczMw==',
+  'x-api-key': Env.heygenApiKey,
 };
 
 Future<String> createToken() async {

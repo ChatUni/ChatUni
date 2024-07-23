@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:chatuni/api/elevenlabs.dart';
+import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/utils/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
@@ -7,7 +9,6 @@ import 'package:mobx/mobx.dart';
 import '/api/tutor.dart';
 import '/io/player.dart';
 import '/io/recognizer.dart';
-import '/io/recorder.dart';
 import '/io/tts.dart';
 import '/models/msg.dart';
 import '/models/tutor.dart';
@@ -18,12 +19,13 @@ class Tutors = _Tutors with _$Tutors;
 
 const useLocalRecognition = true;
 const useLocalTextToSpeech = false;
+const useMidLayerTts = false;
 
 abstract class _Tutors with Store {
-  final Recorder _recorder = Recorder();
+  // final Recorder _recorder = Recorder();
   final Player _player = Player();
   final Recognizer _stt = Recognizer();
-  final TextToSpeech _tts = TextToSpeech();
+  // final TextToSpeech _tts = TextToSpeech();
 
   @observable
   bool isRecording = false;
@@ -56,7 +58,7 @@ abstract class _Tutors with Store {
   @action
   Future<void> selectTutor(Tutor t) async {
     tutor = t;
-    await _tts.setVoice(t.voice, t.locale ?? 'en-US', t.speed);
+    // await _tts.setVoice(t.voice, t.locale ?? 'en-US', t.speed);
     final msg = await loadMsg(
       true,
       () => greeting(t.id),
@@ -86,7 +88,7 @@ abstract class _Tutors with Store {
     if (useLocalRecognition) {
       await _stt.start(lang);
     } else {
-      await _recorder.start();
+      // await _recorder.start();
     }
     isRecording = true;
   }
@@ -104,7 +106,7 @@ abstract class _Tutors with Store {
         _stt.clear();
       }
     } else {
-      await _recorder.stop();
+      // await _recorder.stop();
       //await _player.play(_recorder.playPath);
       //await trans();
     }
@@ -114,15 +116,26 @@ abstract class _Tutors with Store {
   Future<void> read(Msg m) async {
     if (!m.isAI) return;
     if (isReading) {
-      useLocalTextToSpeech ? await _tts.stop() : await _player.stop();
+      if (useLocalTextToSpeech) {
+        // await _tts.stop();
+      } else {
+        await _player.stop();
+      }
       m.isReading = false;
     } else {
-      if (useLocalTextToSpeech && m.text != '') {
-        await _tts.speak(m.text);
-        m.isReading = true;
-      } else if (!useLocalTextToSpeech && m.url != '') {
-        await _player.play(m.url);
-        m.isReading = true;
+      if (useLocalTextToSpeech) {
+        // if (m.text != '') {
+        //   await _tts.speak(m.text);
+        //   m.isReading = true;
+        // }
+      } else {
+        if (m.url != '') {
+          await _player.play(m.url);
+          m.isReading = true;
+        } else {
+          final bytes = await tts11(m.text, tutor!.voice);
+          await _player.playBytes(bytes);
+        }
       }
     }
   }
@@ -161,7 +174,7 @@ abstract class _Tutors with Store {
     Msg msg = addMsg(text);
     Msg? aiMsg = await loadMsg(
       true,
-      () => chatVoice(msg, tutor!), // chatComplete(msgs),
+      () => useMidLayerTts ? chatVoice(msg, tutor!) : chatComplete(msgs),
     );
     await addAIMsg(aiMsg);
   }
@@ -176,10 +189,10 @@ abstract class _Tutors with Store {
   //   }
   // }
 
-  getVoices() => _tts.voices
-      .where((v) => v['locale'] == 'en-US')
-      .map((v) => v['name'])
-      .join(',');
+  // getVoices() => _tts.voices
+  //     .where((v) => v['locale'] == 'en-US')
+  //     .map((v) => v['name'])
+  //     .join(',');
 
   void _onPlaying(bool isPlaying) {
     isReading = isPlaying;
@@ -202,11 +215,11 @@ abstract class _Tutors with Store {
   _Tutors() {
     loadTutors();
     listenToEvent(onPlayingEvent, _onPlaying);
-    _tts.onTtsState.listen(_onTtsState);
+    // _tts.onTtsState.listen(_onTtsState);
   }
 
   void dispose() {
     _player.dispose();
-    _recorder.dispose();
+    // _recorder.dispose();
   }
 }

@@ -53,6 +53,7 @@ String buildUrl(
   if (params.isNotEmpty) {
     url += '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
   }
+  print(url);
   return url;
 }
 
