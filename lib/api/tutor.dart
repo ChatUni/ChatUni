@@ -62,9 +62,9 @@ Future<Msg?> chatVoice(Msg msg, Tutor tutor) async {
     },
     headers: headers,
   );
-  if (r.statusCode != 200) return null;
+  if (r['status'] != '100') return null;
   try {
-    var vr = r.data['result'];
+    var vr = r['result'];
     return Msg()
       ..isAI = true
       ..text = vr['text']
