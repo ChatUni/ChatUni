@@ -9,7 +9,7 @@ class Pricing {
   int time = 0;
   String currency = '';
   int fee = 0;
-  int special = 0;
+  double special = 0.0;
 
   Pricing();
 
