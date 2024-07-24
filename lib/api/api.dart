@@ -23,7 +23,7 @@ final dioGet = (String base) => (
       Map<String, String> headers = const {},
     }) async {
       final r = await _dio.get(
-        buildUrl(base, func, params: params),
+        buildUrl(base, func, params),
         options: Options(headers: headers),
       );
       return r.data;
@@ -36,7 +36,7 @@ final dioPost = (String base) => (
       Map<String, String> headers = const {},
     }) async {
       final r = await _dio.post(
-        buildUrl(base, func, params: params),
+        buildUrl(base, func, params),
         data: data,
         options: Options(headers: headers),
       );
@@ -45,11 +45,11 @@ final dioPost = (String base) => (
 
 String buildUrl(
   String base,
-  String func, {
+  String func, [
   Map<String, String> params = const {},
-  Map<String, String> headers = const {},
-}) {
-  String url = '$base/$func';
+]) {
+  String url = base;
+  if (func.isNotEmpty) url += '/$func';
   if (params.isNotEmpty) {
     url += '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
   }

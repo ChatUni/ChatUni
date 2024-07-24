@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:chatuni/api/elevenlabs.dart';
 import 'package:chatuni/api/openai.dart';
+import 'package:chatuni/api/youdao.dart';
 import 'package:chatuni/utils/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
@@ -134,7 +134,7 @@ abstract class _Tutors with Store {
           m.isReading = true;
         } else {
           addLoadingMsg(true);
-          final bytes = await tts11(m.text, tutor!.voice);
+          final bytes = await ttsyd(m.text, tutor!.voice);
           msgs.removeLast();
           await _player.playBytes(bytes);
           m.isReading = true;

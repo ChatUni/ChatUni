@@ -13,6 +13,12 @@ abstract class Env {
   @EnviedField(varName: 'HEYGEN_API_KEY')
   static final String heygenApiKey = _Env.heygenApiKey;
 
+  @EnviedField(varName: 'YOUDAO_APP_KEY')
+  static final String youdaoAppKey = _Env.youdaoAppKey;
+
+  @EnviedField(varName: 'YOUDAO_APP_SECRET')
+  static final String youdaoAppSecret = _Env.youdaoAppSecret;
+
   @EnviedField(varName: 'USER_JWT_SECRET')
   static final String userJwtSecret = _Env.userJwtSecret;
 }
