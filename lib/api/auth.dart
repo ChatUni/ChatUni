@@ -63,12 +63,12 @@ Future<String?> sendCodeToPhone(String phone, [String type = '1']) async {
   if (error != null) {
     snack('Please enter a valid number');
   } else {
-    snack('Code sent!');
     var r = await post(
       'login/authcode',
       data: phoneData(phone),
       headers: headers,
     );
+
     return r['result'];
   }
   return null;
@@ -79,7 +79,7 @@ Future<String?> sendCodeToEmail(String email, [String type = '1']) async {
   if (error != null) {
     snack('Please enter a valid email');
   } else {
-    snack('Code sent!');
+    // snack('Code sent!');
     var r = await post(
       'login/authcode',
       data: emailData(email),

@@ -99,12 +99,14 @@ abstract class _Auth with Store {
   @action
   void logout() {
     isLoggedIn = false;
+    snack('log out successfully!');
   }
 
   @action
   Future<void> sendCode() async {
     isSendingCode = true;
     final r = await sendCodeToPhone(phone);
+    snack('Code sent!');
     isSendingCode = false;
   }
 
