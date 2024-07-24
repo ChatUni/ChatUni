@@ -1,4 +1,3 @@
-import 'package:chatuni/widgets/common/snack.dart';
 import 'package:mobx/mobx.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,9 +19,6 @@ abstract class _Auth with Store {
 
   @observable
   String phone = '';
-
-  @observable
-  String email = '';
 
   @observable
   String countryCode = countryCodes.first;
@@ -57,11 +53,6 @@ abstract class _Auth with Store {
   }
 
   @action
-  void setEmail(String value) {
-    email = value;
-  }
-
-  @action
   void setCountryCode(String value) {
     countryCode = value;
   }
@@ -83,18 +74,6 @@ abstract class _Auth with Store {
     isLoggingIn = false;
     isLoggedIn = true;
   }
-
-  // @action
-  // Future<void> login() async {
-  //   isLoggingIn = true;
-  //   if (await validateOTP(phone, code)) {
-  //     user = await loginWithPhoneCode(phone, code);
-  //     isLoggedIn = user != null;
-  //   } else {
-  //     snack('Invalid code. Please try again.');
-  //   }
-  //   isLoggingIn = false;
-  // }
 
   @action
   void logout() {
