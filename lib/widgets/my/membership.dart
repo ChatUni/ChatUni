@@ -60,7 +60,7 @@ Text _priceDesc(String desc) => Text(
       style: _titleStyle,
     );
 
-Text _special(int price) => Text(
+Text _special(double price) => Text(
       '特价 ¥$price',
       style: _whiteTitleStyle,
     );
@@ -75,7 +75,7 @@ Observer _priceGrid = obsc<Auth>(
             () => dialog(context, paymentMethodDialog(x.id)),
             v2Card(
               _priceDesc(x.description),
-              _special(x.special),
+              _special(x.special.toDouble()),
               color2: Colors.lightBlueAccent,
             ),
           ),

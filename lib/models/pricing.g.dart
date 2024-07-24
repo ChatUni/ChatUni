@@ -12,7 +12,7 @@ Pricing _$PricingFromJson(Map<String, dynamic> json) => Pricing()
   ..time = (json['time'] as num).toInt()
   ..currency = json['currency'] as String
   ..fee = (json['fee'] as num).toInt()
-  ..special = (json['special'] as num).toInt();
+  ..special = (json['special'] as num).toDouble();
 
 Map<String, dynamic> _$PricingToJson(Pricing instance) => <String, dynamic>{
       'id': instance.id,
