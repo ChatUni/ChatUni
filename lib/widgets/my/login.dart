@@ -8,6 +8,7 @@ import '/widgets/common/button.dart';
 import '/widgets/common/container.dart';
 import '/widgets/common/hoc.dart';
 import '/widgets/common/input.dart';
+import '/widgets/common/snack.dart';
 import '/widgets/scaffold/scaffold.dart';
 
 Widget login() => scaffold(
@@ -17,8 +18,6 @@ Widget login() => scaffold(
           _logo,
           vSpacer(40),
           _phoneInput,
-          vSpacer(10),
-          _emailInput,
           vSpacer(10),
           _codeInput,
           vSpacer(20),
@@ -46,14 +45,6 @@ Observer _phoneInput = obs<Auth>(
   ),
 );
 
-Observer _emailInput = obs<Auth>(
-  (auth) => input(
-    auth.setEmail,
-    labelText: 'Email',
-    prefixIcon: const Icon(Icons.email),
-  ),
-);
-
 Observer _codeInput = obs<Auth>(
   (auth) => input(
     auth.setCode,
@@ -70,7 +61,7 @@ Observer _codeInput = obs<Auth>(
     suffixAction: auth.isPhoneValid
         ? () async {
             await auth.sendCode();
-            // snack('Code sent!');
+            snack('Code sent!');
           }
         : null,
     //keyboardType: TextInputType.number,
@@ -82,7 +73,7 @@ Observer _loginButton = obs<Auth>(
     auth.isLoginEnabled
         ? () async {
             await auth.login();
-            // snack('Login successful!');
+            snack('Login successful!');
           }
         : null,
     text: auth.isLoggingIn ? '' : 'Login',
