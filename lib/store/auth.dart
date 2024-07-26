@@ -1,4 +1,3 @@
-import 'package:chatuni/widgets/common/snack.dart';
 import 'package:mobx/mobx.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -99,14 +98,14 @@ abstract class _Auth with Store {
   @action
   void logout() {
     isLoggedIn = false;
-    snack('log out successfully!');
+    // snack('log out successfully!');
   }
 
   @action
   Future<void> sendCode() async {
     isSendingCode = true;
     final r = await sendCodeToPhone(phone);
-    snack('Code sent!');
+    // snack('Code sent!');
     isSendingCode = false;
   }
 

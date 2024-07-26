@@ -68,7 +68,7 @@ Future<String?> sendCodeToPhone(String phone, [String type = '1']) async {
       data: phoneData(phone),
       headers: headers,
     );
-
+    snack('Code sent to phone number!');
     return r['result'];
   }
   return null;
@@ -85,6 +85,7 @@ Future<String?> sendCodeToEmail(String email, [String type = '1']) async {
       data: emailData(email),
       headers: headers,
     );
+    snack('Code sent to email!');
     return r['result'];
   }
   return null;
