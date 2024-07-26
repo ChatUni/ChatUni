@@ -17,12 +17,13 @@ Widget login() => scaffold(
           _logo,
           vSpacer(40),
           _phoneInput,
-          vSpacer(10),
-          _emailInput,
+          // vSpacer(10),
+          // _emailInput,
           vSpacer(10),
           _codeInput,
           vSpacer(20),
           _loginButton,
+          _loginwithEmail,
         ],
         padding: 50,
         scroll: true,
@@ -46,13 +47,13 @@ Observer _phoneInput = obs<Auth>(
   ),
 );
 
-Observer _emailInput = obs<Auth>(
-  (auth) => input(
-    auth.setEmail,
-    labelText: 'Email',
-    prefixIcon: const Icon(Icons.email),
-  ),
-);
+// Observer _emailInput = obs<Auth>(
+//   (auth) => input(
+//     auth.setEmail,
+//     labelText: 'Email',
+//     prefixIcon: const Icon(Icons.email),
+//   ),
+// );
 
 Observer _codeInput = obs<Auth>(
   (auth) => input(
@@ -87,5 +88,15 @@ Observer _loginButton = obs<Auth>(
         : null,
     text: auth.isLoggingIn ? '' : 'Login',
     icon: auth.isLoggedIn ? Icons.alarm : null,
+  ),
+);
+
+Widget _loginwithEmail = TextButton(
+  onPressed: () {
+    // navigate to other page
+  },
+  child: const Text(
+    'Login with Email?',
+    style: TextStyle(color: Colors.blue),
   ),
 );
