@@ -20,7 +20,7 @@ final phoneData =
 
 final emailData = (String email) => {
       'identifier': email,
-      'type': '1',
+      'type': '2',
     };
 String? validatePhoneNumber(String phoneNumber) {
   final RegExp regex = RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
@@ -74,7 +74,7 @@ Future<String?> sendCodeToPhone(String phone, [String type = '1']) async {
   return null;
 }
 
-Future<String?> sendCodeToEmail(String email, [String type = '1']) async {
+Future<String?> sendCodeToEmail(String email, [String type = '2']) async {
   final error = validateEmail(email);
   if (error != null) {
     snack('Please enter a valid email');
@@ -97,6 +97,21 @@ Future<User?> loginWithPhoneCode(String phone, String code) async {
     data: {
       ...phoneData(phone),
       'phone': phone,
+      'code': code,
+      'system': 3,
+    },
+    headers: headers,
+  );
+  snack('Login successful!');
+  return User.fromJson(r['result']);
+}
+
+Future<User?> loginWithEmailCode(String email, String code) async {
+  var r = await post(
+    'login/login',
+    data: {
+      ...emailData(email),
+      'phone': email,
       'code': code,
       'system': 3,
     },

@@ -48,6 +48,9 @@ abstract class _Auth with Store {
   bool get isPhoneValid => phone != '';
 
   @computed
+  bool get isEmailValid => email != '';
+
+  @computed
   bool get isLoginEnabled => phone != '' && code != '' && !isLoggingIn;
 
   @action
@@ -83,6 +86,14 @@ abstract class _Auth with Store {
     isLoggedIn = true;
   }
 
+  @action
+  Future<void> elogin() async {
+    isLoggingIn = true;
+    user = await loginWithEmailCode(email, code);
+    isLoggingIn = false;
+    isLoggedIn = true;
+  }
+
   // @action
   // Future<void> login() async {
   //   isLoggingIn = true;
@@ -106,6 +117,13 @@ abstract class _Auth with Store {
     isSendingCode = true;
     final r = await sendCodeToPhone(phone);
     // snack('Code sent!');
+    isSendingCode = false;
+  }
+
+  @action
+  Future<void> sendCodetoEmail() async {
+    isSendingCode = true;
+    final r = await sendCodeToEmail(email);
     isSendingCode = false;
   }
 
