@@ -1,3 +1,4 @@
+import 'package:chatuni/widgets/my/emailLogin.dart';
 import 'package:go_router/go_router.dart';
 
 import 'widgets/my/account.dart';
@@ -21,6 +22,10 @@ final router = GoRouter(
     GoRoute(
       path: '/membership',
       builder: (c, s) => membership(),
+    ),
+    GoRoute(
+      path: '/emailLogin',
+      builder: (c, s) => EmailLoginPage(),
     ),
   ],
 );

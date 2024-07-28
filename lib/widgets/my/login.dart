@@ -1,7 +1,7 @@
 import 'package:chatuni/widgets/common/dropdown.dart';
-import 'package:chatuni/widgets/my/emailLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:go_router/go_router.dart';
 
 import '/store/app.dart';
 import '/store/auth.dart';
@@ -92,62 +92,25 @@ Observer _loginButton = obs<Auth>(
   ),
 );
 
+// Widget _loginWithEmail(BuildContext context) => TextButton(
+//       onPressed: () {
+//         // navigate to other page
+//         Navigator.of(context)
+//             .push(MaterialPageRoute(builder: (context) => EmailLoginPage()));
+//       },
+//       child: const Text(
+//         'Login with Email',
+//         style: TextStyle(color: Colors.blue),
+//       ),
+//     );
+
 Widget _loginWithEmail(BuildContext context) => TextButton(
       onPressed: () {
-        // navigate to other page
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => EmailLoginPage()));
+        // Use GoRouter to navigate to the email login page
+        context.go('/emailLogin');
       },
       child: const Text(
         'Login with Email',
         style: TextStyle(color: Colors.blue),
       ),
     );
-
-// class NewScreen extends StatelessWidget {
-//   const NewScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) => Scaffold(
-//         appBar: AppBar(title: const Text('Log in with Email')),
-//         body: Center(
-//           child: SizedBox(
-//             width: MediaQuery.of(context).size.width * 1 / 3,
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 const TextField(
-//                   decoration: InputDecoration(
-//                     labelText: 'Email',
-//                     prefixIcon: Icon(Icons.email),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 20),
-//                 const TextField(
-//                   decoration: InputDecoration(
-//                     labelText: 'Verification Code',
-//                     prefixIcon: Icon(Icons.security),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 20),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     (auth) => button(
-//                           auth.isLoginEnabled
-//                               ? () async {
-//                                   await auth.login();
-//                                   // snack('Login successful!');
-//                                 }
-//                               : null,
-//                           text: auth.isLoggingIn ? '' : 'Login',
-//                           icon: auth.isLoggedIn ? Icons.alarm : null,
-//                         );
-//                   },
-//                   child: const Text('Login'),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       );
-// }
