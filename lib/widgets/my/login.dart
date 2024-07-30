@@ -1,7 +1,7 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 
 import '/store/app.dart';
 import '/store/auth.dart';
@@ -146,7 +146,7 @@ Observer _eloginButton = obs<Auth>(
 
 Widget _loginWithEmail(BuildContext context) => TextButton(
       onPressed: () {
-        context.go('/emailLogin');
+        router.go('/emailLogin');
       },
       child: const Text(
         'Login with Email',
