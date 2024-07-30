@@ -22,6 +22,7 @@ final emailData = (String email) => {
       'identifier': email,
       'type': '2',
     };
+
 String? validatePhoneNumber(String phoneNumber) {
   final RegExp regex = RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
   if (!regex.hasMatch(phoneNumber)) {
@@ -85,6 +86,7 @@ Future<String?> sendCodeToEmail(String email, [String type = '2']) async {
       data: emailData(email),
       headers: headers,
     );
+    print(r);
     snack('Code sent to email!');
     return r['result'];
   }

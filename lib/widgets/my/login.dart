@@ -18,8 +18,6 @@ Widget login() => scaffold(
           _logo,
           vSpacer(40),
           _phoneInput,
-          // vSpacer(10),
-          // _emailInput,
           vSpacer(10),
           _codeInput,
           vSpacer(20),
@@ -30,6 +28,25 @@ Widget login() => scaffold(
         scroll: true,
       ),
       title: 'Login',
+      routeGroup: RouteGroup.my,
+    );
+
+Widget emailLoginPage() => scaffold(
+      vContainer(
+        [
+          vSpacer(40),
+          _logo,
+          vSpacer(40),
+          _emailInput,
+          vSpacer(10),
+          _ecodeInput,
+          vSpacer(20),
+          _eloginButton,
+        ],
+        padding: 50,
+        scroll: true,
+      ),
+      title: 'Email Login',
       routeGroup: RouteGroup.my,
     );
 
@@ -48,13 +65,12 @@ Observer _phoneInput = obs<Auth>(
   ),
 );
 
-// Observer _emailInput = obs<Auth>(
-//   (auth) => input(
-//     auth.setEmail,
-//     labelText: 'Email',
-//     prefixIcon: const Icon(Icons.email),
-//   ),
-// );
+Observer _emailInput = obs<Auth>(
+  (auth) => input(
+    auth.setEmail,
+    labelText: 'Email',
+  ),
+);
 
 Observer _codeInput = obs<Auth>(
   (auth) => input(
@@ -79,6 +95,29 @@ Observer _codeInput = obs<Auth>(
   ),
 );
 
+Observer _ecodeInput = obs<Auth>(
+  (auth) => input(
+    auth.setCode,
+    labelText: 'Verification Code',
+    prefixIcon: const Icon(Icons.security),
+    suffixIcon: auth.isEmailValid
+        ? auth.isSendingCode
+            ? Image.asset(
+                'assets/images/gif/dots.gif',
+                scale: 8,
+              )
+            : const Icon(Icons.send_to_mobile)
+        : null,
+    suffixAction: auth.isEmailValid
+        ? () async {
+            await auth.esendCode();
+            // snack('Code sent!');
+          }
+        : null,
+    //keyboardType: TextInputType.number,
+  ),
+);
+
 Observer _loginButton = obs<Auth>(
   (auth) => button(
     auth.isLoginEnabled
@@ -92,21 +131,21 @@ Observer _loginButton = obs<Auth>(
   ),
 );
 
-// Widget _loginWithEmail(BuildContext context) => TextButton(
-//       onPressed: () {
-//         // navigate to other page
-//         Navigator.of(context)
-//             .push(MaterialPageRoute(builder: (context) => EmailLoginPage()));
-//       },
-//       child: const Text(
-//         'Login with Email',
-//         style: TextStyle(color: Colors.blue),
-//       ),
-//     );
+Observer _eloginButton = obs<Auth>(
+  (auth) => button(
+    auth.isemailLoginEnabled
+        ? () async {
+            await auth.elogin();
+            // snack('Login successful!');
+          }
+        : null,
+    text: auth.isLoggingIn ? '' : 'Login',
+    icon: auth.isLoggedIn ? Icons.alarm : null,
+  ),
+);
 
 Widget _loginWithEmail(BuildContext context) => TextButton(
       onPressed: () {
-        // Use GoRouter to navigate to the email login page
         context.go('/emailLogin');
       },
       child: const Text(

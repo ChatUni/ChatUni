@@ -170,6 +170,11 @@ mixin _$Auth on _Auth, Store {
     return _$loginAsyncAction.run(() => super.login());
   }
 
+  @override
+  Future<void> elogin() {
+    return _$loginAsyncAction.run(() => super.elogin());
+  }
+
   late final _$sendCodeAsyncAction =
       AsyncAction('_Auth.sendCode', context: context);
 
@@ -259,6 +264,7 @@ isLoggedIn: ${isLoggedIn},
 phone: ${phone},
 countryCode: ${countryCode},
 code: ${code},
+email: ${email},
 isSendingCode: ${isSendingCode},
 isLoggingIn: ${isLoggingIn},
 user: ${user},

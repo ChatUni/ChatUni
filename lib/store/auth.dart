@@ -47,11 +47,16 @@ abstract class _Auth with Store {
   @computed
   bool get isPhoneValid => phone != '';
 
+  // @computed
+  // bool get isEmailValid => email != '';
   @computed
-  bool get isEmailValid => email != '';
+  bool get isEmailValid => true;
 
   @computed
   bool get isLoginEnabled => phone != '' && code != '' && !isLoggingIn;
+
+  @computed
+  bool get isemailLoginEnabled => email != '' && code != '' && !isLoggingIn;
 
   @action
   void setPhone(String value) {
@@ -121,7 +126,7 @@ abstract class _Auth with Store {
   }
 
   @action
-  Future<void> sendCodetoEmail() async {
+  Future<void> esendCode() async {
     isSendingCode = true;
     final r = await sendCodeToEmail(email);
     isSendingCode = false;
