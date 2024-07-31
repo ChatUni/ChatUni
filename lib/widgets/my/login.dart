@@ -22,7 +22,8 @@ Widget login() => scaffold(
           _codeInput,
           vSpacer(20),
           _loginButton,
-          Builder(builder: (context) => _loginWithEmail(context)),
+          // _loginWithEmail(router),
+          Builder(builder: (context) => _loginWithEmail()),
         ],
         padding: 50,
         scroll: true,
@@ -144,7 +145,7 @@ Observer _eloginButton = obs<Auth>(
   ),
 );
 
-Widget _loginWithEmail(BuildContext context) => TextButton(
+Widget _loginWithEmail() => TextButton(
       onPressed: () {
         router.go('/emailLogin');
       },

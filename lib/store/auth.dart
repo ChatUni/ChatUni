@@ -76,6 +76,7 @@ abstract class _Auth with Store {
   @action
   void setCode(String value) {
     code = value;
+    // print(value);
   }
 
   @action

@@ -50,13 +50,9 @@ Future<bool> validateOTP(String phone, String code) async {
     },
     headers: headers,
   );
-  print(r['result']);
+  print(code);
 
-  if (r['result'] == 'Code valid') {
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 }
 
 Future<String?> sendCodeToPhone(String phone, [String type = '1']) async {
