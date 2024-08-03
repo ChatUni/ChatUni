@@ -27,5 +27,9 @@ final router = GoRouter(
       path: '/emailLogin',
       builder: (c, s) => emailLoginPage(),
     ),
+    // GoRoute(
+    //   path: '/profile',
+    //   builder: (c, s) => profile(),
+    // ),
   ],
 );

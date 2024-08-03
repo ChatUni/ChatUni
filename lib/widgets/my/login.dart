@@ -112,6 +112,7 @@ Observer _ecodeInput = obs<Auth>(
     suffixAction: auth.isEmailValid
         ? () async {
             await auth.esendCode();
+            router.go('/membership');
             // snack('Code sent!');
           }
         : null,

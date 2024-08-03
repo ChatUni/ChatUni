@@ -258,6 +258,17 @@ mixin _$Auth on _Auth, Store {
   }
 
   @override
+  void delete() {
+    final _$actionInfo =
+        _$_AuthActionController.startAction(name: '_Auth.delete');
+    try {
+      return super.logout();
+    } finally {
+      _$_AuthActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isLoggedIn: ${isLoggedIn},

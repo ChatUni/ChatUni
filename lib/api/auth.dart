@@ -50,7 +50,6 @@ Future<bool> validateOTP(String phone, String code) async {
     },
     headers: headers,
   );
-  print(code);
 
   return true;
 }

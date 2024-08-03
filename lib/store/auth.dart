@@ -30,6 +30,9 @@ abstract class _Auth with Store {
   String code = '';
 
   @observable
+  String cpcode = '';
+
+  @observable
   bool isSendingCode = false;
 
   @observable
@@ -56,7 +59,7 @@ abstract class _Auth with Store {
   bool get isLoginEnabled => phone != '' && code != '' && !isLoggingIn;
 
   @computed
-  bool get isemailLoginEnabled => email != '' && code != '' && !isLoggingIn;
+  bool get isemailLoginEnabled => isEmailValid && code != '' && !isLoggingIn;
 
   @action
   void setPhone(String value) {
@@ -77,6 +80,7 @@ abstract class _Auth with Store {
   void setCode(String value) {
     code = value;
     // print(value);
+    cpcode = value;
   }
 
   @action
