@@ -1,7 +1,27 @@
 import 'package:chatuni/widgets/common/snack.dart';
+import 'package:otp_timer_button/otp_timer_button.dart';
 
 import '/models/user.dart';
 import 'api.dart';
+
+Map<String, DateTime> _otpTimestamps = {};
+
+bool canSendOtp(String phone) {
+  if (_otpTimestamps.containsKey(phone)) {
+    DateTime lastSent = _otpTimestamps[phone]!;
+    return DateTime.now().difference(lastSent).inSeconds >= 60;
+  }
+  return true;
+}
+
+OtpTimerButtonController controller = OtpTimerButtonController();
+
+_requestOtp() {
+  controller.loading();
+  Future.delayed(const Duration(seconds: 60), () {
+    controller.startTimer();
+  });
+}
 
 final post = dioPost(vipBase);
 final headers = {
@@ -58,15 +78,30 @@ Future<String?> sendCodeToPhone(String phone, [String type = '1']) async {
   final error = validatePhoneNumber(phone);
   if (error != null) {
     snack('Please enter a valid number');
-  } else {
-    var r = await post(
-      'login/authcode',
-      data: phoneData(phone),
-      headers: headers,
-    );
+    return null;
+  }
+
+  if (!canSendOtp(phone)) {
+    snack('Please wait 60 seconds before requesting another OTP.');
+    return null;
+  }
+
+  // send OTP
+  var r = await post(
+    'login/authcode',
+    data: phoneData(phone),
+    headers: headers,
+  );
+
+  if (r != null && r.containsKey('result')) {
+    // update the timestamp for OTP sent
+    _otpTimestamps[phone] = DateTime.now();
     snack('Code sent to phone number!');
     return r['result'];
+  } else {
+    snack('Failed to send OTP. Please try again.');
   }
+
   return null;
 }
 
@@ -117,3 +152,7 @@ Future<User?> loginWithEmailCode(String email, String code) async {
   snack('Login successful!');
   return User.fromJson(r['result']);
 }
+
+// Timer(Duration(seconds: 3), () {
+//   print("Yeah, this line is printed after 3 seconds");
+// });

@@ -11,6 +11,15 @@ import '/widgets/common/hoc.dart';
 import '/widgets/common/input.dart';
 import '/widgets/scaffold/scaffold.dart';
 
+// OtpTimerButtonController controller = OtpTimerButtonController();
+
+// _requestOtp() {
+//   controller.loading();
+//   Future.delayed(const Duration(seconds: 60), () {
+//     controller.startTimer();
+//   });
+// }
+
 Widget login() => scaffold(
       vContainer(
         [
@@ -89,6 +98,7 @@ Observer _codeInput = obs<Auth>(
     suffixAction: auth.isPhoneValid
         ? () async {
             await auth.sendCode();
+
             // snack('Code sent!');
           }
         : null,
