@@ -31,11 +31,13 @@ Widget tutors() => obs<Tutors>((tutors) {
         vContainer(
           [
             vSpacer(20),
-            level(1),
+            level('Level 1'),
             tutorList(1),
             vSpacer(10),
-            level(2),
+            level('Level 2'),
             tutorList(2),
+            level('Customized'),
+            tutorList(0),
           ],
           hAlign: CrossAxisAlignment.start,
           padding: 0,

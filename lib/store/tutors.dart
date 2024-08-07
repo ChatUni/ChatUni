@@ -37,7 +37,7 @@ abstract class _Tutors with Store {
   bool isReading = false;
 
   @observable
-  bool isAvatar = true;
+  bool isAvatar = false;
 
   @observable
   var tutors = ObservableList<Tutor>();
@@ -64,6 +64,7 @@ abstract class _Tutors with Store {
   @action
   Future<void> selectTutor(Tutor t) async {
     tutor = t;
+    isAvatar = t.level == 0;
     // await _tts.setVoice(t.voice, t.locale ?? 'en-US', t.speed);
     // _rtc.createPC(
     //   'https://create-images-results.d-id.com/google-oauth2|115115236146534848384/upl_HJNFFUCs2NaEGsfiZ1ecN/image.jpeg',
