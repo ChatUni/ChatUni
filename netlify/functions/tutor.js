@@ -1,11 +1,12 @@
 import { makeApi } from './utils/http'
 import { chat, initAI } from './utils/openai'
 import { tutors } from './data/tutors'
+import { getTutors } from './utils/tutor'
 
 export const handler = makeApi({
   handlers: {
     get: {
-      tutors: q => tutors,
+      tutors: q => getTutors(),
       greeting: q => tutors.find(x => x.id == q.id).greetings,
     },
     post: {

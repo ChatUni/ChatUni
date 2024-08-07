@@ -165,7 +165,7 @@ abstract class _Tutors with Store {
     if (aiMsg != null) {
       removeLoadingMsg();
       msgs.add(aiMsg);
-      await read(aiMsg);
+      if (!isAvatar) await read(aiMsg);
     }
   }
 
