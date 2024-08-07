@@ -185,4 +185,21 @@ export const tutors = [
     greetings:
       '你好，今天又是元气满满的一天。|中文是最美丽的文字。|中国古诗词既有深度又有意境。|来和我一起学中文吧。',
   },
+  {
+    id: 101,
+    type: 5,
+    level: 0,
+    speed: 0.5,
+    speed2: '中',
+    name: '校长',
+    gender: '男',
+    icon: 101,
+    voice:  'youxiaohao', // 'iP95p4xoKVk53GoZ742B', 'Li-mu',
+    locale: 'zh-CN',
+    personality: '教育改变人生',
+    skill: '学教育，做教育',
+    desc: '',
+    greetings:
+      '你好，有什么可以帮到您的?',
+  },
 ]
