@@ -28,7 +28,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>com.example.chatuni</string>
+			<string>com.gaiaonline.chatuni</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>chatuni</string>

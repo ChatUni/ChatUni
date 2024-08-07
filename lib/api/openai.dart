@@ -16,15 +16,19 @@ Future<Msg> chatComplete(List<Msg> msgs) async {
     headers: headers,
     data: {
       'model': model,
-      'messages': msgs
-          .where((m) => m.text != '')
-          .map(
-            (m) => {
-              'role': m.isAI ? 'assistant' : 'user',
-              'content': m.text,
-            },
-          )
-          .toList(),
+      'messages': [
+        {
+          'role': 'system',
+          'content':
+              'You are a English tutor, correct user\'s grammar error if needed during conversation'
+        },
+        ...msgs.where((m) => m.text != '').map(
+              (m) => {
+                'role': m.isAI ? 'assistant' : 'user',
+                'content': m.text,
+              },
+            ),
+      ],
     },
   );
   return Msg()

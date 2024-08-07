@@ -49,6 +49,21 @@ mixin _$Tutors on _Tutors, Store {
     });
   }
 
+  late final _$isAvatarAtom = Atom(name: '_Tutors.isAvatar', context: context);
+
+  @override
+  bool get isAvatar {
+    _$isAvatarAtom.reportRead();
+    return super.isAvatar;
+  }
+
+  @override
+  set isAvatar(bool value) {
+    _$isAvatarAtom.reportWrite(value, super.isAvatar, () {
+      super.isAvatar = value;
+    });
+  }
+
   late final _$tutorsAtom = Atom(name: '_Tutors.tutors', context: context);
 
   @override
@@ -178,6 +193,7 @@ mixin _$Tutors on _Tutors, Store {
     return '''
 isRecording: ${isRecording},
 isReading: ${isReading},
+isAvatar: ${isAvatar},
 tutors: ${tutors},
 tutor: ${tutor},
 msgs: ${msgs},

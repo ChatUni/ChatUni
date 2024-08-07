@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/api/youdao.dart';
+import 'package:chatuni/io/websocket.dart';
 import 'package:chatuni/utils/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
@@ -26,12 +27,17 @@ abstract class _Tutors with Store {
   final Player _player = Player();
   final Recognizer _stt = Recognizer();
   // final TextToSpeech _tts = TextToSpeech();
+  // final _rtc = WebRTC();
+  final Ably ably = Ably();
 
   @observable
   bool isRecording = false;
 
   @observable
   bool isReading = false;
+
+  @observable
+  bool isAvatar = true;
 
   @observable
   var tutors = ObservableList<Tutor>();
@@ -59,6 +65,9 @@ abstract class _Tutors with Store {
   Future<void> selectTutor(Tutor t) async {
     tutor = t;
     // await _tts.setVoice(t.voice, t.locale ?? 'en-US', t.speed);
+    // _rtc.createPC(
+    //   'https://create-images-results.d-id.com/google-oauth2|115115236146534848384/upl_HJNFFUCs2NaEGsfiZ1ecN/image.jpeg',
+    // );
     final msg = await loadMsg(
       true,
       () => greeting(t.id),
@@ -153,6 +162,7 @@ abstract class _Tutors with Store {
 
   Future<void> addAIMsg(Msg? aiMsg) async {
     if (aiMsg != null) {
+      removeLoadingMsg();
       msgs.add(aiMsg);
       await read(aiMsg);
     }
@@ -166,6 +176,12 @@ abstract class _Tutors with Store {
     );
   }
 
+  void removeLoadingMsg() {
+    if (msgs.isNotEmpty && msgs.last.isWaiting) {
+      msgs.removeLast();
+    }
+  }
+
   Future<T> loadMsg<T>(bool isAI, Future<T> Function() api) async {
     addLoadingMsg(isAI);
     final r = await api();
@@ -175,11 +191,17 @@ abstract class _Tutors with Store {
 
   Future<void> voice(String text) async {
     Msg msg = addMsg(text);
-    Msg? aiMsg = await loadMsg(
-      true,
-      () => useMidLayerTts ? chatVoice(msg, tutor!) : chatComplete(msgs),
-    );
-    await addAIMsg(aiMsg);
+    if (isAvatar) {
+      // _rtc.sendMsg(msg.text);
+      addLoadingMsg(true);
+      ably.send('q', text);
+    } else {
+      Msg? aiMsg = await loadMsg(
+        true,
+        () => (useMidLayerTts ? chatVoice(msg, tutor!) : chatComplete(msgs)),
+      );
+      await addAIMsg(aiMsg);
+    }
   }
 
   // Future<void> trans() async {
@@ -197,7 +219,10 @@ abstract class _Tutors with Store {
   //     .map((v) => v['name'])
   //     .join(',');
 
+  // getRTCRenderer() => _rtc.remoteRenderer;
+
   void _onPlaying(bool isPlaying) {
+    print(isPlaying ? 'Started talking' : 'Finished talking');
     isReading = isPlaying;
     if (!isPlaying) {
       for (var m in msgs) {
@@ -219,6 +244,14 @@ abstract class _Tutors with Store {
     loadTutors();
     listenToEvent(onPlayingEvent, _onPlaying);
     // _tts.onTtsState.listen(_onTtsState);
+    ably.listen(
+      'a',
+      (msg) => addAIMsg(
+        Msg()
+          ..text = msg.toString()
+          ..isAI = true,
+      ),
+    );
   }
 
   void dispose() {

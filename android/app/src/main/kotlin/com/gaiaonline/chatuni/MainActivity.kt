@@ -1,4 +1,4 @@
-package com.example.chatuni
+package com.gaiaonline.chatuni
 
 import io.flutter.embedding.android.FlutterActivity
 
