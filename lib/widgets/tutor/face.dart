@@ -26,7 +26,9 @@ Widget face() => obsc<Tutors>((tutors, context) {
                     allowsInlineMediaPlayback: true,
                   ),
                   initialUrlRequest: URLRequest(
-                    url: WebUri('https://d-id.netlify.app/d-id.html'),
+                    url: WebUri(
+                      'https://chatuni.netlify.app/d-id.html?id=${tutor.id}',
+                    ),
                   ),
                 ),
               )
