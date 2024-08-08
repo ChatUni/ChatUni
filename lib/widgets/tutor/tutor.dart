@@ -38,6 +38,7 @@ Widget tutors() => obs<Tutors>((tutors) {
             tutorList(2),
             level('Customized'),
             tutorList(0),
+            vSpacer(80),
           ],
           hAlign: CrossAxisAlignment.start,
           padding: 0,
