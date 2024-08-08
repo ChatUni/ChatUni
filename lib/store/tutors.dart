@@ -69,10 +69,11 @@ abstract class _Tutors with Store {
     // _rtc.createPC(
     //   'https://create-images-results.d-id.com/google-oauth2|115115236146534848384/upl_HJNFFUCs2NaEGsfiZ1ecN/image.jpeg',
     // );
-    final msg = await loadMsg(
-      true,
-      () => greeting(t.id),
-    );
+    final msg = t.greetings;
+    // await loadMsg(
+    //   true,
+    //   () => greeting(t.id),
+    // );
     if (msg != null) {
       await addAIMsg(
         Msg()

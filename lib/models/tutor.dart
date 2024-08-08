@@ -17,6 +17,7 @@ class Tutor {
   String skill = '';
   String desc = '';
   String? locale = '';
+  String? greetings = '';
 
   Tutor();
 

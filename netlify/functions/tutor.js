@@ -15,4 +15,5 @@ export const handler = makeApi({
     },
   },
   initAI,
+  nocache: true,
 })
