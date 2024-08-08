@@ -266,9 +266,10 @@ const sendToChat = async (msg) => {
   // connectionState not supported in firefox
   if (peerConnection?.signalingState === 'stable' || peerConnection?.iceConnectionState === 'connected') {
 
+    let r;
     // Agents Overview - Step 3: Send a Message to a Chat session - Send a message to a Chat
-    const r = await sendToChat2(msg);
-    if (r.status === 400) {
+    if (tutor.chatId) r = await sendToChat2(msg);
+    if (!r || r.status === 400) {
       console.log('Renew Chat');
       await createChat();
       await sendToChat2(msg);
