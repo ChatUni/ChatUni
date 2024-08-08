@@ -1,8 +1,11 @@
-import axios from 'axios'
-import { API, ADMIN } from './db'
+import { DB, get, post } from './http'
 
-const DB = 'algo.ChatUni'
-const api = API(DB)
-const admin = ADMIN(DB)
+const db = DB('algo.ChatUni')
 
-export const getTutors = () => axios.get(api('doc', 'tutors')).then(r => r.data)
+export const getTutors = () => get(db('doc', 'tutors'))
+
+export const saveChatId = async (id, chatId) => {
+  const tutor = await get(`${db('getById', 'tutors')}&params={"id":${id}}`)
+  tutor.chatId = chatId
+  await post(db('save', 'tutors'), tutor)
+}

@@ -18,8 +18,7 @@ let sessionClientAnswer;
 let statsIntervalId;
 let videoIsPlaying;
 let lastBytesReceived;
-let agentId;
-let chatId;
+let tutor;
 let ably;
 let channel;
 
@@ -148,7 +147,7 @@ function playIdleVideo() {
   videoElement.classList.toggle("animated")
 
   videoElement.srcObject = undefined;
-  videoElement.src = "https://agents-results.d-id.com/google-oauth2|115115236146534848384/agt_JdGCtniN/idle_1721805182857.mp4"; // 'emma_idle.mp4';
+  videoElement.src = tutor.idleVideo;
   videoElement.loop = true;
 
   // Remove Animation Class after it's completed
@@ -204,9 +203,7 @@ const connect = async () => {
   const params = new URLSearchParams(window.location.search);
   const id = +params.get('id');
   const tutors = await fetch('https://chatuni.netlify.app/.netlify/functions/tutor?type=tutors').then(r => r.json());
-  const tutor = tutors.find(x => x.id == id);
-  agentId = tutor.agentId;
-  chatId = tutor.chatId;
+  tutor = tutors.find(x => x.id == id);
 
   // WEBRTC API CALL 1 - Create a new stream
   const sessionResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams`, {
@@ -246,7 +243,7 @@ const connect = async () => {
   });
 };
 
-const sendToChat2 = (msg) => fetchWithRetries(`${DID_API.url}/agents/${agentId}/chat/${chatId}`, {
+const sendToChat2 = (msg) => fetchWithRetries(`${DID_API.url}/agents/${tutor.agentId}/chat/${tutor.chatId}`, {
     method: 'POST',
     headers: {
       'Authorization': `Basic ${DID_API.key}`,
@@ -295,8 +292,6 @@ const destroy = async () => {
 
 // Agents API Workflow
 async function agentsAPIworkflow(isNewAgent) {
-  agentIdLabel.innerHTML = `<span style='color:orange'>Processing...<style='color:orange'>`
-  chatIdLabel.innerHTML = `<span style='color:orange'>Processing...<style='color:orange'>`
   axios.defaults.baseURL = `${DID_API.url}`;
   axios.defaults.headers.common['Authorization'] = `Basic ${DID_API.key}`
   axios.defaults.headers.common['content-type'] = 'application/json'
@@ -323,8 +318,6 @@ async function agentsAPIworkflow(isNewAgent) {
         console.log(`Retrying ${retries}/${maxRetryCount}. ${err}`);
         return retry(url, retries + 1);
       } else {
-        agentIdLabel.innerHTML = `<span style='color:red'>Failed</span>`
-        chatIdLabel.innerHTML = `<span style='color:red'>Failed</span>`
         throw new Error(`Max retries exceeded. error: ${err}`);
       }
     }
@@ -405,28 +398,15 @@ async function agentsAPIworkflow(isNewAgent) {
 
   // Agents Overview - Step 2: Create a new Chat session with the Agent
   // https://docs.d-id.com/reference/agents-overview#%EF%B8%8F-step-2-create-a-new-chat-session-with-the-agent
-  const createChat = await axios.post(`/agents/${agentId}/chat`)
+  const createChat = await axios.post(`/agents/${tutor.agentId}/chat`)
   console.log("Create Chat: ", createChat.data)
-  let chatId = createChat.data.id
-  console.log("Chat ID: " + chatId)
+  tutor.chatId = createChat.data.id
+  console.log("Chat ID: " + tutor.chatId)
 
-  // Agents Overview - Step 3: Send a Message to a Chat session
-  // https://docs.d-id.com/reference/agents-overview#%EF%B8%8F-step-3--send-a-message-to-a-chat-session
-  // The WebRTC steps are called in the functions: 'connectButton.onclick', onIceCandidate(event), 'startButton.onclick'
-
-  console.log("Create new Agent with Knowledge - DONE!\n Press on the 'Connect' button to proceed.\n Store the created 'agentID' and 'chatId' variables at the bottom of the JS file for future chats")
-  agentIdLabel.innerHTML = agentId
-  chatIdLabel.innerHTML = chatId
-  return { agentId: agentId, chatId: chatId }
-
+  await fetch(`https://chatuni.netlify.app/.netlify/functions/tutor?type=saveChatId&id=${tutor.id}&chatId=${tutor.chatId}`, { method: 'POST' }).then(r => r.json());
 }
 
-const createChat = async () => {
-  const agentsIds = {} = await agentsAPIworkflow(false)
-  console.log(agentsIds)
-  agentId = agentsIds.agentId
-  chatId = agentsIds.chatId
-}
+const createChat = () => agentsAPIworkflow(false)
 
 const setupAbly = async () => {
   ably = new Ably.Realtime(ABLY_API_KEY);

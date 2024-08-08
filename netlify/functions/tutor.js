@@ -1,7 +1,7 @@
 import { makeApi } from './utils/http'
 import { chat, initAI } from './utils/openai'
 import { tutors } from './data/tutors'
-import { getTutors } from './utils/tutor'
+import { getTutors, saveChatId } from './utils/tutor'
 
 export const handler = makeApi({
   handlers: {
@@ -11,6 +11,7 @@ export const handler = makeApi({
     },
     post: {
       chat: (q, b) => chat(b.text),
+      saveChatId: (q, b) => saveChatId(q.id, q.chatId),
     },
   },
   initAI,
