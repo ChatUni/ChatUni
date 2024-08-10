@@ -422,4 +422,5 @@ const setupAbly = async () => {
 window.onload = () => {
   connect();
   setupAbly();
+  document.addEventListener('keydown', e => e.key === 't' && sendToChat('how are you doing'));
 }
