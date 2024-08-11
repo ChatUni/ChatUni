@@ -66,8 +66,9 @@ List<InkWell> buildIcons(App app, BuildContext context) {
   );
   InkWell metaIcon = menuIcon(
     Icons.language,
-    '元宇宙',
-    () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
+    '场景', // '元宇宙',
+    () => context.go('/scenario'),
+    // () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
     isSelected: app.routeGroup == RouteGroup.meta,
   );
   InkWell accountIcon = menuIcon(

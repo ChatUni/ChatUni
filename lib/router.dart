@@ -8,7 +8,11 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (c, s) => tutors(),
+      builder: (c, s) => tutors(false),
+    ),
+    GoRoute(
+      path: '/scenario',
+      builder: (c, s) => tutors(true),
     ),
     GoRoute(
       path: '/tutor',
