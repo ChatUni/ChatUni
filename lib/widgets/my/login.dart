@@ -2,6 +2,7 @@ import 'package:chatuni/router.dart';
 import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:otp_timer_button/otp_timer_button.dart';
 
 import '/store/app.dart';
 import '/store/auth.dart';
@@ -11,12 +12,12 @@ import '/widgets/common/hoc.dart';
 import '/widgets/common/input.dart';
 import '/widgets/scaffold/scaffold.dart';
 
-// OtpTimerButtonController controller = OtpTimerButtonController();
+OtpTimerButtonController OTPcontroller = OtpTimerButtonController();
 
 // _requestOtp() {
-//   controller.loading();
+//   OTPcontroller.loading();
 //   Future.delayed(const Duration(seconds: 60), () {
-//     controller.startTimer();
+//     OTPcontroller.startTimer();
 //   });
 // }
 
@@ -87,24 +88,49 @@ Observer _codeInput = obs<Auth>(
     auth.setCode,
     labelText: 'Verification Code',
     prefixIcon: const Icon(Icons.security),
-    suffixIcon: auth.isPhoneValid
-        ? auth.isSendingCode
-            ? Image.asset(
-                'assets/images/gif/dots.gif',
-                scale: 8,
+    suffixIcon: auth.isPhoneValid && !auth.hasSentCodeBefore
+        ? OtpTimerButton(
+            controller: OTPcontroller,
+            onPressed: () async {
+              await auth.sendCode();
+              OTPcontroller.loading();
+              Future.delayed(const Duration(seconds: 60), () {
+                OTPcontroller.startTimer();
+              });
+            },
+            text: const Text('Send OTP'),
+            duration: 0, // seconds
+          )
+        : auth.isPhoneValid && auth.hasSentCodeBefore
+            ? const Icon(
+                Icons.send_to_mobile,
               )
-            : const Icon(Icons.send_to_mobile)
-        : null,
-    suffixAction: auth.isPhoneValid
-        ? () async {
-            await auth.sendCode();
-
-            // snack('Code sent!');
-          }
-        : null,
-    //keyboardType: TextInputType.number,
+            : null,
+    suffixAction: null,
   ),
 );
+
+// Observer _codeInput = obs<Auth>(
+//   (auth) => input(
+//     auth.setCode,
+//     labelText: 'Verification Code',
+//     prefixIcon: const Icon(Icons.security),
+//     suffixIcon: auth.isPhoneValid
+//         ? auth.isSendingCode
+//             ? Image.asset(
+//                 'assets/images/gif/dots.gif',
+//                 scale: 8,
+//               )
+//             : const Icon(Icons.send_to_mobile)
+//         : null,
+//     suffixAction: auth.isPhoneValid
+//         ? () async {
+//             await auth.sendCode();
+//           }
+//         : null,
+//     //keyboardType: TextInputType.number,
+//   ),
+// );
 
 Observer _ecodeInput = obs<Auth>(
   (auth) => input(
