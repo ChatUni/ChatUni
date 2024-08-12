@@ -16,7 +16,7 @@ OtpTimerButtonController OTPcontroller = OtpTimerButtonController();
 
 // _requestOtp() {
 //   OTPcontroller.loading();
-//   Future.delayed(const Duration(seconds: 60), () {
+//   Future.delayed(const Duration(seconds: 10), () {
 //     OTPcontroller.startTimer();
 //   });
 // }
@@ -83,33 +83,6 @@ Observer _emailInput = obs<Auth>(
   ),
 );
 
-Observer _codeInput = obs<Auth>(
-  (auth) => input(
-    auth.setCode,
-    labelText: 'Verification Code',
-    prefixIcon: const Icon(Icons.security),
-    suffixIcon: auth.isPhoneValid && !auth.hasSentCodeBefore
-        ? OtpTimerButton(
-            controller: OTPcontroller,
-            onPressed: () async {
-              await auth.sendCode();
-              OTPcontroller.loading();
-              Future.delayed(const Duration(seconds: 60), () {
-                OTPcontroller.startTimer();
-              });
-            },
-            text: const Text('Send OTP'),
-            duration: 0, // seconds
-          )
-        : auth.isPhoneValid && auth.hasSentCodeBefore
-            ? const Icon(
-                Icons.send_to_mobile,
-              )
-            : null,
-    suffixAction: null,
-  ),
-);
-
 // Observer _codeInput = obs<Auth>(
 //   (auth) => input(
 //     auth.setCode,
@@ -131,6 +104,42 @@ Observer _codeInput = obs<Auth>(
 //     //keyboardType: TextInputType.number,
 //   ),
 // );
+
+Observer _codeInput = obs<Auth>(
+  (auth) => input(
+    auth.setCode,
+    labelText: 'Verification Code',
+    prefixIcon: const Icon(Icons.security),
+    suffixIcon: auth.isPhoneValid
+        ? auth.isSendingCode
+            ? Image.asset(
+                'assets/images/gif/dots.gif',
+                scale: 8,
+              )
+            : auth.hasSentCodeBefore
+                ? OtpTimerButton(
+                    controller: OTPcontroller,
+                    onPressed: () async {
+                      await auth.sendCode();
+                      OTPcontroller.loading();
+                      OTPcontroller.startTimer();
+                    },
+                    text: const Text('Resend OTP'),
+                    duration: 60, // seconds
+                  )
+                : TextButton(
+                    onPressed: () async {
+                      await auth.sendCode();
+                      auth.hasSentCodeBefore = true;
+                      // OTPcontroller.startTimer();
+                    },
+                    child: const Text('Send Code'),
+                  )
+        : null,
+    suffixAction: null,
+    //keyboardType: TextInputType.number,
+  ),
+);
 
 Observer _ecodeInput = obs<Auth>(
   (auth) => input(
