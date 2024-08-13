@@ -65,5 +65,41 @@ Observer _settings = obsc<Auth>(
     menuItem(Icons.verified_user, 'Security'),
     menuItem(Icons.history, 'History'),
     menuItem(Icons.logout, 'Logout', onTap: auth.logout),
+    menuItem(
+      Icons.delete,
+      'Delete Account',
+      onTap: () => _deleteAccount(context, auth),
+    ),
   ]),
 );
+
+void _deleteAccount(BuildContext context, Auth auth) async {
+  final bool? confirm = await showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      title: const Text('Confirm Deletion'),
+      content: const Text('Do you want to delete your account?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false), // no
+          child: const Text('No'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true), // yes
+          child: const Text('Yes'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm == true) {
+    auth.delete();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Account deleted successfully')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Account deletion canceled')),
+    );
+  }
+}

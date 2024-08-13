@@ -170,6 +170,11 @@ mixin _$Auth on _Auth, Store {
     return _$loginAsyncAction.run(() => super.login());
   }
 
+  @override
+  Future<void> elogin() {
+    return _$loginAsyncAction.run(() => super.elogin());
+  }
+
   late final _$sendCodeAsyncAction =
       AsyncAction('_Auth.sendCode', context: context);
 
@@ -253,12 +258,24 @@ mixin _$Auth on _Auth, Store {
   }
 
   @override
+  void delete() {
+    final _$actionInfo =
+        _$_AuthActionController.startAction(name: '_Auth.delete');
+    try {
+      return super.logout();
+    } finally {
+      _$_AuthActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isLoggedIn: ${isLoggedIn},
 phone: ${phone},
 countryCode: ${countryCode},
 code: ${code},
+email: ${email},
 isSendingCode: ${isSendingCode},
 isLoggingIn: ${isLoggingIn},
 user: ${user},

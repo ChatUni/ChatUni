@@ -1,6 +1,8 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:otp_timer_button/otp_timer_button.dart';
 
 import '/store/app.dart';
 import '/store/auth.dart';
@@ -8,8 +10,16 @@ import '/widgets/common/button.dart';
 import '/widgets/common/container.dart';
 import '/widgets/common/hoc.dart';
 import '/widgets/common/input.dart';
-import '/widgets/common/snack.dart';
 import '/widgets/scaffold/scaffold.dart';
+
+OtpTimerButtonController OTPcontroller = OtpTimerButtonController();
+
+// _requestOtp() {
+//   OTPcontroller.loading();
+//   Future.delayed(const Duration(seconds: 10), () {
+//     OTPcontroller.startTimer();
+//   });
+// }
 
 Widget login() => scaffold(
       vContainer(
@@ -22,11 +32,32 @@ Widget login() => scaffold(
           _codeInput,
           vSpacer(20),
           _loginButton,
+          // _loginWithEmail(router),
+          Builder(builder: (context) => _loginWithEmail()),
         ],
         padding: 50,
         scroll: true,
       ),
       title: 'Login',
+      routeGroup: RouteGroup.my,
+    );
+
+Widget emailLoginPage() => scaffold(
+      vContainer(
+        [
+          vSpacer(40),
+          _logo,
+          vSpacer(40),
+          _emailInput,
+          vSpacer(10),
+          _ecodeInput,
+          vSpacer(20),
+          _eloginButton,
+        ],
+        padding: 50,
+        scroll: true,
+      ),
+      title: 'Email Login',
       routeGroup: RouteGroup.my,
     );
 
@@ -45,6 +76,35 @@ Observer _phoneInput = obs<Auth>(
   ),
 );
 
+Observer _emailInput = obs<Auth>(
+  (auth) => input(
+    auth.setEmail,
+    labelText: 'Email',
+  ),
+);
+
+// Observer _codeInput = obs<Auth>(
+//   (auth) => input(
+//     auth.setCode,
+//     labelText: 'Verification Code',
+//     prefixIcon: const Icon(Icons.security),
+//     suffixIcon: auth.isPhoneValid
+//         ? auth.isSendingCode
+//             ? Image.asset(
+//                 'assets/images/gif/dots.gif',
+//                 scale: 8,
+//               )
+//             : const Icon(Icons.send_to_mobile)
+//         : null,
+//     suffixAction: auth.isPhoneValid
+//         ? () async {
+//             await auth.sendCode();
+//           }
+//         : null,
+//     //keyboardType: TextInputType.number,
+//   ),
+// );
+
 Observer _codeInput = obs<Auth>(
   (auth) => input(
     auth.setCode,
@@ -56,12 +116,49 @@ Observer _codeInput = obs<Auth>(
                 'assets/images/gif/dots.gif',
                 scale: 8,
               )
+            : auth.hasSentCodeBefore
+                ? OtpTimerButton(
+                    controller: OTPcontroller,
+                    onPressed: () async {
+                      await auth.sendCode();
+                      OTPcontroller.loading();
+                      OTPcontroller.startTimer();
+                    },
+                    text: const Text('Resend OTP'),
+                    duration: 60, // seconds
+                  )
+                : TextButton(
+                    onPressed: () async {
+                      await auth.sendCode();
+                      auth.hasSentCodeBefore = true;
+                      // OTPcontroller.startTimer();
+                    },
+                    child: const Text('Send Code'),
+                  )
+        : null,
+    suffixAction: null,
+    //keyboardType: TextInputType.number,
+  ),
+);
+
+Observer _ecodeInput = obs<Auth>(
+  (auth) => input(
+    auth.setCode,
+    labelText: 'Verification Code',
+    prefixIcon: const Icon(Icons.security),
+    suffixIcon: auth.isEmailValid
+        ? auth.isSendingCode
+            ? Image.asset(
+                'assets/images/gif/dots.gif',
+                scale: 8,
+              )
             : const Icon(Icons.send_to_mobile)
         : null,
-    suffixAction: auth.isPhoneValid
+    suffixAction: auth.isEmailValid
         ? () async {
-            await auth.sendCode();
-            snack('Code sent!');
+            await auth.esendCode();
+            router.go('/membership');
+            // snack('Code sent!');
           }
         : null,
     //keyboardType: TextInputType.number,
@@ -73,10 +170,33 @@ Observer _loginButton = obs<Auth>(
     auth.isLoginEnabled
         ? () async {
             await auth.login();
-            snack('Login successful!');
+            // snack('Login successful!');
           }
         : null,
     text: auth.isLoggingIn ? '' : 'Login',
     icon: auth.isLoggedIn ? Icons.alarm : null,
   ),
 );
+
+Observer _eloginButton = obs<Auth>(
+  (auth) => button(
+    auth.isemailLoginEnabled
+        ? () async {
+            await auth.elogin();
+            // snack('Login successful!');
+          }
+        : null,
+    text: auth.isLoggingIn ? '' : 'Login',
+    icon: auth.isLoggedIn ? Icons.alarm : null,
+  ),
+);
+
+Widget _loginWithEmail() => TextButton(
+      onPressed: () {
+        router.go('/emailLogin');
+      },
+      child: const Text(
+        'Login with Email',
+        style: TextStyle(color: Colors.blue),
+      ),
+    );
