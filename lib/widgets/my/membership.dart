@@ -112,7 +112,7 @@ Card _benefit = tCard(
   [_benefitItem, _benefitItem],
   color: Colors.lightGreenAccent,
 );
-
+/*
 Observer paymentMethodDialog(int id) => obs<Auth>(
       (auth) => confirmDialog(
         '选择付款方式',
@@ -129,3 +129,90 @@ Observer paymentMethodDialog(int id) => obs<Auth>(
         () => auth.createPayment(id),
       ),
     );
+*/
+/*
+Observer paymentMethodDialog(int id) => obs<Auth>(
+      (auth) => confirmDialog(
+        '选择付款方式',
+        [
+          ccRow([
+            Expanded(
+              child: dropdown(
+                paymentMethods,
+                auth.setPaymentMethod,
+              ),
+            ),
+          ]),
+        ],
+        () {
+          // Ensure the context is passed correctly
+          showDialog(
+            context: context,  // Ensure you have access to the context here
+            builder: (BuildContext context) => confirmBox(
+              '确认支付?',
+              () => auth.createPayment(id),
+            ),
+          );
+        },
+      ),
+    );
+Observer paymentMethodDialog(int id) => obs<Auth>(
+      (auth) => confirmBox(
+        '确认支付?',
+        () => auth.createPayment(id),
+      ),
+    );
+
+Observer paymentMethodDialog(int id) => Observer(
+  builder: (BuildContext context) {
+    final auth = Auth();  // Make sure to use your MobX store
+    return confirmDialog(
+      '选择付款方式',
+      [
+        ccRow([
+          Expanded(
+            child: dropdown(
+              paymentMethods,
+              auth.setPaymentMethod,
+            ),
+          ),
+        ]),
+      ],
+      () {
+        Navigator.of(context).pop(); // Close the first dialog
+        // Show the second confirmation dialog
+        confirmBox(
+          '确认支付?',
+          () => auth.createPayment(id),
+        );
+      },
+    );
+  },
+);
+*/
+Observer paymentMethodDialog(int id) => obsc<Auth>(
+  (auth, context) => confirmDialog(
+    '选择付款方式',
+    [
+      ccRow([
+        Expanded(
+          child: dropdown(
+            paymentMethods,
+            auth.setPaymentMethod,
+          ),
+        ),
+      ]),
+    ],
+    () {
+      Navigator.of(context).pop(); // Close the first dialog
+      // Show the second confirmation dialog
+      dialog(
+        context, 
+        confirmBox(
+          '确认支付?',
+          () => auth.createPayment(id),
+        ),
+      );
+    },
+  ),
+);

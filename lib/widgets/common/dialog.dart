@@ -48,3 +48,30 @@ AlertDialog alert(String msg) => AlertDialog(
         ),
       ),
     );
+
+SimpleDialog confirmBox(
+  String title,
+  void Function() onConfirm,
+) =>
+    SimpleDialog(
+      title: Text(title),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      children: [
+        vSpacer(10),
+        ecRow([
+          SimpleDialogOption(
+            onPressed: () => router.pop(),
+            child: txt('取消', color: Colors.blueAccent, bold: true),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              onConfirm();
+              router.pop();
+            },
+            child: txt('确定', color: Colors.blueAccent, bold: true),
+          ),
+        ]),
+      ],
+    );
