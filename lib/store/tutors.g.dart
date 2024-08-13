@@ -16,6 +16,12 @@ mixin _$Tutors on _Tutors, Store {
       (_$isTutorSelectedComputed ??= Computed<bool>(() => super.isTutorSelected,
               name: '_Tutors.isTutorSelected'))
           .value;
+  Computed<bool>? _$isAvatarComputed;
+
+  @override
+  bool get isAvatar => (_$isAvatarComputed ??=
+          Computed<bool>(() => super.isAvatar, name: '_Tutors.isAvatar'))
+      .value;
 
   late final _$isRecordingAtom =
       Atom(name: '_Tutors.isRecording', context: context);
@@ -46,6 +52,22 @@ mixin _$Tutors on _Tutors, Store {
   set isReading(bool value) {
     _$isReadingAtom.reportWrite(value, super.isReading, () {
       super.isReading = value;
+    });
+  }
+
+  late final _$isScenarioAtom =
+      Atom(name: '_Tutors.isScenario', context: context);
+
+  @override
+  bool get isScenario {
+    _$isScenarioAtom.reportRead();
+    return super.isScenario;
+  }
+
+  @override
+  set isScenario(bool value) {
+    _$isScenarioAtom.reportWrite(value, super.isScenario, () {
+      super.isScenario = value;
     });
   }
 
@@ -174,15 +196,28 @@ mixin _$Tutors on _Tutors, Store {
   }
 
   @override
+  void setScenario(bool s) {
+    final _$actionInfo =
+        _$_TutorsActionController.startAction(name: '_Tutors.setScenario');
+    try {
+      return super.setScenario(s);
+    } finally {
+      _$_TutorsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isRecording: ${isRecording},
 isReading: ${isReading},
+isScenario: ${isScenario},
 tutors: ${tutors},
 tutor: ${tutor},
 msgs: ${msgs},
 lang: ${lang},
-isTutorSelected: ${isTutorSelected}
+isTutorSelected: ${isTutorSelected},
+isAvatar: ${isAvatar}
     ''';
   }
 }

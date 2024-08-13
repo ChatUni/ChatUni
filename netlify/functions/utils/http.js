@@ -1,3 +1,6 @@
+import axios from 'axios'
+import { tap } from './util'
+
 const FUNC = '/.netlify/functions/'
 let origin = ''
 
@@ -13,6 +16,9 @@ export const isProd = process?.env.NODE_ENV
 export const HOST = isDev ? `http://localhost:${PORT}/` : '/'
 export const API = HOST + 'api/'
 export const ADMIN = HOST + 'admin/'
+export const DB  = db => (type, doc) => `https://sace-mongodb.netlify.app/.netlify/functions/api?type=${type}&db=${db}&doc=${doc}`
+export const get = url => axios.get(tap(url)).then(r => r.data)
+export const post = (url, data) => axios.post(tap(url), data).then(r => r.data)
 
 const headers = nocache => ({
   'Access-Control-Allow-Credentials': true,

@@ -55,9 +55,9 @@ List<Widget> _actions = [
     onPressed: null,
     icon: Icon(Icons.search, color: Colors.white),
   ),
-  const IconButton(
-    onPressed: null,
-    icon: Icon(Icons.bookmark, color: Colors.white),
+  IconButton(
+    onPressed: () {},
+    icon: const Icon(Icons.bookmark, color: Colors.white),
   ),
 ];
 
