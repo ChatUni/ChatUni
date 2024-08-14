@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:chatuni/utils/event.dart';
-import 'package:chatuni/widgets/common/snack.dart';
 import 'package:otp_timer_button/otp_timer_button.dart';
 
 import '/models/user.dart';
@@ -89,13 +88,15 @@ Future<bool> validateOTP(String phone, String code) async {
     headers: headers,
   );
 
+  // bool result = resultChecker();
+  // if ()
   return true;
 }
 
 Future<String?> sendCodeToPhone(String phone, [String type = '1']) async {
   final error = validatePhoneNumber(phone);
   if (error != null) {
-    snack('Please enter a valid number');
+    // snack('Please enter a valid number');
     raiseEvent(validNumber, true);
     return null;
   }
