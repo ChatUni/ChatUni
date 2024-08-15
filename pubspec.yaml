@@ -59,6 +59,11 @@ dependencies:
   speech_to_text: ^6.6.0
   url_launcher: ^6.3.0
   uuid: ^4.4.2
+  pie_chart: ^5.0.0
+  file_picker: ^5.2.6
+  flutter_markdown:
+  animated_text_kit: ^4.2.2
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
