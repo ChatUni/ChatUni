@@ -127,12 +127,7 @@ const toggleVideoImg = isVideo => {
 }
 
 function setVideoElement(stream) {
-  if (!stream) {
-    toggleVideoImg(false);
-    return;
-  }
-
-  toggleVideoImg(true);
+  if (!stream) return;
 
   // Add Animation Class
   videoElement.classList.add("animated")
@@ -157,6 +152,8 @@ function setVideoElement(stream) {
   }
 }
 function playIdleVideo() {
+  toggleVideoImg(true);
+
   // Add Animation Class
   videoElement.classList.toggle("animated")
 
