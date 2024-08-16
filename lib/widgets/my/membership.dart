@@ -129,66 +129,51 @@ Observer paymentMethodDialog(int id) => obs<Auth>(
         () => auth.createPayment(id),
       ),
     );
-*/
-/*
-Observer paymentMethodDialog(int id) => obs<Auth>(
-      (auth) => confirmDialog(
-        '选择付款方式',
-        [
-          ccRow([
-            Expanded(
-              child: dropdown(
-                paymentMethods,
-                auth.setPaymentMethod,
-              ),
-            ),
-          ]),
-        ],
-        () {
-          // Ensure the context is passed correctly
-          showDialog(
-            context: context,  // Ensure you have access to the context here
-            builder: (BuildContext context) => confirmBox(
-              '确认支付?',
-              () => auth.createPayment(id),
-            ),
-          );
-        },
-      ),
-    );
-Observer paymentMethodDialog(int id) => obs<Auth>(
-      (auth) => confirmBox(
-        '确认支付?',
-        () => auth.createPayment(id),
-      ),
-    );
 
-Observer paymentMethodDialog(int id) => Observer(
-  builder: (BuildContext context) {
-    final auth = Auth();  // Make sure to use your MobX store
-    return confirmDialog(
-      '选择付款方式',
-      [
-        ccRow([
-          Expanded(
-            child: dropdown(
-              paymentMethods,
-              auth.setPaymentMethod,
-            ),
-          ),
-        ]),
+Observer paymentMethodDialog(int id) {
+  return obsc<Auth>((auth, context) {
+    return AlertDialog(
+      title: Text('选择付款方式'),
+      content: dropdown(
+        paymentMethods,
+        auth.setPaymentMethod,
+      ),
+      actions: [
+        TextButton(
+          child: Text('取消'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        TextButton(
+          child: Text('确认'),
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the first dialog
+            
+            // Show the second confirmation dialog
+            showDialog(
+              context: context,
+              builder: (BuildContext dialogContext) => AlertDialog(
+                title: Text('确认支付?'),
+                actions: [
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                  ),
+                  TextButton(
+                    child: Text('确认'),
+                    onPressed: () {
+                      auth.createPayment(id);
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ],
-      () {
-        Navigator.of(context).pop(); // Close the first dialog
-        // Show the second confirmation dialog
-        confirmBox(
-          '确认支付?',
-          () => auth.createPayment(id),
-        );
-      },
     );
-  },
-);
+  });
+}
 */
 Observer paymentMethodDialog(int id) => obsc<Auth>(
   (auth, context) => confirmDialog(
@@ -204,15 +189,21 @@ Observer paymentMethodDialog(int id) => obsc<Auth>(
       ]),
     ],
     () {
-      Navigator.of(context).pop(); // Close the first dialog
-      // Show the second confirmation dialog
-      dialog(
-        context, 
-        confirmBox(
-          '确认支付?',
-          () => auth.createPayment(id),
-        ),
-      );
+      // Close the first dialog
+      Navigator.of(context).pop();
+      // Delay slightly before showing the second dialog
+      Future.delayed(Duration(milliseconds: 100), () {
+        // Show the second confirmation dialog
+        showDialog(
+          context: context,
+          builder: (_) => confirmBox(
+            '确认支付?',
+            () {
+              auth.createPayment(id); // Proceed with payment
+            },
+          ),
+        );
+      });
     },
   ),
 );
