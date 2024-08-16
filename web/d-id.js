@@ -26,6 +26,7 @@ const videoElement = document.getElementById('video-element');
 videoElement.setAttribute('playsinline', '');
 videoElement.setAttribute('height', window.innerHeight);
 const img = document.getElementById('headImg');
+img.setAttribute('height', window.innerHeight);
 const textArea = document.getElementById("textArea");
 
 async function createPeerConnection(offer, iceServers) {
@@ -119,8 +120,20 @@ function onTrack(event) {
     });
   }, 500);
 }
+
+const toggleVideoImg = isVideo => {
+  img.style.display = isVideo ? 'none' : 'block';
+  videoElement.style.display = isVideo ? 'block' : 'none';
+}
+
 function setVideoElement(stream) {
-  if (!stream) return;
+  if (!stream) {
+    toggleVideoImg(false);
+    return;
+  }
+
+  toggleVideoImg(true);
+
   // Add Animation Class
   videoElement.classList.add("animated")
 
