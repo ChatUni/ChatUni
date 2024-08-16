@@ -25,6 +25,7 @@ let channel;
 const videoElement = document.getElementById('video-element');
 videoElement.setAttribute('playsinline', '');
 videoElement.setAttribute('height', window.innerHeight);
+const img = document.getElementById('headImg');
 const textArea = document.getElementById("textArea");
 
 async function createPeerConnection(offer, iceServers) {
@@ -204,6 +205,7 @@ const connect = async () => {
   const id = +params.get('id');
   const tutors = await fetch('https://chatuni.netlify.app/.netlify/functions/tutor?type=tutors').then(r => r.json());
   tutor = tutors.find(x => x.id == id);
+  img.src = tutor.stillImage;
 
   // WEBRTC API CALL 1 - Create a new stream
   const sessionResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams`, {
