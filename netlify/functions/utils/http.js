@@ -17,8 +17,8 @@ export const HOST = isDev ? `http://localhost:${PORT}/` : '/'
 export const API = HOST + 'api/'
 export const ADMIN = HOST + 'admin/'
 export const DB  = db => (type, doc) => `https://sace-mongodb.netlify.app/.netlify/functions/api?type=${type}&db=${db}&doc=${doc}`
-export const get = url => axios.get(tap(url)).then(r => r.data)
-export const post = (url, data) => axios.post(tap(url), data).then(r => r.data)
+export const get = (url, headers) => axios.get(tap(url), { headers: headers || {}}).then(r => r.data)
+export const post = (url, data, headers) => axios.post(tap(url), data, { headers: headers || {}}).then(r => r.data)
 
 const headers = nocache => ({
   'Access-Control-Allow-Credentials': true,
