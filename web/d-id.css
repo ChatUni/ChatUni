@@ -9,11 +9,12 @@ body {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  height: 100vh;
   /* margin-top: 50px; */
 }
 
-#video-wrapper {
-  background-position: top;
+img {
+  flex-grow: 1;
 }
 
 video {
@@ -22,6 +23,7 @@ video {
   background-position: top;
   /* position: absolute; */
   background-size: contain;
+  flex-grow: 1;
 }
 
 .animated {
