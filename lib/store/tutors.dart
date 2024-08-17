@@ -71,17 +71,17 @@ abstract class _Tutors with Store {
     // _rtc.createPC(
     //   'https://create-images-results.d-id.com/google-oauth2|115115236146534848384/upl_HJNFFUCs2NaEGsfiZ1ecN/image.jpeg',
     // );
-    final msg = t.greetings;
-    // await loadMsg(
-    //   true,
-    //   () => greeting(t.id),
-    // );
-    if (msg != null) {
-      await addAIMsg(
-        Msg()
-          ..text = msg
-          ..isAI = true,
-      );
+    if (isAvatar) {
+      addLoadingMsg(true);
+    } else {
+      final msg = t.greetings;
+      if (msg != null) {
+        await addAIMsg(
+          Msg()
+            ..text = msg
+            ..isAI = true,
+        );
+      }
     }
   }
 
@@ -132,7 +132,7 @@ abstract class _Tutors with Store {
 
   @action
   Future<void> read(Msg m) async {
-    if (!m.isAI) return;
+    if (!m.isAI || isAvatar) return;
     if (isReading) {
       if (useLocalTextToSpeech) {
         // await _tts.stop();

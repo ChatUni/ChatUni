@@ -51,6 +51,7 @@ async function createPeerConnection(offer, iceServers) {
   let dc = await peerConnection.createDataChannel("JanusDataChannel");
   dc.onopen = () => {
     console.log("datachannel open");
+    channel.publish('a', tutor.greetings)
   };
 
   // Agent Text Responses - Decoding the responses, pasting to the HTML element
