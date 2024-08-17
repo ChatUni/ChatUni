@@ -10,27 +10,31 @@ body {
   justify-content: space-evenly;
   align-items: center;
   height: 100vh;
+  background-color: beige;
   /* margin-top: 50px; */
 }
 
 img {
   flex-grow: 1;
+  /* animation: opout 1s ease-in; */
 }
 
 video {
-  /* display: block; */
+  display: none;
   /* border-radius: 50%; */
   background-position: top;
   /* position: absolute; */
   background-size: contain;
   flex-grow: 1;
+  /* animation: opin 0.2s ease-in-out; */
 }
 
-.animated {
-  animation: opacityAnimation 0.2s ease-in-out;
-}
-
-@keyframes opacityAnimation {
-from { opacity: 0.8; }
+@keyframes opin {
+from { opacity: 0.5; }
 to { opacity: 1; }
 }
+@keyframes opout {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+  }
+  

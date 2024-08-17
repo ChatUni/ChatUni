@@ -24,9 +24,7 @@ let channel;
 
 const videoElement = document.getElementById('video-element');
 videoElement.setAttribute('playsinline', '');
-videoElement.setAttribute('height', window.innerHeight);
 const img = document.getElementById('headImg');
-img.setAttribute('height', window.innerHeight);
 const textArea = document.getElementById("textArea");
 
 async function createPeerConnection(offer, iceServers) {
@@ -130,7 +128,7 @@ function setVideoElement(stream) {
   if (!stream) return;
 
   // Add Animation Class
-  videoElement.classList.add("animated")
+  // videoElement.classList.add("animated")
 
   // Removing browsers' autoplay's 'Mute' Requirement
   videoElement.muted = false;
@@ -139,9 +137,9 @@ function setVideoElement(stream) {
   videoElement.loop = false;
 
   // Remove Animation Class after it's completed
-  setTimeout(() => {
-    videoElement.classList.remove("animated")
-  }, 1000);
+  // setTimeout(() => {
+  //   videoElement.classList.remove("animated")
+  // }, 1000);
 
   // safari hotfix
   if (videoElement.paused) {
@@ -155,16 +153,16 @@ function playIdleVideo() {
   toggleVideoImg(true);
 
   // Add Animation Class
-  videoElement.classList.toggle("animated")
+  // videoElement.classList.toggle("animated")
 
   videoElement.srcObject = undefined;
   videoElement.src = tutor.idleVideo;
   videoElement.loop = true;
 
   // Remove Animation Class after it's completed
-  setTimeout(() => {
-    videoElement.classList.remove("animated")
-  }, 1000);
+  // setTimeout(() => {
+  //   videoElement.classList.remove("animated")
+  // }, 1000);
 }
 function stopAllStreams() {
   if (videoElement.srcObject) {
