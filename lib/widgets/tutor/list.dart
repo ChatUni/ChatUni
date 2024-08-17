@@ -1,3 +1,4 @@
+import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +12,12 @@ Widget tutorList(int level) => obs<Tutors>(
         child: ListView(
           padding: aEdge(8),
           scrollDirection: Axis.horizontal,
-          children: tutors.tutors
-              .where((t) => t.level == level)
-              .map((t) => tutorCard(t))
-              .toList(),
+          children: log(
+            tutors.tutors
+                .where((t) => t.level == level)
+                .map((t) => tutorCard(t))
+                .toList(),
+          ),
         ),
       ),
     );
