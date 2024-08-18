@@ -50,10 +50,14 @@ async function createPeerConnection(offer, iceServers) {
 
   // Data Channel creation (for dispalying the Agent's responses as text)
   let dc = await peerConnection.createDataChannel("JanusDataChannel");
-  dc.onopen = async () => {
+  dc.onopen = () => {
     console.log("datachannel open");
-    await sendToChat(tutor.greetings, true);
-    channel.publish('a', tutor.greetings)
+    msgs.push({
+      "role": "assistant",
+      "content": tutor.greetings,
+      "created_at": new Date().toISOString()
+    })
+  channel.publish('a', tutor.greetings)
   };
 
   // Agent Text Responses - Decoding the responses, pasting to the HTML element
@@ -62,12 +66,12 @@ async function createPeerConnection(offer, iceServers) {
     let msgType = "chat/answer:"
     if (msg.includes(msgType)) {
       msg = decodeURIComponent(msg.replace(msgType, ""))
-      console.log(msg)
-      msgs.push[{
+      console.log('Data Channel in: ' + msg)
+      msgs.push({
         "role": "assistant",
         "content": msg,
         "created_at": new Date().toISOString()
-      }]
+      })
       channel.publish('a', msg)
     }
   };
