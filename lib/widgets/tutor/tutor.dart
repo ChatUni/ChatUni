@@ -47,8 +47,6 @@ Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
                   vSpacer(10),
                   level('Level 2'),
                   tutorList(2),
-                  level('Customized'),
-                  tutorList(0),
                   vSpacer(80),
                 ],
                 hAlign: CrossAxisAlignment.start,

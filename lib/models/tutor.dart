@@ -18,6 +18,7 @@ class Tutor {
   String desc = '';
   String? locale = '';
   String? greetings = '';
+  String? agentId = '';
 
   Tutor();
 

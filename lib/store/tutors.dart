@@ -55,7 +55,7 @@ abstract class _Tutors with Store {
   bool get isTutorSelected => tutor != null;
 
   @computed
-  bool get isAvatar => isTutorSelected && tutor!.level == 0;
+  bool get isAvatar => isTutorSelected && tutor!.agentId != null;
 
   @action
   Future<void> loadTutors() async {

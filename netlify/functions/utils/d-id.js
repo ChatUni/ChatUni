@@ -28,12 +28,14 @@ export const createAgent = (name, voice, img, desc) => post(`${DID}/agents`, {
 
 export const importAgent = async () => {
   const tutors = await get(db('doc', 'tutors'))
-  for (t of tutors.slice(1)) {
-    await createAgent(t.name, t.gender == '男' ? 'en-US-RyanMultilingualNeural' : 'en-US-JennyMultilingualNeural', `https://chatuni.netlify.app/icons/${t.id}.png`, t.system)
-    const { agents } = await get(`${DID}/agents/me`, headers)
-    t.agentId = agents[0].id
-    t.idleVideo = agents[0].presenter.idle_video
-    t.stillImage = agents[0].presenter.source_url
+  const { agents } = await get(`${DID}/agents/me`, headers)
+  for (t of tutors) {
+    // await createAgent(t.name, t.gender == '男' ? 'en-US-RyanMultilingualNeural' : 'en-US-JennyMultilingualNeural', `https://chatuni.netlify.app/icons/${t.id}.png`, t.system)
+    // const { agents } = await get(`${DID}/agents/me`, headers)
+    const agent = agents.find(x => x.preview_name == t.name)
+    t.agentId = agent.id
+    t.idleVideo = agent.presenter.idle_video
+    t.stillImage = agent.presenter.source_url
     t.chatId = ''
     await post(db('save', 'tutors'), t)
   }

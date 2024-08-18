@@ -21,6 +21,7 @@ let lastBytesReceived;
 let tutor;
 let ably;
 let channel;
+let msgs = [];
 
 const params = new URLSearchParams(window.location.search);
 const tutorId = +params.get('id');
@@ -49,8 +50,9 @@ async function createPeerConnection(offer, iceServers) {
 
   // Data Channel creation (for dispalying the Agent's responses as text)
   let dc = await peerConnection.createDataChannel("JanusDataChannel");
-  dc.onopen = () => {
+  dc.onopen = async () => {
     console.log("datachannel open");
+    await sendToChat(tutor.greetings, true);
     channel.publish('a', tutor.greetings)
   };
 
@@ -61,6 +63,11 @@ async function createPeerConnection(offer, iceServers) {
     if (msg.includes(msgType)) {
       msg = decodeURIComponent(msg.replace(msgType, ""))
       console.log(msg)
+      msgs.push[{
+        "role": "assistant",
+        "content": msg,
+        "created_at": new Date().toISOString()
+      }]
       channel.publish('a', msg)
     }
   };
@@ -264,20 +271,18 @@ const sendToChat2 = (msg) => fetchWithRetries(`${DID_API.url}/agents/${tutor.age
     body: JSON.stringify({
       "streamId": streamId,
       "sessionId": sessionId,
-      "messages": [
-        {
-          "role": "user",
-          "content": msg,
-          "created_at": new Date().toString()
-        }
-      ]
+      "messages": [...msgs, msg]
     }),
   });
 
-const sendToChat = async (msg) => {
+const sendToChat = async (txt, isAI) => {
   // connectionState not supported in firefox
   if (peerConnection?.signalingState === 'stable' || peerConnection?.iceConnectionState === 'connected') {
-
+    const msg = {
+      "role": isAI ? "assistant" : "user",
+      "content": txt,
+      "created_at": new Date().toISOString()
+    }
     let r;
     // Agents Overview - Step 3: Send a Message to a Chat session - Send a message to a Chat
     if (tutor.chatId) r = await sendToChat2(msg);
@@ -286,6 +291,7 @@ const sendToChat = async (msg) => {
       await createChat();
       await sendToChat2(msg);
     }
+    msgs.push(msg);
   }
 };
 
