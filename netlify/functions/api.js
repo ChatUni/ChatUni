@@ -4,7 +4,7 @@ import pusher from './utils/pusher'
 export const handler = makeApi({
   handlers: {
     post: {
-      pusher: (q, b) => pusher.trigger(q.channel, q.event, q.msg),
+      pusher: (q, b) => pusher.trigger(q.channel, q.event, b),
     },
   },
 })

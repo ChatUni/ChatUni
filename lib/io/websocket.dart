@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ably_flutter/ably_flutter.dart';
 import 'package:chatuni/env.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
@@ -41,7 +43,7 @@ void pusherListen(
   await pusher.subscribe(
     channelName: channel,
     onEvent: (e) {
-      if (e.eventName == event) onEvent(e.data);
+      if (e.eventName == event) onEvent(jsonDecode(e.data));
     },
   );
 }

@@ -60,7 +60,7 @@ async function createPeerConnection(offer, iceServers) {
       "created_at": new Date().toISOString()
     })
     // channel.publish('a', tutor.greetings)
-    fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a&msg=${tutor.greetings}`, { method: 'POST' });
+    fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a`, { method: 'POST', body: tutor.greetings });
   };
 
   // Agent Text Responses - Decoding the responses, pasting to the HTML element
@@ -76,7 +76,7 @@ async function createPeerConnection(offer, iceServers) {
         "created_at": new Date().toISOString()
       })
       // channel.publish('a', msg)
-      fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a&msg=${msg}`, { method: 'POST' });
+      fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a`, { method: 'POST', body: msg });
     }
   };
 
@@ -454,7 +454,7 @@ const setupPusher = () => {
 
   pusher.subscribe('did').bind('q', e => {
     console.log(`Pusher in - ${e}`);
-    sendToChat(e);
+    sendToChat(e.msg);
   });
 }
 
