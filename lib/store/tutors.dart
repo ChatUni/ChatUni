@@ -28,7 +28,7 @@ abstract class _Tutors with Store {
   final Recognizer _stt = Recognizer();
   // final TextToSpeech _tts = TextToSpeech();
   // final _rtc = WebRTC();
-  final Ably ably = Ably();
+  // final Ably ably = Ably();
 
   @observable
   bool isRecording = false;
@@ -203,7 +203,8 @@ abstract class _Tutors with Store {
     if (isAvatar) {
       // _rtc.sendMsg(msg.text);
       addLoadingMsg(true);
-      ably.send('q', text);
+      // ably.send('q', text);
+      wsChat('did', 'q', text);
     } else {
       Msg? aiMsg = await loadMsg(
         true,
@@ -253,8 +254,10 @@ abstract class _Tutors with Store {
     loadTutors();
     listenToEvent(onPlayingEvent, _onPlaying);
     // _tts.onTtsState.listen(_onTtsState);
-    ably.listen(
-      'a',
+    pusherListen(
+      'did', 'a',
+      // ably.listen(
+      //   'a',
       (msg) => addAIMsg(
         Msg()
           ..text = msg.toString()

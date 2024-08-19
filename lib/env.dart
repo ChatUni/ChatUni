@@ -25,6 +25,9 @@ abstract class Env {
   @EnviedField(varName: 'ABLY_API_KEY')
   static final String ablyAppKey = _Env.ablyAppKey;
 
+  @EnviedField(varName: 'PUSHER_APP_KEY')
+  static final String pusherAppKey = _Env.pusherAppKey;
+
   @EnviedField(varName: 'USER_JWT_SECRET')
   static final String userJwtSecret = _Env.userJwtSecret;
 }

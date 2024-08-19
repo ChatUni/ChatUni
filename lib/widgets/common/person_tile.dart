@@ -21,6 +21,7 @@ Widget personTile(
           _desc(desc),
           vSpacer(10),
           _action(action),
+          vSpacer(8),
         ]),
       ),
     );

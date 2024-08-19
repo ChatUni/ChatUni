@@ -4,6 +4,7 @@ const DID_API = {
   "service": "talks"
 }
 const ABLY_API_KEY = "dUneIQ.aARKiA:9HSmVmMZm4hOh7k97hOCJJQ2vJee3Ovg-GVPYnEX_Z0";
+const chatuni_url = 'https://chatuni.netlify.app/.netlify/functions'
 
 const RTCPeerConnection = (
   window.RTCPeerConnection ||
@@ -20,6 +21,7 @@ let videoIsPlaying;
 let lastBytesReceived;
 let tutor;
 let ably;
+let pusher;
 let channel;
 let msgs = [];
 
@@ -57,7 +59,8 @@ async function createPeerConnection(offer, iceServers) {
       "content": tutor.greetings,
       "created_at": new Date().toISOString()
     })
-  channel.publish('a', tutor.greetings)
+    // channel.publish('a', tutor.greetings)
+    fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a`, { method: 'POST', body: JSON.stringify({ msg: tutor.greetings }) });
   };
 
   // Agent Text Responses - Decoding the responses, pasting to the HTML element
@@ -72,7 +75,8 @@ async function createPeerConnection(offer, iceServers) {
         "content": msg,
         "created_at": new Date().toISOString()
       })
-      channel.publish('a', msg)
+      // channel.publish('a', msg)
+      fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a`, { method: 'POST', body: JSON.stringify({ msg }) });
     }
   };
 
@@ -224,7 +228,7 @@ const connect = async () => {
   stopAllStreams();
   closePC();
 
-  const tutors = await fetch('https://chatuni.netlify.app/.netlify/functions/tutor?type=tutors').then(r => r.json());
+  const tutors = await fetch(`${chatuni_url}/tutor?type=tutors`).then(r => r.json());
   tutor = tutors.find(x => x.id == tutorId);
   img.src = tutor.stillImage;
 
@@ -426,7 +430,7 @@ async function agentsAPIworkflow(isNewAgent) {
   tutor.chatId = createChat.data.id
   console.log("Chat ID: " + tutor.chatId)
 
-  await fetch(`https://chatuni.netlify.app/.netlify/functions/tutor?type=saveChatId&id=${tutor.id}&chatId=${tutor.chatId}`, { method: 'POST' }).then(r => r.json());
+  await fetch(`${chatuni_url}/tutor?type=saveChatId&id=${tutor.id}&chatId=${tutor.chatId}`, { method: 'POST' }).then(r => r.json());
 }
 
 const createChat = () => agentsAPIworkflow(false)
@@ -441,8 +445,22 @@ const setupAbly = async () => {
   })
 }
 
+const setupPusher = () => {
+  Pusher.logToConsole = true;
+
+  pusher = new Pusher('172ec90f09af1d54c4e1', {
+    cluster: 'us3'
+  });
+
+  pusher.subscribe('did').bind('q', msg => {
+    console.log(`Pusher in - ${msg}`);
+    sendToChat(msg);
+  });
+}
+
 window.onload = () => {
   connect();
-  setupAbly();
+  // setupAbly();
+  setupPusher();
   document.addEventListener('keydown', e => e.key === 't' && sendToChat('how are you doing'));
 }

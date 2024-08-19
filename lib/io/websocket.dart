@@ -1,5 +1,6 @@
 import 'package:ably_flutter/ably_flutter.dart';
 import 'package:chatuni/env.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 class Ably {
   late Realtime realtime;
@@ -24,4 +25,18 @@ class Ably {
   Ably() {
     _init();
   }
+}
+
+void pusherListen(
+  String channel,
+  String event,
+  void Function(PusherEvent) onEvent,
+) async {
+  PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
+  await pusher.init(
+    apiKey: Env.pusherAppKey,
+    cluster: 'us3',
+  );
+  await pusher.connect();
+  await pusher.subscribe(channelName: channel, onEvent: (e) => onEvent(e));
 }

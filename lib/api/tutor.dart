@@ -74,3 +74,9 @@ Future<Msg?> chatVoice(Msg msg, Tutor tutor) async {
     return null;
   }
 }
+
+Future wsChat(String channel, String event, String msg) => post(
+      'api',
+      params: {'channel': channel, 'event': event},
+      data: {'msg': msg},
+    );
