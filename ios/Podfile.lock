@@ -28,18 +28,26 @@ PODS:
   - just_audio (0.0.1):
     - Flutter
   - msgpack (0.4.0)
+  - NWWebSocket (0.5.4)
   - OrderedSet (5.0.0)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
   - permission_handler_apple (9.3.0):
     - Flutter
+  - pusher_channels_flutter (0.0.1):
+    - Flutter
+    - PusherSwift (~> 10.1.5)
+  - PusherSwift (10.1.5):
+    - NWWebSocket (~> 0.5.4)
+    - TweetNacl (~> 1.0.0)
   - record (0.0.1):
     - Flutter
   - speech_to_text (0.0.1):
     - Flutter
     - Try
   - Try (2.1.1)
+  - TweetNacl (1.0.2)
   - url_launcher_ios (0.0.1):
     - Flutter
   - WebRTC-SDK (125.6422.04)
@@ -56,6 +64,7 @@ DEPENDENCIES:
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - pusher_channels_flutter (from `.symlinks/plugins/pusher_channels_flutter/ios`)
   - record (from `.symlinks/plugins/record/ios`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -65,8 +74,11 @@ SPEC REPOS:
     - Ably
     - AblyDeltaCodec
     - msgpack
+    - NWWebSocket
     - OrderedSet
+    - PusherSwift
     - Try
+    - TweetNacl
     - WebRTC-SDK
 
 EXTERNAL SOURCES:
@@ -92,6 +104,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  pusher_channels_flutter:
+    :path: ".symlinks/plugins/pusher_channels_flutter/ios"
   record:
     :path: ".symlinks/plugins/record/ios"
   speech_to_text:
@@ -112,12 +126,16 @@ SPEC CHECKSUMS:
   flutter_webrtc: 75b868e4f9e817c7a9a42ca4b6169063de4eec9f
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   msgpack: c85f6251873059738472ae136951cec5f30f3251
+  NWWebSocket: 040d22f23438cc09aaeabf537beff67699c3c76d
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  pusher_channels_flutter: 01297e6e420e0ad61a6e5901e27bb272a6f58ec2
+  PusherSwift: cad631bad86cfff4b8458dce1310a7774e469b1f
   record: cae05d8dd3cdb1dea3511b20e5a5811a1ae00d0d
   speech_to_text: b43a7d99aef037bd758ed8e45d79bbac035d2dfe
   Try: 5ef669ae832617b3cee58cb2c6f99fb767a4ff96
+  TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   WebRTC-SDK: c3d69a87e7185fad3568f6f3cff7c9ac5890acf3
 
