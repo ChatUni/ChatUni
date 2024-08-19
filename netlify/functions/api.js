@@ -1,5 +1,5 @@
 import { makeApi } from './utils/http'
-import pusher from './utils/http'
+import pusher from './utils/pusher'
 
 export const handler = makeApi({
   handlers: {
