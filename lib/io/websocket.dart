@@ -30,7 +30,7 @@ class Ably {
 void pusherListen(
   String channel,
   String event,
-  void Function(PusherEvent) onEvent,
+  void Function(dynamic) onEvent,
 ) async {
   PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   await pusher.init(
@@ -38,5 +38,10 @@ void pusherListen(
     cluster: 'us3',
   );
   await pusher.connect();
-  await pusher.subscribe(channelName: channel, onEvent: (e) => onEvent(e));
+  await pusher.subscribe(
+    channelName: channel,
+    onEvent: (e) {
+      if (e.eventName == event) onEvent(e.data);
+    },
+  );
 }

@@ -258,9 +258,9 @@ abstract class _Tutors with Store {
       'did', 'a',
       // ably.listen(
       //   'a',
-      (msg) => addAIMsg(
+      (data) => addAIMsg(
         Msg()
-          ..text = msg.toString()
+          ..text = data.msg
           ..isAI = true,
       ),
     );

@@ -452,9 +452,9 @@ const setupPusher = () => {
     cluster: 'us3'
   });
 
-  pusher.subscribe('did').bind('q', msg => {
-    console.log(`Pusher in - ${msg}`);
-    sendToChat(msg);
+  pusher.subscribe('did').bind('q', e => {
+    console.log(`Pusher in - ${e}`);
+    sendToChat(e.data.msg);
   });
 }
 
