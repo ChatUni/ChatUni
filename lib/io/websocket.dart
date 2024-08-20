@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:ably_flutter/ably_flutter.dart';
 import 'package:chatuni/env.dart';
+import 'package:chatuni/utils/js.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 class Ably {
@@ -33,7 +33,7 @@ class Ably {
 void pusherListen(
   String channel,
   String event,
-  void Function(dynamic) onEvent,
+  void Function(String) onEvent,
 ) async {
   PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   await pusher.init(
@@ -44,8 +44,14 @@ void pusherListen(
   await pusher.subscribe(
     channelName: channel,
     onEvent: (e) {
-      log('Flutter pusher in - $e');
-      if (e.eventName == event) onEvent(jsonDecode(e.data));
+      cl('Flutter pusher in - $e');
+      if (e.eventName == event) {
+        if (e.data is String) {
+          onEvent(jsonDecode(e.data)['msg']);
+        } else {
+          onEvent(pusherParse(e.data));
+        }
+      }
     },
   );
 }

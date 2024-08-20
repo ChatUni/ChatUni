@@ -1,0 +1,1 @@
+window.pusherParse = data => data._strings.msg.hashMapCellValue

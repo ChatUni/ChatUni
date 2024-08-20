@@ -49,6 +49,7 @@ dependencies:
   go_router: ^14.2.0
   http: ^1.2.1
   http_parser: ^4.0.2
+  js: ^0.6.7
   json_annotation: ^4.9.0
   just_audio: ^0.9.39
   mobx: ^2.3.3+2
