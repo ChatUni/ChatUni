@@ -454,7 +454,7 @@ const setupPusher = () => {
 
   pusher.subscribe('did').bind('q', e => {
     console.log(`Pusher in - ${e}`);
-    sendToChat(e.msg);
+    sendToChat(e);
   });
 }
 
