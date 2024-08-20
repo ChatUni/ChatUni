@@ -260,7 +260,7 @@ abstract class _Tutors with Store {
       //   'a',
       (data) => addAIMsg(
         Msg()
-          ..text = data //['msg']
+          ..text = data['msg']
           ..isAI = true,
       ),
     );
