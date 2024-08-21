@@ -29,6 +29,7 @@ const params = new URLSearchParams(window.location.search);
 const tutorId = +params.get('id');
 const videoElement = document.getElementById('video-element');
 videoElement.setAttribute('playsinline', '');
+videoElement.setAttribute('height', window.innerHeight);
 const img = document.getElementById('headImg');
 //img.src = `images/${tutorId}.png`;
 const textArea = document.getElementById("textArea");
