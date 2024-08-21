@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ably_flutter/ably_flutter.dart';
 import 'package:chatuni/env.dart';
 import 'package:chatuni/utils/js.dart';
@@ -45,7 +47,7 @@ void pusherListen(
       cl('Flutter pusher in - $e');
       if (e.eventName == event) {
         if (e.data is String) {
-          onEvent(e.data);
+          onEvent(jsonDecode(e.data)['msg']);
         } else {
           onEvent(pusherParse(e.data));
         }
