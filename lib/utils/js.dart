@@ -1,10 +1,10 @@
 @JS()
 library jsutils;
 
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 @JS('console.log')
 external void cl(String msg);
 
 @JS('pusherParse')
-external String pusherParse(Object data);
+external String pusherParse(JSObject data);
