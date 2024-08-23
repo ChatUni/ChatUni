@@ -1,11 +1,4 @@
 PODS:
-  - Ably (1.2.33):
-    - AblyDeltaCodec (= 1.3.3)
-    - msgpack (= 0.4.0)
-  - ably_flutter (1.2.34):
-    - Ably (= 1.2.33)
-    - Flutter
-  - AblyDeltaCodec (1.3.3)
   - app_links (0.0.1):
     - Flutter
   - audio_session (0.0.1):
@@ -22,12 +15,8 @@ PODS:
     - OrderedSet (~> 5.0)
   - flutter_tts (0.0.1):
     - Flutter
-  - flutter_webrtc (0.11.3):
-    - Flutter
-    - WebRTC-SDK (= 125.6422.04)
   - just_audio (0.0.1):
     - Flutter
-  - msgpack (0.4.0)
   - NWWebSocket (0.5.4)
   - OrderedSet (5.0.0)
   - path_provider_foundation (0.0.1):
@@ -50,17 +39,14 @@ PODS:
   - TweetNacl (1.0.2)
   - url_launcher_ios (0.0.1):
     - Flutter
-  - WebRTC-SDK (125.6422.04)
 
 DEPENDENCIES:
-  - ably_flutter (from `.symlinks/plugins/ably_flutter/ios`)
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - Flutter (from `Flutter`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
-  - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -71,19 +57,13 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Ably
-    - AblyDeltaCodec
-    - msgpack
     - NWWebSocket
     - OrderedSet
     - PusherSwift
     - Try
     - TweetNacl
-    - WebRTC-SDK
 
 EXTERNAL SOURCES:
-  ably_flutter:
-    :path: ".symlinks/plugins/ably_flutter/ios"
   app_links:
     :path: ".symlinks/plugins/app_links/ios"
   audio_session:
@@ -96,8 +76,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   flutter_tts:
     :path: ".symlinks/plugins/flutter_tts/ios"
-  flutter_webrtc:
-    :path: ".symlinks/plugins/flutter_webrtc/ios"
   just_audio:
     :path: ".symlinks/plugins/just_audio/ios"
   path_provider_foundation:
@@ -114,18 +92,13 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  Ably: 1d78e5dec56db6d2cf91b10d14fea796ce591bae
-  ably_flutter: e4b2f440e48855dbbd94856f27fa73dc53f17e23
-  AblyDeltaCodec: add5d06a756b3581b12aab5b5500a320b8c55bea
   app_links: e70ca16b4b0f88253b3b3660200d4a10b4ea9795
   audio_session: 088d2483ebd1dc43f51d253d4a1c517d9a2e7207
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_inappwebview_ios: 97215cf7d4677db55df76782dbd2930c5e1c1ea0
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
-  flutter_webrtc: 75b868e4f9e817c7a9a42ca4b6169063de4eec9f
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
-  msgpack: c85f6251873059738472ae136951cec5f30f3251
   NWWebSocket: 040d22f23438cc09aaeabf537beff67699c3c76d
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
@@ -137,7 +110,6 @@ SPEC CHECKSUMS:
   Try: 5ef669ae832617b3cee58cb2c6f99fb767a4ff96
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  WebRTC-SDK: c3d69a87e7185fad3568f6f3cff7c9ac5890acf3
 
 PODFILE CHECKSUM: 28a00bf2954f79ed0b89c9bd8351cc669eab1b32
 

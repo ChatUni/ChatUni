@@ -14,14 +14,6 @@ packages:
     description: dart
     source: sdk
     version: "0.3.2"
-  ably_flutter:
-    dependency: "direct main"
-    description:
-      name: ably_flutter
-      sha256: cd7865da714f86a72a6fe5060619b9f9a0e171ef1fe0caaba77f18c3640be5f7
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.34"
   analyzer:
     dependency: transitive
     description:
@@ -302,14 +294,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.6"
-  dart_webrtc:
-    dependency: transitive
-    description:
-      name: dart_webrtc
-      sha256: ac7ef077084b3e54004716f1d736fcd839e1b60bc3f21f4122a35a9bb5ca2e47
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.8"
   dio:
     dependency: "direct main"
     description:
@@ -493,14 +477,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_webrtc:
-    dependency: "direct main"
-    description:
-      name: flutter_webrtc
-      sha256: "67faa07cf49392b50b1aa14590a83caa64d2109345fabd29899dcd8da8538348"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.11.6+hotfix.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -885,14 +861,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
-  platform_detect:
-    dependency: transitive
-    description:
-      name: platform_detect
-      sha256: a62f99417fc4fa2d099ce0ccdbb1bd3977920f2a64292c326271f049d4bc3a4f
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -1282,14 +1250,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  webrtc_interface:
-    dependency: transitive
-    description:
-      name: webrtc_interface
-      sha256: abec3ab7956bd5ac539cf34a42fa0c82ea26675847c0966bb85160400eea9388
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
   xdg_directories:
     dependency: transitive
     description:
