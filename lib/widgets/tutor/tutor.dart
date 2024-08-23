@@ -12,48 +12,65 @@ import 'level.dart';
 import 'list.dart';
 
 Widget tutor() => scaffold(
-      vContainer(
-        [
-          face(),
-          chat(),
-          vSpacer(80),
-        ],
-        padding: 0,
-      ),
-      title: 'Tutor',
-      showMic: true,
-      routeGroup: RouteGroup.tutor,
-    );
+  Padding(
+    padding: const EdgeInsets.all(16.0), 
+    child: Row(
+      children: [
+        Expanded(
+          flex: 1, 
+          child: Center(child: face()),
+        ),
+        SizedBox(width: 16), 
+        Expanded(
+          flex: 2, 
+          child: Column(
+            children: [
+              Expanded(child: chat()), 
+              vSpacer(80), 
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+  title: 'Tutor',
+  showMic: true,
+  routeGroup: RouteGroup.tutor,
+);
 
 Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
-      tutors.clearTutor();
-      tutors.setScenario(isScenario);
+  tutors.clearTutor();
+  tutors.setScenario(isScenario);
 
-      return scaffold(
-        isScenario
-            ? ListView(
-                padding: aEdge(8),
-                scrollDirection: Axis.vertical,
-                children: tutors.tutors
-                    .where((t) => t.level == 10)
-                    .map((t) => tutorCard(t))
-                    .toList(),
-              )
-            : vContainer(
-                [
-                  vSpacer(20),
-                  level('Level 1'),
-                  tutorList(1),
-                  vSpacer(10),
-                  level('Level 2'),
-                  tutorList(2),
-                  vSpacer(80),
-                ],
-                hAlign: CrossAxisAlignment.start,
-                padding: 0,
-                scroll: true,
-              ),
-        title: 'Tutors',
-        routeGroup: RouteGroup.tutor,
-      );
+  return scaffold(
+    isScenario
+        ? ListView(
+            padding: aEdge(8),
+            scrollDirection: Axis.vertical,
+            children: tutors.tutors
+                .where((t) => t.level == 10)
+                .map((t) => tutorCard(t))
+                .toList(),
+          )
+        : vContainer(
+            [
+              vSpacer(20),
+              level('Level 1'),
+              tutorList(1),
+              vSpacer(10),
+              level('Level 2'),
+              tutorList(2),
+              level('Customized'),
+              tutorList(0),
+              vSpacer(80),
+            ],
+            hAlign: CrossAxisAlignment.start,
+            padding: 0,
+            scroll: true,
+          ),
+    title: 'Tutors',
+    routeGroup: RouteGroup.tutor,
+  );
+});
+
     });
