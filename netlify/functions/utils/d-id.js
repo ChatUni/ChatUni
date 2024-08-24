@@ -45,9 +45,10 @@ export const updateAgent = async (id, desc) => {
   const tutors = await get(db('doc', 'tutors'))
   const tutor = tutors.find((x) => x.id == id)
   if (!tutor) return 'Tutor not found'
-
+console.log(tutor.system)
+console.log(desc)
   const ep = `${DID}/agents/${tutor.agentId}`
-  await patch(ep, {
+  const t = await patch(ep, {
     "llm": {
       "type": "openai",
       "provider": "openai",
@@ -55,6 +56,8 @@ export const updateAgent = async (id, desc) => {
       "instructions": desc
     },
   }, headers)
-  const t = await get(ep)
+console.log('done')
+  tutor.system = desc
+  await post(db('save', 'tutors'), t)
   return t
 }
