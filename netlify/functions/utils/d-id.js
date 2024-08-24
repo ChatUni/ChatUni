@@ -1,4 +1,4 @@
-import { DB, get, post } from './http'
+import { DB, get, patch, post } from './http'
 
 const DID = 'https://api.d-id.com'
 const headers = {
@@ -39,4 +39,22 @@ export const importAgent = async () => {
     t.chatId = ''
     await post(db('save', 'tutors'), t)
   }
+}
+
+export const updateAgent = async (id, desc) => {
+  const tutors = await get(db('doc', 'tutors'))
+  const tutor = tutors.find((x) => x.id == id)
+  if (!tutor) return 'Tutor not found'
+
+  const ep = `${DID}/agents/${tutor.agentId}`
+  await patch(ep, {
+    "llm": {
+      "type": "openai",
+      "provider": "openai",
+      "model": "gpt-3.5-turbo-1106",
+      "instructions": desc
+    },
+  }, headers)
+  const t = await get(ep)
+  return t
 }
