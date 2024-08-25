@@ -12,13 +12,30 @@ import 'level.dart';
 import 'list.dart';
 
 Widget tutor() => scaffold(
-      vContainer(
-        [
-          face(),
-          chat(),
-          vSpacer(80),
-        ],
-        padding: 0,
+      Padding(
+        padding: const EdgeInsets.all(16.0), // Add margins
+        child: Row(
+          children: [
+            // Left 2/5: Portrait
+            Expanded(
+              flex: 2, // 2/5 Width
+              child: Center(child: face()),
+            ),
+            const SizedBox(width: 16), // Add spacing between left and right
+            // Right 3/5: Dialogue interface
+            Expanded(
+              flex: 3, //3/5 Width
+              child: Column(
+                children: [
+                  Expanded(
+                      child:
+                          chat()), // The conversation content takes up the remaining space
+                  vSpacer(50), // Bottom space
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       title: 'Tutor',
       showMic: true,
@@ -47,6 +64,8 @@ Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
                   vSpacer(10),
                   level('Level 2'),
                   tutorList(2),
+                  level('Customized'),
+                  tutorList(0),
                   vSpacer(80),
                 ],
                 hAlign: CrossAxisAlignment.start,
