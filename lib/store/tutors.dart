@@ -57,6 +57,10 @@ abstract class _Tutors with Store {
   @computed
   bool get isAvatar => isTutorSelected && tutor!.agentId != null;
 
+  @computed
+  String get avatarUrl =>
+      '${kIsWeb ? '' : 'https://chatuni.netlify.app'}/d-id.html?id=${tutor?.id}';
+
   @action
   Future<void> loadTutors() async {
     tutors.clear();

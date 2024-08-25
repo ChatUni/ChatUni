@@ -16,7 +16,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/tutor',
-      builder: (c, s) => tutor(),
+      builder: (c, s) => tutor(c),
     ),
     GoRoute(
       path: '/my',

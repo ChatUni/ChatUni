@@ -11,36 +11,33 @@ import 'face.dart';
 import 'level.dart';
 import 'list.dart';
 
-Widget tutor() => scaffold(
-      Padding(
-        padding: const EdgeInsets.all(16.0), // Add margins
-        child: Row(
-          children: [
-            // Left 2/5: Portrait
-            Expanded(
-              flex: 2, // 2/5 Width
-              child: Center(child: face()),
-            ),
-            const SizedBox(width: 16), // Add spacing between left and right
-            // Right 3/5: Dialogue interface
-            Expanded(
-              flex: 3, //3/5 Width
-              child: Column(
-                children: [
-                  Expanded(
-                      child:
-                          chat()), // The conversation content takes up the remaining space
-                  vSpacer(50), // Bottom space
+Widget tutor(BuildContext context) {
+  final width = MediaQuery.of(context).size.width;
+
+  final body = (width < 1024)
+      ? vContainer([face(), chat(), vSpacer(50)], padding: 0)
+      : ccRow(
+          [
+            grow(2, Center(child: face())),
+            grow(
+              3,
+              scCol(
+                [
+                  grow(1, chat()),
+                  vSpacer(50),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-      title: 'Tutor',
-      showMic: true,
-      routeGroup: RouteGroup.tutor,
-    );
+        );
+
+  return scaffold(
+    body,
+    title: 'Tutor',
+    showMic: true,
+    routeGroup: RouteGroup.tutor,
+  );
+}
 
 Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
       tutors.clearTutor();
@@ -64,8 +61,6 @@ Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
                   vSpacer(10),
                   level('Level 2'),
                   tutorList(2),
-                  level('Customized'),
-                  tutorList(0),
                   vSpacer(80),
                 ],
                 hAlign: CrossAxisAlignment.start,

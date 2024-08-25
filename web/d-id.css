@@ -9,12 +9,13 @@ body {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  height: 100vh;
+  height: 400px;
   /* margin-top: 50px; */
 }
 
 img {
   flex-grow: 1;
+  height: 100%;
   /* animation: opout 1s ease-in; */
 }
 
