@@ -24,8 +24,9 @@ Widget chat() => obs<Tutors>(
           // );
         });
 
-        return Expanded(
-          child: ListView(
+        return grow(
+          1,
+          ListView(
             controller: msgsScrollController,
             padding: aEdge(8),
             children: tutors.msgs.map((m) => msgRow(m)).toList(),

@@ -22,10 +22,7 @@ Widget tutor(BuildContext context) {
             grow(
               3,
               scCol(
-                [
-                  grow(1, chat()),
-                  vSpacer(50),
-                ],
+                [chat(), vSpacer(50)],
               ),
             ),
           ],

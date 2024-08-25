@@ -14,34 +14,21 @@ Observer msgRow(Msg m) => obsc<Tutors>(
               m.isAI ? MainAxisAlignment.start : MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: m.isWaiting
-              ? [
-                  Image.asset(
-                    'assets/images/gif/dots.gif',
-                    width: 100,
-                    height: 50,
-                  ),
-                ]
+              ? [spinner]
               : [
                   msgDot(m, true),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 60,
-                    child: Text(
-                      ' ${m.text}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: tutors.isReading && m.isReading
-                            ? FontWeight.w800
-                            : FontWeight.w500,
-                        color: m.isAI ? Colors.black : Colors.indigo,
-                      ),
-                      textAlign: m.isAI ? TextAlign.start : TextAlign.end,
-                    ),
-                  ),
+                  msgTxt(m, tutors.isReading),
                   msgDot(m, false),
                 ],
         ),
       ),
     );
+
+Image spinner = Image.asset(
+  'assets/images/gif/dots.gif',
+  width: 100,
+  height: 50,
+);
 
 Widget msgDot(Msg m, bool before) => pBox(tEdge(4))(
       before && m.url != ''
@@ -54,4 +41,15 @@ Widget msgDot(Msg m, bool before) => pBox(tEdge(4))(
                 color: m.isAI ? Colors.green : Colors.blue[700],
               ),
             ),
+    );
+
+Text msgTxt(Msg m, bool isReading) => Text(
+      ' ${m.text}',
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight:
+            isReading && m.isReading ? FontWeight.w800 : FontWeight.w500,
+        color: m.isAI ? Colors.black : Colors.indigo,
+      ),
+      textAlign: m.isAI ? TextAlign.start : TextAlign.end,
     );
