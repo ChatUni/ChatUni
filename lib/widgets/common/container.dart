@@ -197,6 +197,9 @@ LayoutGrid vGrid(
       children: children,
     );
 
+SizedBox box(double width, double height, Widget child) =>
+    SizedBox(width: width, height: height, child: child);
+
 Expanded grow(int cols, Widget child) => Expanded(flex: cols, child: child);
 
 InkWell tap(void Function() onTap, Widget child) =>

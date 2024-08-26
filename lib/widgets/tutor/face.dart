@@ -9,18 +9,18 @@ Widget face() => obsc<Tutors>((tutors, context) {
       final tutor = tutors.tutor ?? tutors.tutors[0];
 
       final width = MediaQuery.of(context).size.width;
-      const height = 400.0;
+      final isRow = width > 1024;
+      final height = isRow ? MediaQuery.of(context).size.height : 400.0;
 
       return cBox(Colors.white)(
         tutors.isAvatar
-            ? SizedBox(
-                width: width,
-                height: height,
-                // child: RTCVideoView(
+            ? box(
+                width, height,
+                // RTCVideoView(
                 //   tutors.getRTCRenderer(),
                 //   objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitContain,
                 // ),
-                child: InAppWebView(
+                InAppWebView(
                   initialSettings: InAppWebViewSettings(
                     mediaPlaybackRequiresUserGesture: false,
                     allowsInlineMediaPlayback: true,

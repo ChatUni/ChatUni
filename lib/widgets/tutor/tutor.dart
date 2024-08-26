@@ -18,9 +18,9 @@ Widget tutor(BuildContext context) {
       ? vContainer([face(), chat(), vSpacer(50)], padding: 0)
       : ccRow(
           [
-            grow(2, Center(child: face())),
+            grow(3, Center(child: face())),
             grow(
-              3,
+              7,
               scCol(
                 [chat(), vSpacer(50)],
               ),
