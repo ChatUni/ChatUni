@@ -141,9 +141,11 @@ function onTrack(event) {
   }, 100);
 }
 
-const toggleVideoImg = isVideo => {
-  img.style.display = isVideo ? 'none' : 'block';
-  videoElement.style.display = isVideo ? 'block' : 'none';
+const showVideoElement = () => {
+  if (img.style.display === 'block') {
+    img.style.display = 'none';
+    videoElement.style.display = 'block';
+  }
 }
 
 function setVideoElement(stream) {
@@ -172,14 +174,14 @@ function setVideoElement(stream) {
   }
 }
 function playIdleVideo() {
-  toggleVideoImg(true);
+  showVideoElement();
 
   // Add Animation Class
   // videoElement.classList.toggle("animated")
 
-  videoElement.srcObject = undefined;
   videoElement.src = tutor.idleVideo;
   videoElement.loop = true;
+  setTimeout(() => videoElement.srcObject = undefined, 100);
 
   // Remove Animation Class after it's completed
   // setTimeout(() => {
