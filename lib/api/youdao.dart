@@ -13,7 +13,7 @@ final headers = {
   'Content-Type': 'application/x-www-form-urlencoded',
 };
 
-var uuid = const Uuid();
+const _uuid = Uuid();
 
 Future ttsyd(String text, String voice) async {
   final r = await http.post(
@@ -25,7 +25,7 @@ Future ttsyd(String text, String voice) async {
 }
 
 Map<String, String> buildForm(String text, String voice) {
-  final salt = uuid.v4();
+  final salt = _uuid.v4();
   final curtime =
       (DateTime.now().millisecondsSinceEpoch / 1000).floor().toString();
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/api/youdao.dart';
 import 'package:chatuni/io/websocket.dart';
+import 'package:chatuni/store/app.dart';
 import 'package:chatuni/utils/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
@@ -59,7 +60,7 @@ abstract class _Tutors with Store {
 
   @computed
   String get avatarUrl =>
-      '${kIsWeb ? '' : 'https://chatuni.netlify.app'}/d-id.html?id=${tutor?.id}';
+      '${kIsWeb ? '' : 'https://chatuni.netlify.app'}/d-id.html?sessionId=$sessionId&id=${tutor?.id}';
 
   @action
   Future<void> loadTutors() async {
@@ -208,7 +209,7 @@ abstract class _Tutors with Store {
       // _rtc.sendMsg(msg.text);
       addLoadingMsg(true);
       // ably.send('q', text);
-      wsChat('did', 'q', text);
+      wsChat('did', 'q-$sessionId', text);
     } else {
       Msg? aiMsg = await loadMsg(
         true,
@@ -259,7 +260,7 @@ abstract class _Tutors with Store {
     listenToEvent(onPlayingEvent, _onPlaying);
     // _tts.onTtsState.listen(_onTtsState);
     pusherListen(
-      'did', 'a',
+      'did', 'a-$sessionId',
       // ably.listen(
       //   'a',
       (msg) => addAIMsg(

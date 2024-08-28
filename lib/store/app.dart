@@ -1,6 +1,7 @@
 import 'package:app_links/app_links.dart';
 import 'package:chatuni/router.dart';
 import 'package:mobx/mobx.dart';
+import 'package:uuid/uuid.dart';
 
 part 'app.g.dart';
 
@@ -9,6 +10,9 @@ class App = _App with _$App;
 enum RouteGroup { tutor, course, meta, my }
 
 final _appLinks = AppLinks();
+const _uuid = Uuid();
+
+final sessionId = _uuid.v4();
 
 abstract class _App with Store {
   @observable

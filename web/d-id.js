@@ -27,6 +27,7 @@ let msgs = [];
 
 const params = new URLSearchParams(window.location.search);
 const tutorId = +params.get('id');
+const appSessionId = +params.get('sessionId');
 const videoElement = document.getElementById('video-element');
 videoElement.setAttribute('playsinline', '');
 videoElement.setAttribute('height', window.innerHeight);
@@ -61,7 +62,7 @@ async function createPeerConnection(offer, iceServers) {
       "created_at": new Date().toISOString()
     })
     // channel.publish('a', tutor.greetings)
-    fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a`, { method: 'POST', body: JSON.stringify({ msg: tutor.greetings }) });
+    fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a-${appSessionId}`, { method: 'POST', body: JSON.stringify({ msg: tutor.greetings }) });
   };
 
   // Agent Text Responses - Decoding the responses, pasting to the HTML element
@@ -77,7 +78,7 @@ async function createPeerConnection(offer, iceServers) {
         "created_at": new Date().toISOString()
       })
       // channel.publish('a', msg)
-      fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a`, { method: 'POST', body: JSON.stringify({ msg }) });
+      fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a-${appSessionId}`, { method: 'POST', body: JSON.stringify({ msg }) });
     }
   };
 
@@ -436,15 +437,15 @@ async function agentsAPIworkflow(isNewAgent) {
 
 const createChat = () => agentsAPIworkflow(false)
 
-const setupAbly = async () => {
-  ably = new Ably.Realtime(ABLY_API_KEY);
-  channel = ably.channels.get("did");
-  await channel.attach();
-  channel.subscribe("q", (msg) => {
-    console.log(`Ably in - ${msg}`);
-    sendToChat(msg.data);
-  })
-}
+// const setupAbly = async () => {
+//   ably = new Ably.Realtime(ABLY_API_KEY);
+//   channel = ably.channels.get("did");
+//   await channel.attach();
+//   channel.subscribe("q", (msg) => {
+//     console.log(`Ably in - ${msg}`);
+//     sendToChat(msg.data);
+//   })
+// }
 
 const setupPusher = () => {
   Pusher.logToConsole = true;
@@ -453,7 +454,7 @@ const setupPusher = () => {
     cluster: 'us3'
   });
 
-  pusher.subscribe('did').bind('q', e => {
+  pusher.subscribe('did').bind(`q-${appSessionId}`, e => {
     console.log(`Pusher in - ${e}`);
     sendToChat(e.msg);
   });
