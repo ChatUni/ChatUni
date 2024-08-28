@@ -69,7 +69,7 @@ List<InkWell> buildIcons(App app, BuildContext context) {
     '场景', // '元宇宙',
     () => context.go('/scenario'),
     // () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
-    isSelected: app.routeGroup == RouteGroup.meta,
+    isSelected: app.routeGroup == RouteGroup.scenario,
   );
   InkWell accountIcon = menuIcon(
     Icons.person,

@@ -65,6 +65,6 @@ Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
                 scroll: true,
               ),
         title: 'Tutors',
-        routeGroup: RouteGroup.tutor,
+        routeGroup: isScenario ? RouteGroup.scenario : RouteGroup.tutor,
       );
     });
