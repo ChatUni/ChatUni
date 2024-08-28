@@ -27,7 +27,7 @@ let msgs = [];
 
 const params = new URLSearchParams(window.location.search);
 const tutorId = +params.get('id');
-const appSessionId = +params.get('sessionId');
+const appSessionId = params.get('sessionId');
 const videoElement = document.getElementById('video-element');
 videoElement.setAttribute('playsinline', '');
 videoElement.setAttribute('height', window.innerHeight);
