@@ -138,7 +138,7 @@ function onTrack(event) {
         lastBytesReceived = report.bytesReceived;
       }
     });
-  }, 500);
+  }, 100);
 }
 
 const toggleVideoImg = isVideo => {
