@@ -142,7 +142,7 @@ function onTrack(event) {
 }
 
 const showVideoElement = () => {
-  if (img.style.display === 'block') {
+  if (!img.style.display) {
     img.style.display = 'none';
     videoElement.style.display = 'block';
   }
