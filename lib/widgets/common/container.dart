@@ -12,6 +12,8 @@ EdgeInsets rEdge(double size) => EdgeInsets.only(right: size);
 EdgeInsets bEdge(double size) => EdgeInsets.only(bottom: size);
 EdgeInsets lEdge(double size) => EdgeInsets.only(left: size);
 EdgeInsets aEdge(double size) => EdgeInsets.all(size);
+EdgeInsets edge(double left, double top, double right, double bottom) =>
+    EdgeInsets.fromLTRB(left, top, right, bottom);
 
 Container Function(Widget) pcBox(EdgeInsets padding, Color color) =>
     (Widget child) => Container(padding: padding, color: color, child: child);

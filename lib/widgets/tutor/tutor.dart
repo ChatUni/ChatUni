@@ -15,16 +15,11 @@ Widget tutor(BuildContext context) {
   final width = MediaQuery.of(context).size.width;
 
   final body = (width < 1024)
-      ? vContainer([face(), chat(), vSpacer(100)], padding: 0)
+      ? vContainer([face(), chat()], padding: 0)
       : ccRow(
           [
             grow(3, Center(child: face())),
-            grow(
-              7,
-              scCol(
-                [chat(), vSpacer(100)],
-              ),
-            ),
+            grow(7, scCol([chat()])),
           ],
         );
 

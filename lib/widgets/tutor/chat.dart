@@ -28,7 +28,7 @@ Widget chat() => obs<Tutors>(
           1,
           ListView(
             controller: msgsScrollController,
-            padding: aEdge(8),
+            padding: edge(8, 8, 8, 100),
             children: tutors.msgs.map((m) => msgRow(m)).toList(),
           ),
         );
