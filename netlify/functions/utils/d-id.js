@@ -41,23 +41,29 @@ export const importAgent = async () => {
   }
 }
 
-export const updateAgent = async (id, desc) => {
+export const updateAgent = async (id, { prompt, personality, skill, desc }) => {
   const tutors = await get(db('doc', 'tutors'))
   const tutor = tutors.find((x) => x.id == id)
   if (!tutor) return 'Tutor not found'
 
-  const ep = `${DID}/agents/${tutor.agentId}`
-  const t = await patch(ep, {
-    "llm": {
-      "type": "openai",
-      "provider": "openai",
-      "model": "gpt-3.5-turbo-1106",
-      "instructions": desc
-    },
-  }, headers)
+  if (prompt) {
+    const ep = `${DID}/agents/${tutor.agentId}`
+    await patch(ep, {
+      "llm": {
+        "type": "openai",
+        "provider": "openai",
+        "model": "gpt-3.5-turbo-1106",
+        "instructions": prompt
+      },
+    }, headers)
+    tutor.system = prompt
+  }
 
-  tutor.system = desc
+  if (personality) tutor.personality = personality
+  if (skill) tutor.skill = skill
+  if (desc) tutor.desc = desc
+
   await post(db('save', 'tutors'), tutor)
 
-  return t
+  return tutor
 }

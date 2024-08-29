@@ -14,7 +14,7 @@ export const handler = makeApi({
       chat: (q, b) => chat(b.text),
       saveChatId: (q, b) => saveChatId(q.id, q.chatId),
       importAgent: (q, b) => importAgent(),
-      updateAgent: (q, b) => updateAgent(b.id, b.prompt),
+      updateAgent: (q, b) => updateAgent(b.id, b),
     },
   },
   initAI,
