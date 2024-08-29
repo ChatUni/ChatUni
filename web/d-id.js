@@ -111,9 +111,9 @@ function onIceCandidate(event) {
   }
 }
 function onVideoStatusChange(streamIsPlaying, stream) {
-  showVideoElement();
   if (streamIsPlaying) {
     setVideoElement(stream);
+    showVideoElement();
   } else {
     clearTimeout(streamStopId);
     streamStopId = setTimeout(playIdleVideo, 500);
