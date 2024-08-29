@@ -29,9 +29,12 @@ let msgs = [];
 const params = new URLSearchParams(window.location.search);
 const tutorId = +params.get('id');
 const appSessionId = params.get('sessionId');
-const videoElement = document.getElementById('video-element');
-videoElement.setAttribute('playsinline', '');
-videoElement.setAttribute('height', window.innerHeight);
+const streamVideoElement = document.getElementById('streamVideo');
+streamVideoElement.setAttribute('playsinline', '');
+streamVideoElement.setAttribute('height', window.innerHeight);
+const idleVideoElement = document.getElementById('idleVideo');
+idleVideoElement.setAttribute('playsinline', '');
+idleVideoElement.setAttribute('height', window.innerHeight);
 const img = document.getElementById('headImg');
 //img.src = `images/${tutorId}.png`;
 const textArea = document.getElementById("textArea");
@@ -112,11 +115,11 @@ function onIceCandidate(event) {
 }
 function onVideoStatusChange(streamIsPlaying, stream) {
   if (streamIsPlaying) {
-    setVideoElement(stream);
-    showVideoElement();
+    streamVideoElement.srcObject = stream;
+    showVideoElement(true);
   } else {
     clearTimeout(streamStopId);
-    streamStopId = setTimeout(playIdleVideo, 500);
+    streamStopId = setTimeout(() => showVideoElement(false), 500);
   }
 }
 function onTrack(event) {
@@ -139,33 +142,36 @@ function onTrack(event) {
   }, 200);
 }
 
-const showVideoElement = () => {
+const showVideoElement = isStream => {
   if (!img.style.display) {
     img.style.display = 'none';
-    videoElement.style.display = 'block';
+    streamVideoElement.style.display = 'block';
+  } else {
+    streamVideoElement.style.display = isStream ? 'block' : 'none';
+    idleVideoElement.style.display = isStream ? 'none' : 'block';
   }
 }
 
-function setVideoElement(stream) {
+function setstreamVideoElement(stream) {
   if (!stream) return;
 
   // Add Animation Class
-  // videoElement.classList.add("animated")
+  // streamVideoElement.classList.add("animated")
 
   // Removing browsers' autoplay's 'Mute' Requirement
-  videoElement.muted = false;
+  streamVideoElement.muted = false;
 
-  videoElement.srcObject = stream;
-  videoElement.loop = false;
+  streamVideoElement.srcObject = stream;
+  streamVideoElement.loop = false;
 
   // Remove Animation Class after it's completed
   // setTimeout(() => {
-  //   videoElement.classList.remove("animated")
+  //   streamVideoElement.classList.remove("animated")
   // }, 1000);
 
   // safari hotfix
-  if (videoElement.paused) {
-    videoElement
+  if (streamVideoElement.paused) {
+    streamVideoElement
       .play()
       .then((_) => { })
       .catch((e) => { });
@@ -173,22 +179,22 @@ function setVideoElement(stream) {
 }
 function playIdleVideo() {
   // Add Animation Class
-  // videoElement.classList.toggle("animated")
+  // streamVideoElement.classList.toggle("animated")
 
-  videoElement.src = tutor.idleVideo;
-  videoElement.loop = true;
-  setTimeout(() => videoElement.srcObject = undefined, 100);
+  streamVideoElement.src = tutor.idleVideo;
+  streamVideoElement.loop = true;
+  setTimeout(() => streamVideoElement.srcObject = undefined, 100);
 
   // Remove Animation Class after it's completed
   // setTimeout(() => {
-  //   videoElement.classList.remove("animated")
+  //   streamVideoElement.classList.remove("animated")
   // }, 1000);
 }
 function stopAllStreams() {
-  if (videoElement.srcObject) {
+  if (streamVideoElement.srcObject) {
     console.log('stopping video streams');
-    videoElement.srcObject.getTracks().forEach((track) => track.stop());
-    videoElement.srcObject = null;
+    streamVideoElement.srcObject.getTracks().forEach((track) => track.stop());
+    streamVideoElement.srcObject = null;
   }
 }
 function closePC(pc = peerConnection) {
@@ -232,6 +238,7 @@ const connect = async () => {
   const tutors = await fetch(`${chatuni_url}/tutor?type=tutors`).then(r => r.json());
   tutor = tutors.find(x => x.id == tutorId);
   img.src = tutor.stillImage;
+  idleVideoElement.src = tutor.idleVideo;
 
   // WEBRTC API CALL 1 - Create a new stream
   const sessionResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams`, {
