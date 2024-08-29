@@ -67,7 +67,7 @@ async function createPeerConnection(offer, iceServers) {
     })
     // channel.publish('a', tutor.greetings)
     // fetch(`${chatuni_url}/api?type=pusher&channel=did&event=a-${appSessionId}`, { method: 'POST', body: JSON.stringify({ msg: tutor.greetings }) });
-    sendToChat(`read after me, ${tutor.greetings}`);
+    sendToChat(`read after me in ${tutor.lang}, ${tutor.greetings}`);
   };
 
   // Agent Text Responses - Decoding the responses, pasting to the HTML element
@@ -471,5 +471,5 @@ window.onload = () => {
   connect();
   // setupAbly();
   setupPusher();
-  document.addEventListener('keydown', e => e.key === 't' && sendToChat('how are you doing'));
+  document.addEventListener('keydown', e => e.key === 't' && sendToChat('你好吗'));
 }

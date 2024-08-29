@@ -11,25 +11,25 @@ import 'face.dart';
 import 'level.dart';
 import 'list.dart';
 
-Widget tutor(BuildContext context) {
-  final width = MediaQuery.of(context).size.width;
+Widget tutor() => obsc<Tutors>((tutors, context) {
+      final width = MediaQuery.of(context).size.width;
 
-  final body = (width < 1024)
-      ? vContainer([face(), chat()], padding: 0)
-      : ccRow(
-          [
-            grow(3, Center(child: face())),
-            grow(7, scCol([chat()])),
-          ],
-        );
+      final body = (width < 1024)
+          ? vContainer([face(), chat()], padding: 0)
+          : ccRow(
+              [
+                grow(3, Center(child: face())),
+                grow(7, scCol([chat()])),
+              ],
+            );
 
-  return scaffold(
-    body,
-    title: 'Tutor',
-    showMic: true,
-    routeGroup: RouteGroup.tutor,
-  );
-}
+      return scaffold(
+        body,
+        title: 'Tutor',
+        showMic: true,
+        routeGroup: tutors.isScenario ? RouteGroup.scenario : RouteGroup.tutor,
+      );
+    });
 
 Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
       tutors.clearTutor();
