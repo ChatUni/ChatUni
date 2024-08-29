@@ -17,7 +17,8 @@ let streamId;
 let sessionId;
 let sessionClientAnswer;
 let statsIntervalId;
-let videoIsPlaying;
+let streamIsPlaying;
+let streamStoppedTime;
 let lastBytesReceived;
 let tutor;
 let ably;
@@ -109,16 +110,18 @@ function onIceCandidate(event) {
     });
   }
 }
-function onVideoStatusChange(videoIsPlaying, stream) {
-  let status;
-  if (videoIsPlaying) {
-    status = 'streaming';
-
-    const remoteStream = stream;
-    setVideoElement(remoteStream);
+function onVideoStatusChange(streamIsPlaying, stream) {
+  if (streamIsPlaying) {
+    setVideoElement(stream);
   } else {
-    status = 'empty';
-    playIdleVideo();
+    if (streamStoppedTime) {
+      if (Date.now() - streamStoppedTime > 500) {
+        streamStoppedTime = 0;
+        playIdleVideo();    
+      }
+    } else {
+      streamStoppedTime = Date.now();
+    }
   }
 }
 function onTrack(event) {
@@ -129,16 +132,16 @@ function onTrack(event) {
     stats.forEach((report) => {
      if (report.type === 'inbound-rtp' && report.kind === 'video') {
 
-        const videoStatusChanged = videoIsPlaying !== report.bytesReceived > lastBytesReceived;
+        const videoStatusChanged = streamIsPlaying !== report.bytesReceived > lastBytesReceived;
 
         if (videoStatusChanged) {
-          videoIsPlaying = report.bytesReceived > lastBytesReceived;
-          onVideoStatusChange(videoIsPlaying, event.streams[0]);
+          streamIsPlaying = report.bytesReceived > lastBytesReceived;
+          onVideoStatusChange(streamIsPlaying, event.streams[0]);
         }
         lastBytesReceived = report.bytesReceived;
       }
     });
-  }, 100);
+  }, 200);
 }
 
 const showVideoElement = () => {
