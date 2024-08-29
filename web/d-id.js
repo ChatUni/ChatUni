@@ -57,6 +57,7 @@ async function createPeerConnection(offer, iceServers) {
   let dc = await peerConnection.createDataChannel("JanusDataChannel");
   dc.onopen = () => {
     console.log("datachannel open");
+    showVideoElement();
     msgs.push({
       "role": "assistant",
       "content": tutor.greetings,
@@ -177,8 +178,6 @@ function setVideoElement(stream) {
   }
 }
 function playIdleVideo() {
-  showVideoElement();
-
   // Add Animation Class
   // videoElement.classList.toggle("animated")
 
