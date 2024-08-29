@@ -18,7 +18,7 @@ let sessionId;
 let sessionClientAnswer;
 let statsIntervalId;
 let streamIsPlaying;
-let streamStoppedTime;
+let streamStopId;
 let lastBytesReceived;
 let tutor;
 let ably;
@@ -72,7 +72,6 @@ async function createPeerConnection(offer, iceServers) {
     let msg = event.data
     let msgType = "chat/answer:"
     if (msg.includes(msgType)) {
-      showVideoElement();
       msg = decodeURIComponent(msg.replace(msgType, ""))
       console.log('Data Channel in: ' + msg)
       msgs.push({
@@ -112,17 +111,12 @@ function onIceCandidate(event) {
   }
 }
 function onVideoStatusChange(streamIsPlaying, stream) {
+  showVideoElement();
   if (streamIsPlaying) {
     setVideoElement(stream);
   } else {
-    if (streamStoppedTime) {
-      if (Date.now() - streamStoppedTime > 500) {
-        streamStoppedTime = 0;
-        playIdleVideo();    
-      }
-    } else {
-      streamStoppedTime = Date.now();
-    }
+    clearTimeout(streamStopId);
+    streamStopId = setTimeout(playIdleVideo, 500);
   }
 }
 function onTrack(event) {
