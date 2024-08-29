@@ -144,6 +144,7 @@ function onTrack(event) {
 
 const showVideoElement = isStream => {
   if (!img.style.display) {
+    if (!isStream) return;
     img.style.display = 'none';
     streamVideoElement.style.display = 'block';
   } else {
