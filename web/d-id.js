@@ -57,7 +57,6 @@ async function createPeerConnection(offer, iceServers) {
   let dc = await peerConnection.createDataChannel("JanusDataChannel");
   dc.onopen = () => {
     console.log("datachannel open");
-    showVideoElement();
     msgs.push({
       "role": "assistant",
       "content": tutor.greetings,
@@ -73,6 +72,7 @@ async function createPeerConnection(offer, iceServers) {
     let msg = event.data
     let msgType = "chat/answer:"
     if (msg.includes(msgType)) {
+      showVideoElement();
       msg = decodeURIComponent(msg.replace(msgType, ""))
       console.log('Data Channel in: ' + msg)
       msgs.push({
