@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chatuni/api/api.dart';
 import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/api/youdao.dart';
 import 'package:chatuni/io/websocket.dart';
@@ -60,7 +61,7 @@ abstract class _Tutors with Store {
 
   @computed
   String get avatarUrl =>
-      '${kIsWeb ? '' : 'https://chatuni.netlify.app'}/d-id.html?sessionId=$sessionId&id=${tutor?.id}';
+      '${kIsWeb ? '' : cuBase}/d-id.html?sessionId=$sessionId&id=${tutor?.id}';
 
   @action
   Future<void> loadTutors() async {

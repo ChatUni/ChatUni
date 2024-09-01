@@ -30,7 +30,7 @@ export const importAgent = async () => {
   const tutors = await get(db('doc', 'tutors'))
   const { agents } = await get(`${DID}/agents/me`, headers)
   for (t of tutors) {
-    // await createAgent(t.name, t.gender == '男' ? 'en-US-RyanMultilingualNeural' : 'en-US-JennyMultilingualNeural', `https://chatuni.netlify.app/icons/${t.id}.png`, t.system)
+    // await createAgent(t.name, t.gender == '男' ? 'en-US-RyanMultilingualNeural' : 'en-US-JennyMultilingualNeural', `https://chatuni.ai/icons/${t.id}.png`, t.system)
     // const { agents } = await get(`${DID}/agents/me`, headers)
     const agent = agents.find(x => x.preview_name == t.name)
     t.agentId = agent.id

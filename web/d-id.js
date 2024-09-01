@@ -4,7 +4,7 @@ const DID_API = {
   "service": "talks"
 }
 const ABLY_API_KEY = "dUneIQ.aARKiA:9HSmVmMZm4hOh7k97hOCJJQ2vJee3Ovg-GVPYnEX_Z0";
-const chatuni_url = 'https://chatuni.netlify.app/.netlify/functions'
+const chatuni_url = 'https://chatuni.ai/.netlify/functions'
 
 const RTCPeerConnection = (
   window.RTCPeerConnection ||
