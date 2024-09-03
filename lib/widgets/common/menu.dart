@@ -5,10 +5,14 @@ ListTile menuItem(
   String text, {
   bool isEdit = false,
   void Function()? onTap,
+  Color color = Colors.black,
 }) =>
     ListTile(
       leading: Icon(icon),
-      title: Text(text),
+      title: Text(
+        text,
+        style: TextStyle(color: color),
+      ),
       trailing: Icon(isEdit ? Icons.edit : Icons.forward),
       onTap: onTap,
     );
