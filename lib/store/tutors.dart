@@ -53,6 +53,15 @@ abstract class _Tutors with Store {
   String lang = 'en';
 
   @computed
+  List<Tutor> get langTutors => tutors.where((t) => t.level != 10).toList();
+
+  @computed
+  List<Tutor> get scenarioTutors => tutors.where((t) => t.level == 10).toList();
+
+  List<Tutor> levelTutors(int level) =>
+      tutors.where((t) => t.level == level).toList();
+
+  @computed
   bool get isTutorSelected => tutor != null;
 
   @computed

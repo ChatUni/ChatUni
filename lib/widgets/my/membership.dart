@@ -66,8 +66,7 @@ Text _special(double price) => Text(
     );
 
 Observer _priceGrid = obsc<Auth>(
-  (auth, context) => vGrid(
-    2,
+  (auth, context) => grid(
     2,
     auth.priceList
         .map(

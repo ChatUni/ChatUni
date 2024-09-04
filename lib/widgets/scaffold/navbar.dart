@@ -61,7 +61,7 @@ List<InkWell> buildIcons(App app, BuildContext context) {
     Icons.menu_book_rounded,
     '课程',
     () =>
-        launch('https://chatuni.smartkit.vip/teacher/#/level', isNewTab: false),
+        launch('https://chatuni.smartkit.vip/teacher/#/level', isNewTab: true),
     isSelected: app.routeGroup == RouteGroup.course,
   );
   InkWell metaIcon = menuIcon(

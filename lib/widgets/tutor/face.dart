@@ -1,21 +1,20 @@
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/common/device.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '/store/tutors.dart';
 import '/widgets/common/hoc.dart';
 
-Widget face() => obsc<Tutors>((tutors, context) {
+Widget face() => obs<Tutors>((tutors) {
       final tutor = tutors.tutor ?? tutors.tutors[0];
 
-      final width = MediaQuery.of(context).size.width;
-      final isRow = width > 1024;
-      final height = isRow ? MediaQuery.of(context).size.height : 400.0;
+      final height = Window.isDesktop() ? Window.height : 400.0;
 
       return cBox(Colors.white)(
         tutors.isAvatar
             ? box(
-                width, height,
+                Window.width, height,
                 // RTCVideoView(
                 //   tutors.getRTCRenderer(),
                 //   objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitContain,
@@ -32,9 +31,9 @@ Widget face() => obsc<Tutors>((tutors, context) {
               )
             : Image.asset(
                 'assets/images/${tutors.isReading ? 'gif' : 'tutoricons'}/${tutor.id}.${tutors.isReading ? 'gif' : 'png'}',
-                width: width,
+                width: Window.width,
                 height: height,
-                fit: width > 480 ? BoxFit.fitHeight : BoxFit.fitWidth,
+                fit: Window.width > 480 ? BoxFit.fitHeight : BoxFit.fitWidth,
                 alignment: Alignment.topCenter,
               ),
       );

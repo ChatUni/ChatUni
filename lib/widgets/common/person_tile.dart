@@ -13,9 +13,8 @@ Widget personTile(
   void Function()? action,
 }) =>
     Card(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-        child: ssCol([
+      child: pBox(edge(12, 12, 12, 4))(
+        ssCol([
           _header(image, title, props),
           const Divider(),
           _desc(desc),

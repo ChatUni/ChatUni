@@ -185,19 +185,63 @@ Card tCard(
       ),
     );
 
-LayoutGrid vGrid(
+Container grid(
   int cols,
-  int rows,
   List<Widget> children, {
-  double spacing = 10,
+  double spacing = 8,
+  double left = 8,
+  double top = 8,
+  double right = 8,
+  double bottom = 8,
 }) =>
-    LayoutGrid(
-      columnSizes: range(1, cols).map((_) => 1.fr).toList(),
-      rowSizes: range(1, rows).map((_) => auto).toList(),
-      columnGap: spacing,
-      rowGap: spacing,
+    pBox(edge(left, top, right, bottom))(
+      SingleChildScrollView(
+        child: LayoutGrid(
+          columnSizes: range(1, cols).map((_) => 1.fr).toList(),
+          rowSizes: range(1, (children.length / cols).ceil())
+              .map((_) => auto)
+              .toList(),
+          columnGap: spacing,
+          rowGap: spacing,
+          children: children,
+        ),
+      ),
+    );
+
+GridView vGrid(
+  int cols,
+  List<Widget> children, {
+  double spacing = 8,
+}) =>
+    GridView.count(
+      crossAxisCount: cols,
       children: children,
     );
+
+ListView Function(
+  List<Widget>, {
+  double left,
+  double top,
+  double right,
+  double bottom,
+}) _list(bool isVertical) => (
+      List<Widget> children, {
+      double left = 8,
+      double top = 8,
+      double right = 8,
+      double bottom = 8,
+    }) =>
+        ListView.separated(
+          padding: edge(left, top, right, bottom),
+          scrollDirection: isVertical ? Axis.vertical : Axis.horizontal,
+          itemCount: children.length,
+          separatorBuilder: (c, i) => vSpacer(8),
+          itemBuilder: (c, i) => children[i],
+        );
+
+final hList = _list(false);
+
+final vList = _list(true);
 
 SizedBox box(double width, double height, Widget child) =>
     SizedBox(width: width, height: height, child: child);
