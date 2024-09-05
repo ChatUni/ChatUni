@@ -14,9 +14,9 @@ Widget tutor() => obs<Tutors>(
       (tutors) => scaffold(
         Window.isPortrait()
             ? vContainer([face(), chat()], padding: 0)
-            : ccRow(
+            : csRow(
                 [
-                  grow(3, Center(child: face())),
+                  grow(3, face()),
                   grow(7, scCol([chat()])),
                 ],
               ),

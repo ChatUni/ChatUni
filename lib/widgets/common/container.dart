@@ -69,6 +69,9 @@ Row Function(List<Widget>) ccRow =
 Row Function(List<Widget>) ceRow =
     _row(MainAxisAlignment.center, CrossAxisAlignment.end);
 
+Row Function(List<Widget>) cfRow =
+    _row(MainAxisAlignment.center, CrossAxisAlignment.stretch);
+
 Row Function(List<Widget>) esRow =
     _row(MainAxisAlignment.end, CrossAxisAlignment.start);
 

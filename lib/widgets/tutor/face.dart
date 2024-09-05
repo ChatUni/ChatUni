@@ -9,7 +9,7 @@ import '/widgets/common/hoc.dart';
 Widget face() => obs<Tutors>((tutors) {
       final tutor = tutors.tutor ?? tutors.tutors[0];
 
-      final height = Window.isDesktop() ? Window.height : 400.0;
+      final height = Window.isPortrait() ? 400.0 : Window.height - 100;
 
       return cBox(Colors.white)(
         tutors.isAvatar

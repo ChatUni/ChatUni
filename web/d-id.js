@@ -35,7 +35,7 @@ streamVideoElement.setAttribute('height', window.innerHeight);
 const idleVideoElement = document.getElementById('idleVideo');
 idleVideoElement.setAttribute('playsinline', '');
 idleVideoElement.setAttribute('height', window.innerHeight);
-const img = document.getElementById('headImg');
+//const img = document.getElementById('headImg');
 //img.src = `images/${tutorId}.png`;
 const textArea = document.getElementById("textArea");
 
@@ -143,14 +143,16 @@ function onTrack(event) {
 }
 
 const showVideoElement = isStream => {
-  if (!img.style.display) {
-    if (!isStream) return;
-    img.style.display = 'none';
-    streamVideoElement.style.display = 'block';
-  } else {
-    streamVideoElement.style.display = isStream ? 'block' : 'none';
-    idleVideoElement.style.display = isStream ? 'none' : 'block';
-  }
+  // if (!img.style.display) {
+  //   if (!isStream) return;
+  //   img.style.display = 'none';
+  //   streamVideoElement.style.display = 'block';
+  // } else {
+  //   streamVideoElement.style.display = isStream ? 'block' : 'none';
+  //   idleVideoElement.style.display = isStream ? 'none' : 'block';
+  // }
+  streamVideoElement.style.display = isStream ? 'block' : 'none';
+  idleVideoElement.style.display = isStream ? 'none' : 'block';
 }
 
 function setstreamVideoElement(stream) {
@@ -238,7 +240,7 @@ const connect = async () => {
 
   const tutors = await fetch(`${chatuni_url}/tutor?type=tutors`).then(r => r.json());
   tutor = tutors.find(x => x.id == tutorId);
-  img.src = tutor.stillImage;
+  //img.src = tutor.stillImage;
   idleVideoElement.src = tutor.idleVideo;
 
   // WEBRTC API CALL 1 - Create a new stream

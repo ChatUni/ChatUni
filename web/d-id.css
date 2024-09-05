@@ -10,6 +10,7 @@ body {
   justify-content: space-evenly;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
   /* margin-top: 50px; */
 }
 
