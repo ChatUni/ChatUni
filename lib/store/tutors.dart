@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:chatuni/api/openai.dart';
@@ -69,7 +70,7 @@ abstract class _Tutors with Store {
 
   @computed
   String get avatarUrl =>
-      '${kIsWeb ? '' : 'https://chatuni.ai'}/d-id.html?sessionId=$sessionId&id=${tutor?.id}';
+      '${kIsWeb ? '' : 'https://chatuni.ai'}/d-id.html?sessionId=$sessionId&id=${tutor?.id}&tutor=${jsonEncode(tutor!.toJson())}';
 
   @action
   Future<void> loadTutors() async {

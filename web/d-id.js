@@ -28,11 +28,13 @@ let msgs = [];
 
 const params = new URLSearchParams(window.location.search);
 const tutorId = +params.get('id');
+tutor = JSON.parse(params.get('tutor'));
 const appSessionId = params.get('sessionId');
 const streamVideoElement = document.getElementById('streamVideo');
 streamVideoElement.setAttribute('playsinline', '');
 streamVideoElement.setAttribute('height', window.innerHeight);
 const idleVideoElement = document.getElementById('idleVideo');
+idleVideoElement.src = tutor.idleVideo;
 idleVideoElement.setAttribute('playsinline', '');
 idleVideoElement.setAttribute('height', window.innerHeight);
 //const img = document.getElementById('headImg');
@@ -238,10 +240,10 @@ const connect = async () => {
   stopAllStreams();
   closePC();
 
-  const tutors = await fetch(`${chatuni_url}/tutor?type=tutors`).then(r => r.json());
-  tutor = tutors.find(x => x.id == tutorId);
+  //const tutors = await fetch(`${chatuni_url}/tutor?type=tutors`).then(r => r.json());
+  //tutor = tutors.find(x => x.id == tutorId);
   //img.src = tutor.stillImage;
-  idleVideoElement.src = tutor.idleVideo;
+  //idleVideoElement.src = tutor.idleVideo;
 
   // WEBRTC API CALL 1 - Create a new stream
   const sessionResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams`, {

@@ -9,6 +9,20 @@ part of 'tutors.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$Tutors on _Tutors, Store {
+  Computed<List<Tutor>>? _$langTutorsComputed;
+
+  @override
+  List<Tutor> get langTutors =>
+      (_$langTutorsComputed ??= Computed<List<Tutor>>(() => super.langTutors,
+              name: '_Tutors.langTutors'))
+          .value;
+  Computed<List<Tutor>>? _$scenarioTutorsComputed;
+
+  @override
+  List<Tutor> get scenarioTutors => (_$scenarioTutorsComputed ??=
+          Computed<List<Tutor>>(() => super.scenarioTutors,
+              name: '_Tutors.scenarioTutors'))
+      .value;
   Computed<bool>? _$isTutorSelectedComputed;
 
   @override
@@ -21,6 +35,12 @@ mixin _$Tutors on _Tutors, Store {
   @override
   bool get isAvatar => (_$isAvatarComputed ??=
           Computed<bool>(() => super.isAvatar, name: '_Tutors.isAvatar'))
+      .value;
+  Computed<String>? _$avatarUrlComputed;
+
+  @override
+  String get avatarUrl => (_$avatarUrlComputed ??=
+          Computed<String>(() => super.avatarUrl, name: '_Tutors.avatarUrl'))
       .value;
 
   late final _$isRecordingAtom =
@@ -216,8 +236,11 @@ tutors: ${tutors},
 tutor: ${tutor},
 msgs: ${msgs},
 lang: ${lang},
+langTutors: ${langTutors},
+scenarioTutors: ${scenarioTutors},
 isTutorSelected: ${isTutorSelected},
-isAvatar: ${isAvatar}
+isAvatar: ${isAvatar},
+avatarUrl: ${avatarUrl}
     ''';
   }
 }

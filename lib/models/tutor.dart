@@ -17,8 +17,12 @@ class Tutor {
   String skill = '';
   String desc = '';
   String? locale = '';
-  String? greetings = '';
-  String? agentId = '';
+  String greetings = '';
+  String agentId = '';
+  String stillImage = '';
+  String idleVideo = '';
+  String lang = '';
+  String chatId = '';
 
   Tutor();
 
