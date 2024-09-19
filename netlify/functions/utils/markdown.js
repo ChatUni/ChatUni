@@ -128,7 +128,13 @@ const parseParagraph = (n, from, to) => {
 
 const getFillQuestions = t => {
   if (Array.isArray(t)) t = t.join('\n')
-  r = t.matchAll(/(\d+).*?[\._…]{6,}/g).toArray()
+  // const r = t.matchAll(/(\d+).*?[\._…]{6,}/g).toArray()
+  const re = /(\d+).*?[\._…]{6,}/g
+  const r = []
+  let a
+  while ((a = re.exec(t)) !== null) {
+    r.push(a[1])
+  }
   return r.length > 0 ? r.map(x => ({ number: +x[1] })) : null
 }
 
