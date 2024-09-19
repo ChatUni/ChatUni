@@ -133,7 +133,7 @@ const getFillQuestions = t => {
   const r = []
   let a
   while ((a = re.exec(t)) !== null) {
-    r.push(a[1])
+    r.push(a)
   }
   return r.length > 0 ? r.map(x => ({ number: +x[1] })) : null
 }
