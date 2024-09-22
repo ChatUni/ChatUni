@@ -24,14 +24,14 @@ SimpleDialog confirmDialog(
         ecRow([
           SimpleDialogOption(
             onPressed: () => router.pop(),
-            child: txt('取消', color: Colors.blueAccent, bold: true),
+            child: txt('Cancel', color: Colors.blueAccent, bold: true),
           ),
           SimpleDialogOption(
             onPressed: () {
               onConfirm();
               router.pop();
             },
-            child: txt('确定', color: Colors.blueAccent, bold: true),
+            child: txt('OK', color: Colors.blueAccent, bold: true),
           ),
         ]),
       ],

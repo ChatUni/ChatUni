@@ -53,27 +53,27 @@ List<InkWell> buildIcons(App app, BuildContext context) {
 
   InkWell tutorIcon = menuIcon(
     Icons.school,
-    '外教',
+    'Tutor',
     () => context.go('/'),
     isSelected: app.routeGroup == RouteGroup.tutor,
   );
   InkWell courseIcon = menuIcon(
     Icons.menu_book_rounded,
-    '课程',
+    'Course',
     () =>
         launch('https://chatuni.smartkit.vip/teacher/#/level', isNewTab: true),
     isSelected: app.routeGroup == RouteGroup.course,
   );
   InkWell metaIcon = menuIcon(
     Icons.language,
-    '场景', // '元宇宙',
+    'Scene', // '元宇宙',
     () => context.go('/scenario'),
     // () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
     isSelected: app.routeGroup == RouteGroup.scenario,
   );
   InkWell accountIcon = menuIcon(
     Icons.person,
-    '我的',
+    'My',
     () => context.go('/my'),
     isSelected: app.routeGroup == RouteGroup.my,
   );

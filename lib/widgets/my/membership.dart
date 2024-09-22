@@ -48,7 +48,7 @@ Observer _title = obs<Auth>(
   (auth) => ccRow(
     [
       Text(
-        '我的VIP(剩余${auth.user?.remain ?? 0}小时)',
+        'My VIP(${auth.user?.remain ?? 0} hours remaining)', // '我的VIP(剩余0小时)'
         style: _whiteTitleStyle,
       ),
     ],
@@ -61,7 +61,7 @@ Text _priceDesc(String desc) => Text(
     );
 
 Text _special(double price) => Text(
-      '特价 ¥$price',
+      'Special ¥$price',
       style: _whiteTitleStyle,
     );
 
@@ -85,17 +85,17 @@ Observer _priceGrid = obsc<Auth>(
 );
 
 Text _benefitHeader = const Text(
-  '会员权益',
+  'Member Benefits', // '会员权益'
   style: _titleStyle,
 );
 
 Row _benefitItem = scRow([
   const Text(
-    '无限对话',
+    'Unlimited Chat',
     style: _titleStyle,
   ),
   const Text(
-    '(闲聊学习，趣味场景)',
+    '(Casual Chat, Hobby Scene)', // '(闲聊学习，趣味场景)',
     style: _subtitleStyle,
   ),
   const Spacer(),
@@ -114,7 +114,7 @@ Card _benefit = tCard(
 
 Observer paymentMethodDialog(int id) => obs<Auth>(
       (auth) => confirmDialog(
-        '选择付款方式',
+        'Choose payment method', // '选择付款方式',
         [
           ccRow([
             Expanded(

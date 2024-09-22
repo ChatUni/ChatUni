@@ -13,7 +13,11 @@ Widget tutorCard(Tutor tutor) => obsc<Tutors>(
           height: 100,
         ),
         tutor.name,
-        props: [tutor.skill, '语速 ${tutor.speed2}', tutor.personality],
+        props: [
+          tutor.skill,
+          'Talking Speed ${tutor.speed2}',
+          tutor.personality
+        ],
         hasFav: true,
         desc: tutor.desc,
         action: () {
