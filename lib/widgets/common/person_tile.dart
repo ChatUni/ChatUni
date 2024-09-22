@@ -33,8 +33,8 @@ Row _header(Widget image, String title, List<String> props) => ssRow([
         vSpacer(5),
         ...props.map((x) => Text(x)),
       ]),
-      const Spacer(),
-      _fav,
+      // const Spacer(),
+      // _fav,
     ]);
 
 Column _fav = scCol([

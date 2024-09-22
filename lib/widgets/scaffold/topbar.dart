@@ -51,14 +51,14 @@ BoxDecoration _headerImg = const BoxDecoration(
 );
 
 List<Widget> _actions = [
-  const IconButton(
-    onPressed: null,
-    icon: Icon(Icons.search, color: Colors.white),
-  ),
-  IconButton(
-    onPressed: () {},
-    icon: const Icon(Icons.bookmark, color: Colors.white),
-  ),
+  // const IconButton(
+  //   onPressed: null,
+  //   icon: Icon(Icons.search, color: Colors.white),
+  // ),
+  // IconButton(
+  //   onPressed: () {},
+  //   icon: const Icon(Icons.bookmark, color: Colors.white),
+  // ),
 ];
 
 List<Widget> tutorActions() => [
