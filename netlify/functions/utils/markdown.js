@@ -143,7 +143,7 @@ const getOrderedListQuestions = (n, target) => {
     target.type = 'fill'
     target.questions = target.content.map((_, i) => ({ number: i + n.start }))
   } else {
-    target.type = 'choice'
+    target.type = 'choice'  // 11. subject... choices... 12. subject...
     target.questions = n.children.map((q, i) => ({
       number: i + n.start,
       subject: paragraph(q.children[0].children[0]),
@@ -166,7 +166,7 @@ const getNonOrderedListQuestions = (content, from, to, target) => {
   } else {
     const n = getFirstChoiceInParagraph(content)
     if (n > -1) {
-      target.type = 'choice'
+      target.type = 'choice'  // 11 subject... choices... 12 subject...
       const m = content[0].match(/^(<\w{1,2}>)*(\d+)( .+)?$/)
       target.questions = m ? [{
         number: +m[2],

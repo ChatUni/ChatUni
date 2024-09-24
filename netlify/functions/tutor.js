@@ -17,6 +17,6 @@ export const handler = makeApi({
       updateAgent: (q, b) => updateAgent(b.id, b),
     },
   },
-  initAI,
+  // initAI,
   nocache: true,
 })
