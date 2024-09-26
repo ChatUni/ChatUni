@@ -9,7 +9,7 @@ export const parseMD = (file, returnType) => {
   const ast = remark.parse(file.content)
   const [p1, p2] = splitBy(ast.children, ['answer key'], { level: 1, keepFirst: true, ci: true })
   let tests = splitOnEvery(p1, 'Test ', { level: 1, start: true })
-  const q = tests.map(parseTest)
+  const q = tests.map(parseTest).filter(t => t.listen.length > 0)
   tests = splitOnEvery(p2, 'TEST ', { start: true })
   const a = tests.map(parseTestAnswer).filter(x => x.length > 0)
   attachAnswer(q, a)
@@ -129,7 +129,7 @@ const parseParagraph = (n, from, to) => {
 const getFillQuestions = t => {
   if (Array.isArray(t)) t = t.join('\n')
   // const r = t.matchAll(/(\d+).*?[\._…]{6,}/g).toArray()
-  const re = /(\d+).*?[\._…]{6,}/g
+  const re = /(\d{1,2}).*?[\._…]{6,}/g
   const r = []
   let a
   while ((a = re.exec(t)) !== null) {
@@ -230,7 +230,7 @@ const vContent = t => t.content.map(x => `<div>${closeStyle(x)}</div>`).join('')
 const vChoiceQuestion = q => `<div><b>${q.number}.</b> ${closeStyle(q.subject)}</div>${(q.choices || []).map(c => `<div>  ${closeStyle(c)}</div>`).join('')}<div>(${q.answer})</div>`
 
 const closeStyle = t => {
-  if (!t) return ''
+  if (!t || typeof(t) !== "string") return ''
   const n = styles.findIndex(x => t.startsWith(x))
   if (n == -1) return t
   const s1 = styles[n]
