@@ -119,7 +119,11 @@ const parseParagraph = (n, from, to) => {
     getNonOrderedListQuestions(target.content, from, to, target)
   }
 
-  if (target.type == 'instruction' && /^(Test|TEST) \d$/.test(target.content)) return null
+  if (target.type == 'instruction') {
+    if (/^(Test|TEST) \d$/.test(target.content)) return null
+    if (/[📖➡️📞📑]/.test(target.content)) return null 
+  }
+
   if (!target.questions) delete target.questions
   
   prevParagraph = target
@@ -170,7 +174,7 @@ const getNonOrderedListQuestions = (content, from, to, target) => {
       const m = content[0].match(/^(<\w{1,2}>)*(\d+)( .+)?$/)
       target.questions = m ? [{
         number: +m[2],
-        subject: content[n - 1],
+        subject: content[n - 1].replace(/^\d{1,2} /, ''),
         choices: content.slice(n)
       }] : // multi-choice
       [...Array(to - from + 1).keys()].map(i => ({ number: i + from }))

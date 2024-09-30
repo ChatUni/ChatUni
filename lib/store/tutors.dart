@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chatuni/api/api.dart';
 import 'package:chatuni/api/openai.dart';
 import 'package:chatuni/api/youdao.dart';
 import 'package:chatuni/io/websocket.dart';
@@ -66,11 +67,11 @@ abstract class _Tutors with Store {
   bool get isTutorSelected => tutor != null;
 
   @computed
-  bool get isAvatar => isTutorSelected && tutor!.agentId != null;
+  bool get isAvatar => isTutorSelected;
 
   @computed
   String get avatarUrl =>
-      '${kIsWeb ? '' : 'https://chatuni.ai'}/d-id.html?sessionId=$sessionId&id=${tutor?.id}&tutor=${jsonEncode(tutor!.toJson())}';
+      '${kIsWeb ? '' : HOST}/d-id.html?sessionId=$sessionId&id=${tutor?.id}&tutor=${jsonEncode(tutor!.toJson())}';
 
   @action
   Future<void> loadTutors() async {
@@ -91,13 +92,11 @@ abstract class _Tutors with Store {
       addLoadingMsg(true);
     } else {
       final msg = t.greetings;
-      if (msg != null) {
-        await addAIMsg(
-          Msg()
-            ..text = msg
-            ..isAI = true,
-        );
-      }
+      await addAIMsg(
+        Msg()
+          ..text = msg
+          ..isAI = true,
+      );
     }
   }
 
