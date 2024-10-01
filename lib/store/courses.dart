@@ -14,7 +14,7 @@ abstract class _Courses with Store {
   @action
   Future<void> loadListenings(CourseType type) async {
     listenings.clear();
-    var ts = await fetchListenings(type);
-    listenings.addAll(ts);
+    // var ts = await fetchListenings(type);
+    // listenings.addAll(ts);
   }
 }

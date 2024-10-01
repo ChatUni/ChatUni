@@ -1,3 +1,4 @@
+import 'package:chatuni/store/ielts.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ void main() {
       providers: [
         Provider<App>(create: (_) => App()),
         Provider<Auth>(create: (_) => Auth()),
+        Provider<Ielts>(create: (_) => Ielts()),
         Provider<Tutors>(create: (_) => Tutors()),
       ],
       child: MaterialApp.router(

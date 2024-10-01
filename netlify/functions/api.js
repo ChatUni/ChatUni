@@ -6,7 +6,7 @@ export const handler = makeApi({
   handlers: {
     post: {
       pusher: (q, b) => pusher.trigger(q.channel, q.event, b),
-      parseMD: (q, b) => parseMD(b.file, q.returnType),
+      parseMD: (q, b) => parseMD(b.file, q.returnType, q.save),
     },
   },
 })

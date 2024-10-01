@@ -1,19 +1,32 @@
+import { DB, get, post } from './http'
 import { remark } from 'remark'
 import { tap } from './util'
 
+const db = DB('algo.ChatUni')
+
 const categories = ['LISTENING', 'READING', 'WRITING', 'SPEAKING']
+const fillPattern = /(\d{1,2}).*?[\._…]{6,}/g
 
 let prevParagraph
 
-export const parseMD = (file, returnType) => {
+export const parseMD = async (file, returnType, save) => {
   const ast = remark.parse(file.content)
+  const id = findId(ast.children)
   const [p1, p2] = splitBy(ast.children, ['answer key'], { level: 1, keepFirst: true, ci: true })
   let tests = splitOnEvery(p1, 'Test ', { level: 1, start: true })
-  const q = tests.map(parseTest).filter(t => t.listen.length > 0)
+  const q = tests.map(parseTest).filter(t => t.listen.length > 0).map((t, i) => ({id: `${id}-${i+1}`, ...t}))
   tests = splitOnEvery(p2, 'TEST ', { start: true })
   const a = tests.map(parseTestAnswer).filter(x => x.length > 0)
   attachAnswer(q, a)
+  if (save) await post(db('save', 'ielts'), q)
   return returnType == 'html' ? visual(q) : q
+}
+
+const findId = ns => {
+  for (let n of ns) {
+    const m = paragraph(n).join('').match(/ACADEMIC (\d{1,2})$/)
+    if (m) return m[1]
+  }
 }
 
 const paragraph = (n, opt = {}) => {
@@ -121,8 +134,10 @@ const parseParagraph = (n, from, to) => {
 
   if (target.type == 'instruction') {
     if (/^(Test|TEST) \d$/.test(target.content)) return null
-    if (/[📖➡️📞📑]/.test(target.content)) return null 
+    if (/[📖➡️📞📑]/.test(target.content)) return null
   }
+
+  target.content = mergeContent(target.content)
 
   if (!target.questions) delete target.questions
   
@@ -130,13 +145,39 @@ const parseParagraph = (n, from, to) => {
   return prevParagraph
 }
 
+const mergeContent = c => {
+  const nl = [' ', ',']
+  const l = []
+  let s = -1
+  for (let i = 0; i < c.length; i++) {
+    if (c[i]) {
+      const isOpen = nl.includes(c[i][c[i].length - 1])
+      const isClose = nl.includes(c[i][0])
+      if (s > -1 ) {
+        if (isClose && !isOpen) {
+          l.push(c.slice(s, i + 1).map(removeStyle).join(''))
+          s = -1
+        }
+      } else {
+        if (isOpen) s = i
+        else l.push(c[i])
+      }
+    }
+  }
+  return l
+}
+
+const removeStyle = t => {
+  const n = styles.findIndex(x => t.startsWith(x))
+  return n == -1 ? t : t.slice(styles[n].length)
+}
+
 const getFillQuestions = t => {
   if (Array.isArray(t)) t = t.join('\n')
   // const r = t.matchAll(/(\d+).*?[\._…]{6,}/g).toArray()
-  const re = /(\d{1,2}).*?[\._…]{6,}/g
   const r = []
   let a
-  while ((a = re.exec(t)) !== null) {
+  while ((a = fillPattern.exec(t)) !== null) {
     r.push(a)
   }
   return r.length > 0 ? r.map(x => ({ number: +x[1] })) : null
@@ -220,10 +261,10 @@ const visual = q => q.map(vTest).join('<hr>')
 const vTest = (t, i) => `<div><h1>Test ${i + 1}</h1>${vListen(t.listen)}</div>`
 const vListen = (t, i) => `<div><h2>Listen</h2>${t.map(vPart).join('')}</div>`
 const vPart = (t, i) => `<div><h3>${t.name}</h3>${t.groups.map(vGroup).join('')}</div>`
-const vGroup = (t, i) => `<div><h4>Questions ${t.from} to ${t.to}</h4>${t.paragraphs.map(vParagraph).join('<br/>')}</div>`
-const vParagraph = (t, i) => {
+const vGroup = (t, i) => `<div><h4>Questions ${t.from} to ${t.to}</h4>${t.paragraphs.map(x => vParagraph(x, t.from, t.to)).join('<br/>')}</div>`
+const vParagraph = (t, from, to) => {
   if (t.type == 'instruction') return vContent(t)
-  if (t.type == 'fill') return `${vContent(t)}<div>(${t.questions.map(q => q.answer).join()})</div>`
+  if (t.type == 'fill') return `${vFillQuestion(t, from, to)}<div>(${t.questions.map(q => q.answer).join()})</div>`
   if (t.type == 'choice') {
     const qs = t.questions.map(vChoiceQuestion).join('<br>')
     return t.questions.some(q => q.choices) ? qs : `${vContent(t)}<br/>${qs}`
@@ -231,6 +272,10 @@ const vParagraph = (t, i) => {
 }
 
 const vContent = t => t.content.map(x => `<div>${closeStyle(x)}</div>`).join('')
+const vFillQuestion = (t, from, to) => t.content.map((x, i) => {
+  const noNum = /[a-zA-Z]+ [\._…]{6,}/.test(x)
+  return `<div>${noNum ? `${i + from}. ` : ''}${closeStyle(x)}</div>`
+}).join('')
 const vChoiceQuestion = q => `<div><b>${q.number}.</b> ${closeStyle(q.subject)}</div>${(q.choices || []).map(c => `<div>  ${closeStyle(c)}</div>`).join('')}<div>(${q.answer})</div>`
 
 const closeStyle = t => {
