@@ -19,6 +19,16 @@ Widget test() => scaffold(
 
 Widget _tests() => obs<Ielts>(
       (ielts) => ccCol(
-        ielts.tests.map((x) => vCard([txt(x.id)])).toList(),
+        ielts.tests
+            .map(
+              (e) => vCard([
+                pBox(aEdge(8))(left(txt('IELTS Academy ${e.key}'))),
+                grid(
+                  2,
+                  e.value.map((i) => txt('Test ${i.id}')).toList(),
+                ),
+              ]),
+            )
+            .toList(),
       ),
     );
