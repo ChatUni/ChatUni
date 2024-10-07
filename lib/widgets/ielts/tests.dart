@@ -1,5 +1,8 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/utils/utils.dart';
+import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
 import 'package:chatuni/widgets/common/text.dart';
@@ -22,10 +25,20 @@ Widget _tests() => obs<Ielts>(
         ielts.tests
             .map(
               (e) => vCard([
-                pBox(aEdge(8))(left(txt('IELTS Academy ${e.key}'))),
+                pipe([bold, left, pBox(aEdge(8))])('IELTS Academy ${e.key}'),
                 grid(
                   2,
-                  e.value.map((i) => txt('Test ${i.id}')).toList(),
+                  e.value
+                      .map(
+                        (t) => button(
+                          () {
+                            ielts.selectTest(t);
+                            router.go('/listening');
+                          },
+                          text: 'Test ${t.id}',
+                        ),
+                      )
+                      .toList(),
                 ),
               ]),
             )

@@ -16,8 +16,8 @@ Widget tutor() => obs<Tutors>(
             ? vContainer([face(), chat()], padding: 0)
             : csRow(
                 [
-                  grow(3, face()),
-                  grow(7, scCol([chat()])),
+                  growN(3)(face()),
+                  growN(7)(scCol([chat()])),
                 ],
               ),
         title: 'Tutor',

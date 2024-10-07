@@ -25,7 +25,6 @@ Widget chat() => obs<Tutors>(
         });
 
         return grow(
-          1,
           ListView(
             controller: msgsScrollController,
             padding: edge(8, 8, 8, 100),

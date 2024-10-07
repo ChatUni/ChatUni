@@ -9,6 +9,7 @@ part of 'ielts.dart';
 Question _$QuestionFromJson(Map<String, dynamic> json) => Question()
   ..number = (json['number'] as num).toInt()
   ..answer = json['answer'] as String?
+  ..userAnswer = json['userAnswer'] as String?
   ..subject = json['subject'] as String?
   ..choices =
       (json['choices'] as List<dynamic>?)?.map((e) => e as String).toList();
@@ -16,6 +17,7 @@ Question _$QuestionFromJson(Map<String, dynamic> json) => Question()
 Map<String, dynamic> _$QuestionToJson(Question instance) => <String, dynamic>{
       'number': instance.number,
       'answer': instance.answer,
+      'userAnswer': instance.userAnswer,
       'subject': instance.subject,
       'choices': instance.choices,
     };

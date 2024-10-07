@@ -17,6 +17,12 @@ Text txt(
       ),
     );
 
+Text bold(String text) => txt(text, bold: true);
+
+Text h1(String text) => txt(text, bold: true, size: 28);
+Text h2(String text) => txt(text, bold: true, size: 24);
+Text h3(String text) => txt(text, bold: true, size: 20);
+
 TextSpan txtSpan(
   String text, {
   bool bold = false,

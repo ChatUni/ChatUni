@@ -17,10 +17,7 @@ Observer msgRow(Msg m) => obsc<Tutors>(
               ? [spinner]
               : [
                   msgDot(m, true),
-                  grow(
-                    1,
-                    msgTxt(m, tutors.isReading),
-                  ),
+                  grow(msgTxt(m, tutors.isReading)),
                   msgDot(m, false),
                 ],
         ),
