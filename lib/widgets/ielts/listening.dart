@@ -10,7 +10,15 @@ import 'package:chatuni/widgets/scaffold/scaffold.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-const styles = {'h1': h1, 'h2': h2, 'b': bold};
+const styles = {
+  'h1': h1,
+  'h2': h2,
+  'h3': h3,
+  'h4': h3,
+  'b': bold,
+  'i': italic,
+  'ul': txt,
+};
 
 Widget listening() => scaffold(
       vContainer(
@@ -37,7 +45,11 @@ Widget _part() => obs<Ielts>((ielts) {
         vSpacer(6),
         h3(p.name),
         vSpacer(12),
-        button(() {}, icon: Icons.play_arrow),
+        button(
+          ielts.isPlaying ? ielts.stop : ielts.play,
+          icon: ielts.isPlaying ? Icons.stop : Icons.play_arrow,
+          bgColor: ielts.isPlaying ? Colors.red : Colors.green,
+        ),
         vSpacer(12),
         ...ielts.part!.groups.map((g) => _group(g)),
         button(
@@ -47,9 +59,9 @@ Widget _part() => obs<Ielts>((ielts) {
         ),
         vSpacer(12),
         ccRow([
-          grow(button(() {}, text: 'Prev Part')),
+          grow(button(() => ielts.nextPart(-1), text: 'Prev Part')),
           hSpacer(16),
-          grow(button(() {}, text: 'Next Part')),
+          grow(button(() => ielts.nextPart(1), text: 'Next Part')),
         ]),
       ]);
     });
@@ -65,9 +77,11 @@ List<Widget> _paragraph(Paragraph p) => [
 
 Widget _content(String s) => obs<Ielts>((ielts) {
       final key = styles.keys.firstWhereOrNull((k) => s.startsWith('<$k>'));
-      if (key != null) return styles[key]!(s.replaceFirst('<$key>', ''));
+      if (key != null) s = s.replaceFirst('<$key>', '');
+
       RegExp re = RegExp(r'(\d{1,2}).*?([\._…]{6,})');
       final match = re.firstMatch(s);
+      //if (match != null) print(match.groups([1, 2]));
       if (match != null) {
         final num = match.group(1)!;
         final blank = match.group(2)!;
@@ -87,5 +101,6 @@ Widget _content(String s) => obs<Ielts>((ielts) {
           txt(ss[1]),
         ]);
       }
-      return txt(s);
+
+      return key != null ? styles[key]!(s) : txt(s);
     });

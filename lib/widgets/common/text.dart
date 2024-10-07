@@ -18,6 +18,7 @@ Text txt(
     );
 
 Text bold(String text) => txt(text, bold: true);
+Text italic(String text) => txt(text, italic: true);
 
 Text h1(String text) => txt(text, bold: true, size: 28);
 Text h2(String text) => txt(text, bold: true, size: 24);

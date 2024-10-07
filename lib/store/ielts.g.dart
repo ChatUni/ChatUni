@@ -138,6 +138,28 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void nextPart(int step) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.nextPart');
+    try {
+      return super.nextPart(step);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void partSelected() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.partSelected');
+    try {
+      return super.partSelected();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void fill(String num, String answer) {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.fill');

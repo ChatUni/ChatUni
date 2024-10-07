@@ -100,6 +100,7 @@ flutter:
     - assets/images/
     - assets/images/gif/
     - assets/images/tutoricons/
+    - assets/mp3/ielts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
