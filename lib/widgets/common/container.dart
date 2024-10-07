@@ -249,7 +249,10 @@ final vList = _list(true);
 SizedBox box(double width, double height, Widget child) =>
     SizedBox(width: width, height: height, child: child);
 
-Expanded grow(int cols, Widget child) => Expanded(flex: cols, child: child);
+Expanded Function(Widget) growN(int n) =>
+    (child) => Expanded(flex: n, child: child);
+
+Expanded Function(Widget) grow = growN(1);
 
 InkWell tap(void Function() onTap, Widget child) =>
     InkWell(onTap: onTap, child: child);

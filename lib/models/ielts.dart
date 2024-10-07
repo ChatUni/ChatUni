@@ -6,6 +6,7 @@ part 'ielts.g.dart';
 class Question {
   int number = 0;
   String? answer = '';
+  String? userAnswer = '';
   String? subject = '';
   List<String>? choices = [];
 

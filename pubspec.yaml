@@ -41,6 +41,7 @@ dependencies:
   # ably_flutter: ^1.2.34
   app_links: ^6.1.4
   audioplayers: ^6.0.0
+  collection: ^1.18.0
   crypto: ^3.0.3
   cupertino_icons: ^1.0.6
   dio: ^5.4.3+1

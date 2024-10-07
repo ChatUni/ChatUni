@@ -12,6 +12,7 @@ Observer scaffold(
   String title = '',
   bool showMic = false,
   RouteGroup routeGroup = RouteGroup.tutor,
+  Color? bgColor,
 }) =>
     obsc<App>((app, context) {
       app.setTitle(title);
@@ -25,7 +26,8 @@ Observer scaffold(
           child: topBar(),
         ),
         body: Container(
-          decoration: background(),
+          decoration: bgColor == null ? background() : null,
+          color: bgColor,
           child: body,
         ),
         floatingActionButton: fabMic(context),

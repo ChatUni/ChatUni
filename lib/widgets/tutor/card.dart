@@ -9,14 +9,14 @@ import '/widgets/common/person_tile.dart';
 Widget tutorCard(Tutor tutor) => obsc<Tutors>(
       (tutors, context) => personTile(
         Image.asset(
-          'assets/images/tutoricons/${tutor.id}.png',
+          'assets/images/tutoricons/${tutor.icon}.png',
           height: 100,
         ),
         tutor.name,
         props: [
           tutor.skill,
           'Talking Speed ${tutor.speed2}',
-          tutor.personality
+          tutor.personality,
         ],
         hasFav: true,
         desc: tutor.desc,
