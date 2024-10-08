@@ -115,6 +115,21 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$rcAtom = Atom(name: '_Ielts.rc', context: context);
+
+  @override
+  int get rc {
+    _$rcAtom.reportRead();
+    return super.rc;
+  }
+
+  @override
+  set rc(int value) {
+    _$rcAtom.reportWrite(value, super.rc, () {
+      super.rc = value;
+    });
+  }
+
   late final _$loadTestsAsyncAction =
       AsyncAction('_Ielts.loadTests', context: context);
 
@@ -160,11 +175,33 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
-  void fill(String num, String answer) {
+  void fill(int num, String answer) {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.fill');
     try {
       return super.fill(num, answer);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void singleSelect(Question q, String answer) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.singleSelect');
+    try {
+      return super.singleSelect(q, answer);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void multiSelect(Question q1, Question q2, String answer) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.multiSelect');
+    try {
+      return super.multiSelect(q1, q2, answer);
     } finally {
       _$_IeltsActionController.endAction(_$actionInfo);
     }
@@ -182,6 +219,28 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void play() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.play');
+    try {
+      return super.play();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void stop() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.stop');
+    try {
+      return super.stop();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 allTests: ${allTests},
@@ -190,6 +249,7 @@ part: ${part},
 group: ${group},
 isPlaying: ${isPlaying},
 isChecking: ${isChecking},
+rc: ${rc},
 tests: ${tests},
 partQuestions: ${partQuestions}
     ''';

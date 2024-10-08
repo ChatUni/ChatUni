@@ -71,10 +71,68 @@ Widget _group(Group g) => ssCol(
       g.paragraphs.expand((p) => _paragraph(p)).toList(),
     );
 
-List<Widget> _paragraph(Paragraph p) => [
-      ...p.content.map((c) => _content(c)),
-      vSpacer(12),
+List<Widget> _paragraph(Paragraph p) {
+  final ps = p.isMultiChoice
+      ? [
+          bold(p.questionNumbers),
+          ...p.nonChoiceContent.map((c) => _content(c)),
+          vSpacer(8),
+          ...p.choiceList.map(_multiChoice),
+        ]
+      : p.isSingleChoice
+          ? p.questions!.expand(_singleChoice)
+          : p.content.map((c) => _content(c));
+  return [...ps, vSpacer(12)];
+}
+
+//${c.isCorrect ? ' ✔' : c.isWrong ? ' ✘' : ''}
+List<Widget> _singleChoice(Question q) => [
+      bold('${q.number}. ${q.subject!}'),
+      ...q.choiceList.map(
+        (c) => obs<Ielts>(
+          (ielts) => tap(
+            () => ielts.singleSelect(q, c.key),
+            txt(
+              '${c.key} ${c.value}${ielts.rc < 0 ? '' : ''}',
+              color: ielts.isChecking
+                  ? c.isActual
+                      ? c.isSelected
+                          ? Colors.blue
+                          : Colors.green
+                      : c.isSelected
+                          ? Colors.red
+                          : Colors.black
+                  : c.isSelected
+                      ? Colors.blue
+                      : Colors.black,
+              bold: ielts.isChecking && c.isActual || c.isSelected,
+            ),
+          ),
+        ),
+      ),
+      vSpacer(8),
     ];
+
+Widget _multiChoice(Choice choice) => obs<Ielts>(
+      (ielts) => tap(
+        () => ielts.multiSelect(choice.q1, choice.q2, choice.key),
+        txt(
+          '${choice.key} ${choice.value}${ielts.rc < 0 ? '' : ''}',
+          color: ielts.isChecking
+              ? choice.isActual
+                  ? choice.isSelected
+                      ? Colors.blue
+                      : Colors.green
+                  : choice.isSelected
+                      ? Colors.red
+                      : Colors.black
+              : choice.isSelected
+                  ? Colors.blue
+                  : Colors.black,
+          bold: ielts.isChecking && choice.isActual || choice.isSelected,
+        ),
+      ),
+    );
 
 Widget _content(String s) => obs<Ielts>((ielts) {
       final key = styles.keys.firstWhereOrNull((k) => s.startsWith('<$k>'));
@@ -84,7 +142,7 @@ Widget _content(String s) => obs<Ielts>((ielts) {
       final match = re.firstMatch(s);
       //if (match != null) print(match.groups([1, 2]));
       if (match != null) {
-        final num = match.group(1)!;
+        final num = int.parse(match.group(1)!);
         final blank = match.group(2)!;
         final ss = s.split(blank);
         return scRow([

@@ -30,6 +30,9 @@ abstract class _Ielts with Store {
   @observable
   bool isChecking = false;
 
+  @observable
+  int rc = 0;
+
   @computed
   List<MapEntry<int, List<Test>>> get tests =>
       groupBy(allTests, (x) => int.parse(x.id.split('-').first))
@@ -79,9 +82,40 @@ abstract class _Ielts with Store {
   }
 
   @action
-  void fill(String num, String answer) {
+  void fill(int num, String answer) {
     final q = getQuestion(num);
     if (q != null) q.userAnswer = answer;
+  }
+
+  @action
+  void singleSelect(Question q, String answer) {
+    if (q.userAnswer == answer) {
+      q.userAnswer = null;
+    } else {
+      q.userAnswer = answer;
+    }
+    rc++;
+  }
+
+  @action
+  void multiSelect(Question q1, Question q2, String answer) {
+    if (q1.userAnswer == null) {
+      q1.userAnswer = answer;
+    } else if (q2.userAnswer == null) {
+      final r = q1.userAnswer!.compareTo(answer);
+      if (r < 0) {
+        q2.userAnswer = answer;
+      } else if (r > 0) {
+        q2.userAnswer = q1.userAnswer;
+        q1.userAnswer = answer;
+      } else {
+        q1.userAnswer = null;
+      }
+    } else {
+      if (q1.userAnswer == answer) q1.userAnswer = null;
+      if (q2.userAnswer == answer) q2.userAnswer = null;
+    }
+    rc++;
   }
 
   @action
@@ -102,10 +136,10 @@ abstract class _Ielts with Store {
     isPlaying = false;
   }
 
-  Question? getQuestion(String num) =>
-      partQuestions.firstWhereOrNull((q) => q.number == int.parse(num));
+  Question? getQuestion(int num) =>
+      partQuestions.firstWhereOrNull((q) => q.number == num);
 
-  String? checkAnswer(String num) {
+  String? checkAnswer(int num) {
     final q = getQuestion(num);
     return q == null
         ? 'No such question'
