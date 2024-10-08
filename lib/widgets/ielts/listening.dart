@@ -55,13 +55,100 @@ Widget _part() => obs<Ielts>((ielts) {
     });
 
 Widget _group(Group g) => ssCol(
-      g.paragraphs.expand((p) => _paragraph(p)).toList(),
+      g.paragraphs.map((p) => _paragraph(p)).expand((p) => p).toList(),
     );
 
-List<Widget> _paragraph(Paragraph p) => [
-      ...p.content.map((c) => _content(c)),
-      vSpacer(12),
+List<Widget> _paragraph(Paragraph p) {
+  if (p.type == 'choice' && p.questions!.every((q) => q.choices == null)) {
+    return [
+      ...p.content.map(
+        (c) => Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Checkbox(
+                value: false, // Replace with the actual value
+                onChanged: (bool? value) {
+                  // Handle checkbox value change
+                },
+              ),
+              Text(c),
+            ],
+          ),
+        ),
+      ),
     ];
+  } else if (p.type == 'choice' &&
+      p.questions!.every((q) => q.choices != null)) {
+    return [
+      ...?p.questions?.map(
+        (q) => Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: h3(q.subject.toString()),
+            ),
+            ...?q.choices?.map(
+              (choice) => _multiple(choice),
+            ),
+            vSpacer(12),
+          ],
+        ),
+      ),
+      vSpacer(25),
+    ];
+  } else if (p.type == 'fill') {
+    return [
+      ...p.content.map((f) => _content(f)),
+      vSpacer(25),
+    ];
+  } else {
+    return [
+      ...p.content.map((s) => h2(s)),
+    ];
+  }
+}
+
+Align _multiple(String choice) => Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        children: [
+          Checkbox(
+            value: false, // Replace with the actual value
+            onChanged: (bool? value) {
+              value = true;
+            },
+          ),
+          Text(choice),
+        ],
+      ),
+    );
+
+Widget _choice(String s) => obs<Ielts>((ielts) {
+      final key = styles.keys.firstWhereOrNull((k) => s.startsWith('<$k>'));
+      if (key != null) return styles[key]!(s.replaceFirst('<$key>', ''));
+      RegExp re = RegExp(r'(\d{1,2}).*?([\._…]{6,})');
+      final match = re.firstMatch(s);
+      if (match != null) {
+        final num = match.group(1)!;
+        final blank = match.group(2)!;
+        final ss = s.split(blank);
+        return scRow([
+          txt(ss[0]),
+          hSpacer(8),
+          grow(
+            input(
+              (context) => tap,
+              isDense: true,
+              error: ielts.isChecking ? ielts.checkAnswer(num) : null,
+            ),
+          ),
+          hSpacer(8),
+          txt(ss[1]),
+        ]);
+      }
+      return txt(s);
+    });
 
 Widget _content(String s) => obs<Ielts>((ielts) {
       final key = styles.keys.firstWhereOrNull((k) => s.startsWith('<$k>'));

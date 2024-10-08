@@ -51,7 +51,7 @@ abstract class _Ielts with Store {
   @action
   void selectTest(Test t) {
     test = t;
-    part = t.listen.first;
+    part = t.listen[1];
     group = part!.groups.first;
   }
 
