@@ -99,6 +99,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/gif/
+    - assets/images/ielts/
     - assets/images/tutoricons/
     - assets/mp3/ielts/
 

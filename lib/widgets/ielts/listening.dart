@@ -10,7 +10,7 @@ import 'package:chatuni/widgets/scaffold/scaffold.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-const styles = {
+var styles = {
   'h1': h1,
   'h2': h2,
   'h3': h3,
@@ -18,6 +18,7 @@ const styles = {
   'b': bold,
   'i': italic,
   'ul': txt,
+  'img': (x) => Image.asset('assets/images/ielts/$x'),
 };
 
 Widget listening() => scaffold(
