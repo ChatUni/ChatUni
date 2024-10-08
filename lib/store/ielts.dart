@@ -126,7 +126,8 @@ abstract class _Ielts with Store {
 
   @action
   void play() {
-    _player.play('assets/mp3/ielts/18-1-1.mp3');
+    _player.play(
+        'https://res.cloudinary.com/daqc8bim3/video/upload/v1728419912/18-1-1_ciybjr.mp3');
     isPlaying = true;
   }
 

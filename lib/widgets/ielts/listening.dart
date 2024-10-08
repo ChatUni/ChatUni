@@ -40,7 +40,7 @@ Widget _part() => obs<Ielts>((ielts) {
       final p = ielts.part!;
 
       return ssCol([
-        center(h1('Test 1')),
+        center(h1('Test ${ielts.test!.id.split('-')[1]}')),
         vSpacer(8),
         h3('Listen'),
         vSpacer(6),
