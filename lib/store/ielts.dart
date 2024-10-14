@@ -48,6 +48,16 @@ abstract class _Ielts with Store {
           .expand<Question>((p) => p.questions ?? [])
           .toList();
 
+  @computed
+  int get partIndex =>
+      test == null ? -1 : test!.listen.indexWhere((p) => p.name == part!.name);
+
+  @computed
+  bool get isFirstPart => partIndex == 0;
+
+  @computed
+  bool get isLastPart => test != null && partIndex == test!.listen.length - 1;
+
   @action
   Future<void> loadTests() async {
     allTests.clear();
@@ -59,6 +69,7 @@ abstract class _Ielts with Store {
   void selectTest(Test t) {
     test = t;
     part = t.listen.first;
+    isChecking = false;
     partSelected();
   }
 
@@ -69,8 +80,15 @@ abstract class _Ielts with Store {
     } else if (part == null) {
       part = test!.listen.first;
     } else {
-      var idx = test!.listen.indexWhere((p) => p.name == part!.name);
-      part = test!.listen[(idx + step).clamp(0, test!.listen.length)];
+      part = test!.listen[(partIndex + step).clamp(0, test!.listen.length)];
+      partSelected();
+    }
+  }
+
+  @action
+  void firstPart() {
+    if (test != null) {
+      part = test!.listen.first;
       partSelected();
     }
   }
@@ -78,7 +96,7 @@ abstract class _Ielts with Store {
   @action
   void partSelected() {
     group = part!.groups.first;
-    isChecking = false;
+    // isChecking = false;
     isPlaying = false;
   }
 

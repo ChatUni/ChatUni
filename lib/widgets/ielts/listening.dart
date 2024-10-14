@@ -1,4 +1,5 @@
 import 'package:chatuni/models/ielts.dart';
+import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/ielts.dart';
 import 'package:chatuni/utils/utils.dart';
@@ -33,7 +34,7 @@ Widget listening() => scaffold(
         scroll: true,
       ),
       title: 'Listening',
-      routeGroup: RouteGroup.my,
+      routeGroup: RouteGroup.course,
       bgColor: Colors.white,
     );
 
@@ -54,16 +55,28 @@ Widget _part() => obs<Ielts>((ielts) {
         ),
         vSpacer(12),
         ...ielts.part!.groups.map((g) => _group(g)),
-        button(
-          ielts.checkAnswers,
-          text: 'Check Answers',
-          bgColor: Colors.green,
-        ),
-        vSpacer(12),
+        // button(
+        //   ielts.checkAnswers,
+        //   text: 'Check Answers',
+        //   bgColor: Colors.green,
+        // ),
+        // vSpacer(12),
         ccRow([
-          grow(button(() => ielts.nextPart(-1), text: 'Prev Part')),
+          grow(
+            button(
+              ielts.isFirstPart ? null : () => ielts.nextPart(-1),
+              text: 'Prev Part',
+            ),
+          ),
           hSpacer(16),
-          grow(button(() => ielts.nextPart(1), text: 'Next Part')),
+          grow(
+            button(
+              ielts.isLastPart
+                  ? () => router.go('/ielts_result')
+                  : () => ielts.nextPart(1),
+              text: ielts.isLastPart ? 'Finish' : 'Next Part',
+            ),
+          ),
         ]),
       ]);
     });

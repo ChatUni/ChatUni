@@ -23,6 +23,6 @@ T log<T>(T t, [String msg = '']) {
 }
 
 String cdImg(String name) =>
-    'https://res.cloudinary.com/daqc8bim3/image/upload/$cdVer/$name.png';
+    'https://res.cloudinary.com/daqc8bim3/image/upload/v$cdVer/$name';
 String cdMp3(String name) =>
-    'https://res.cloudinary.com/daqc8bim3/video/upload/$cdVer/$name.mp3';
+    'https://res.cloudinary.com/daqc8bim3/video/upload/v$cdVer/$name.mp3';

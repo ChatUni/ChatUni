@@ -17,7 +17,7 @@ Widget test() => scaffold(
         ],
       ),
       title: 'Ielts',
-      routeGroup: RouteGroup.my,
+      routeGroup: RouteGroup.course,
     );
 
 Widget _tests() => obs<Ielts>(

@@ -11,6 +11,7 @@ let prevParagraph
 
 export const parseMD = async (file, returnType, save) => {
   const ast = remark.parse(file.content)
+  if (returnType == 'ast') return ast
   const id = findId(ast.children)
   const [p1, p2] = splitBy(ast.children, ['answer key'], { level: 1, keepFirst: true, ci: true })
   let tests = splitOnEvery(p1, 'Test ', { level: 1, start: true })
