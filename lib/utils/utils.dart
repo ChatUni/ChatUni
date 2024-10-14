@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Function pipe(List<Function> fns) => (x) => fns.fold(x, (p, c) => c(p));
@@ -20,3 +21,8 @@ T log<T>(T t, [String msg = '']) {
   print(t);
   return t;
 }
+
+String cdImg(String name) =>
+    'https://res.cloudinary.com/daqc8bim3/image/upload/$cdVer/$name.png';
+String cdMp3(String name) =>
+    'https://res.cloudinary.com/daqc8bim3/video/upload/$cdVer/$name.mp3';

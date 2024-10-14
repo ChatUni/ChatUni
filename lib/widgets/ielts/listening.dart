@@ -1,6 +1,7 @@
 import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
@@ -18,7 +19,7 @@ var styles = {
   'b': bold,
   'i': italic,
   'ul': txt,
-  'img': (x) => Image.asset('assets/images/ielts/$x'),
+  'img': (x) => Image.network(cdImg(x)),
 };
 
 Widget listening() => scaffold(
