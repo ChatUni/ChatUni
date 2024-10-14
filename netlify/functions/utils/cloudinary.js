@@ -1,4 +1,5 @@
 import cd from 'cloudinary'
+import { orderBy } from 'lodash'
 
 cd.config({
   cloud_name: 'daqc8bim3',
@@ -9,9 +10,9 @@ cd.config({
 export const cdList = () =>
   cd.v2.api
     .resources({ max_results: 500 })
-    .then(r => sortWith([ascend(prop('public_id'))], r.resources))
+    .then(r => orderBy(r.resources, 'public_id'))
 
 export const cdVersion = () =>
   cd.v2.api
     .resources({ max_results: 500 })
-    .then(r => sortWith([descend(prop('version'))], r.resources)[0].version)
+    .then(r => orderBy(r.resources, 'version', 'desc')[0].version)
