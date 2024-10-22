@@ -1,5 +1,6 @@
 import 'package:chatuni/io/player.dart';
 import 'package:chatuni/models/ielts.dart';
+import 'package:chatuni/utils/const.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:mobx/mobx.dart';
@@ -9,6 +10,9 @@ import '/api/course.dart';
 part 'ielts.g.dart';
 
 class Ielts = _Ielts with _$Ielts;
+
+const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
+const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
 
 abstract class _Ielts with Store {
   final Player _player = Player();
@@ -20,7 +24,13 @@ abstract class _Ielts with Store {
   Test? test;
 
   @observable
+  String? component;
+
+  @observable
   Part? part;
+
+  @observable
+  List<Part> parts = [];
 
   @observable
   Group? group;
@@ -41,22 +51,43 @@ abstract class _Ielts with Store {
           .toList();
 
   @computed
-  List<Question> get partQuestions => part == null
-      ? []
-      : part!.groups
-          .expand((g) => g.paragraphs)
-          .expand<Question>((p) => p.questions ?? [])
-          .toList();
+  bool get isCompSelected =>
+      test != null && component != null && parts.isNotEmpty;
+
+  @computed
+  bool get isPartSelected => isCompSelected && part != null;
 
   @computed
   int get partIndex =>
-      test == null ? -1 : test!.listen.indexWhere((p) => p.name == part!.name);
+      isPartSelected ? parts.indexWhere((p) => p.name == part!.name) : -1;
 
   @computed
   bool get isFirstPart => partIndex == 0;
 
   @computed
-  bool get isLastPart => test != null && partIndex == test!.listen.length - 1;
+  bool get isLastPart => isPartSelected && partIndex == parts.length - 1;
+
+  @computed
+  int get compIndex => isCompSelected ? comps.indexOf(component!) : -1;
+
+  @computed
+  String get nextComponent => comps[nextCompIndex(1)];
+
+  @computed
+  String get prevComponent => comps[nextCompIndex(-1)];
+
+  @computed
+  bool get isFirstComp => compIndex == 0;
+
+  @computed
+  bool get isLastComp => isCompSelected && compIndex == comps.length - 1;
+
+  @computed
+  List<List<Part>> get allComps =>
+      test == null ? [] : [test!.listen, test!.read, test!.write, test!.speak];
+
+  @computed
+  List<Part> get allParts => allComps.expand((c) => c).toList();
 
   @action
   Future<void> loadTests() async {
@@ -68,27 +99,41 @@ abstract class _Ielts with Store {
   @action
   void selectTest(Test t) {
     test = t;
-    part = t.listen.first;
+    _resetTest();
+    setComp(0);
     isChecking = false;
-    partSelected();
   }
 
   @action
-  void nextPart(int step) {
+  void setComp(int idx) {
     if (test == null) {
+      component = null;
+    } else {
+      component = comps[component == null ? 0 : idx];
+      parts = allComps[idx];
+      firstPart();
+    }
+  }
+
+  @action
+  void nextComp(int step) => setComp(nextCompIndex(step));
+
+  @action
+  void nextPart(int step) {
+    if (test == null || parts.isEmpty) {
       part = null;
     } else if (part == null) {
-      part = test!.listen.first;
+      part = parts.first;
     } else {
-      part = test!.listen[(partIndex + step).clamp(0, test!.listen.length)];
+      part = parts[(partIndex + step).clamp(0, parts.length - 1)];
       partSelected();
     }
   }
 
   @action
   void firstPart() {
-    if (test != null) {
-      part = test!.listen.first;
+    if (parts.isNotEmpty) {
+      part = parts.first;
       partSelected();
     }
   }
@@ -104,6 +149,12 @@ abstract class _Ielts with Store {
   void fill(int num, String answer) {
     final q = getQuestion(num);
     if (q != null) q.userAnswer = answer;
+  }
+
+  @action
+  void trueFalseSelect(Question q, String answer) {
+    q.userAnswer = answer;
+    rc++;
   }
 
   @action
@@ -139,7 +190,7 @@ abstract class _Ielts with Store {
 
   @action
   void checkAnswers() {
-    isChecking = false;
+    setComp(0);
     isChecking = true;
   }
 
@@ -155,18 +206,69 @@ abstract class _Ielts with Store {
     isPlaying = false;
   }
 
+  List<Question> getPartQuestions(Part? part) => part == null
+      ? []
+      : part.groups
+          .expand((g) => g.paragraphs)
+          .expand<Question>((p) => p.questions ?? [])
+          .toList();
+
   Question? getQuestion(int num) =>
-      partQuestions.firstWhereOrNull((q) => q.number == num);
+      getPartQuestions(part).firstWhereOrNull((q) => q.number == num);
 
   String? checkAnswer(int num) {
     final q = getQuestion(num);
     return q == null
         ? 'No such question'
-        : q.userAnswer == null || q.userAnswer == ''
-            ? 'Not answered yet'
-            : q.userAnswer != q.answer
-                ? 'Incorrect'
-                : null;
+        : q.userAnswer != q.answer
+            ? q.answer
+            : null;
+  }
+
+  int nextCompIndex(int step) => (compIndex + step).clamp(0, comps.length - 1);
+
+  List<Question> allQuestions(int comp) =>
+      allComps[comp].expand(getPartQuestions).toList();
+
+  int numOfCorrect(int comp) =>
+      allQuestions(comp).where((q) => q.answer == q.userAnswer).length;
+
+  List<int> incorrectQuestions(int comp) => allQuestions(comp)
+      .where((q) => q.answer != q.userAnswer)
+      .map((q) => q.number)
+      .toList();
+
+  int choiceColor(Choice c) => isChecking
+      ? c.isWrong
+          ? Colors.red
+          : c.isActual
+              ? Colors.green
+              : Colors.black
+      : c.isSelected
+          ? Colors.blue
+          : Colors.black;
+
+  bool boldChoice(Choice c) => isChecking && c.isActual || c.isSelected;
+
+  (String, String?) contentTag(String s) {
+    final tag = tags.firstWhereOrNull((t) => s.startsWith('<$t>'));
+    return (tag != null ? s.replaceFirst('<$tag>', '') : s, tag);
+  }
+
+  (int, String?, String?) parseFill(String s) {
+    RegExp re = RegExp(r'(\d{1,2}).*?([\._…]{6,})');
+    final match = re.firstMatch(s);
+    if (match == null) return (-1, null, null);
+    final num = int.parse(match.group(1)!);
+    final blank = match.group(2)!;
+    final ss = s.split(blank);
+    return (num, ss[0], ss[1]);
+  }
+
+  void _resetTest() {
+    allParts.forEach(
+      (p) => getPartQuestions(p).forEach((q) => q.userAnswer = null),
+    );
   }
 
   _Ielts() {

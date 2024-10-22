@@ -21,13 +21,9 @@ class Choice {
 
   bool get isActual => q1.answer == key || q2.answer == key;
 
-  bool get isCorrect =>
-      q1.answer == q1.userAnswer && q1.answer == key ||
-      (q2.answer == q2.userAnswer && q2.answer == key);
+  bool get isCorrect => isSelected && isActual;
 
-  bool get isWrong =>
-      q1.answer != q1.userAnswer && q1.userAnswer == key ||
-      (q2.answer != q2.userAnswer && q2.userAnswer == key);
+  bool get isWrong => isSelected && !isActual;
 
   Choice(this.key, this.value, this.q1, this.q2);
 }
@@ -43,6 +39,10 @@ class Question {
   List<Choice> get choiceList =>
       (choices ?? []).map((x) => getChoice(x, this, this)).toList();
 
+  bool get isCorrect => userAnswer == answer;
+
+  bool isActual(String a) => a == answer;
+
   Question();
 
   factory Question.fromJson(Map<String, dynamic> json) =>
@@ -56,6 +56,8 @@ class Paragraph {
   String type = '';
   List<String> content = [];
   List<Question>? questions = [];
+
+  bool get isTrueFalse => type == 'bool';
 
   bool get isMultiChoice =>
       type == 'choice' &&
@@ -118,6 +120,9 @@ class Part {
 class Test {
   String id = '';
   List<Part> listen = [];
+  List<Part> read = [];
+  List<Part> write = [];
+  List<Part> speak = [];
 
   Test();
 

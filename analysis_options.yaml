@@ -21,6 +21,7 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
+    avoid_function_literals_in_foreach_calls: false
     directives_ordering: true
     prefer_expression_function_bodies: true
     prefer_function_declarations_over_variables: false

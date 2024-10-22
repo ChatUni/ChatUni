@@ -16,12 +16,82 @@ mixin _$Ielts on _Ielts, Store {
           Computed<List<MapEntry<int, List<Test>>>>(() => super.tests,
               name: '_Ielts.tests'))
       .value;
-  Computed<List<Question>>? _$partQuestionsComputed;
+  Computed<bool>? _$isCompSelectedComputed;
 
   @override
-  List<Question> get partQuestions => (_$partQuestionsComputed ??=
-          Computed<List<Question>>(() => super.partQuestions,
-              name: '_Ielts.partQuestions'))
+  bool get isCompSelected =>
+      (_$isCompSelectedComputed ??= Computed<bool>(() => super.isCompSelected,
+              name: '_Ielts.isCompSelected'))
+          .value;
+  Computed<bool>? _$isPartSelectedComputed;
+
+  @override
+  bool get isPartSelected =>
+      (_$isPartSelectedComputed ??= Computed<bool>(() => super.isPartSelected,
+              name: '_Ielts.isPartSelected'))
+          .value;
+  Computed<int>? _$partIndexComputed;
+
+  @override
+  int get partIndex => (_$partIndexComputed ??=
+          Computed<int>(() => super.partIndex, name: '_Ielts.partIndex'))
+      .value;
+  Computed<bool>? _$isFirstPartComputed;
+
+  @override
+  bool get isFirstPart => (_$isFirstPartComputed ??=
+          Computed<bool>(() => super.isFirstPart, name: '_Ielts.isFirstPart'))
+      .value;
+  Computed<bool>? _$isLastPartComputed;
+
+  @override
+  bool get isLastPart => (_$isLastPartComputed ??=
+          Computed<bool>(() => super.isLastPart, name: '_Ielts.isLastPart'))
+      .value;
+  Computed<int>? _$compIndexComputed;
+
+  @override
+  int get compIndex => (_$compIndexComputed ??=
+          Computed<int>(() => super.compIndex, name: '_Ielts.compIndex'))
+      .value;
+  Computed<String>? _$nextComponentComputed;
+
+  @override
+  String get nextComponent =>
+      (_$nextComponentComputed ??= Computed<String>(() => super.nextComponent,
+              name: '_Ielts.nextComponent'))
+          .value;
+  Computed<String>? _$prevComponentComputed;
+
+  @override
+  String get prevComponent =>
+      (_$prevComponentComputed ??= Computed<String>(() => super.prevComponent,
+              name: '_Ielts.prevComponent'))
+          .value;
+  Computed<bool>? _$isFirstCompComputed;
+
+  @override
+  bool get isFirstComp => (_$isFirstCompComputed ??=
+          Computed<bool>(() => super.isFirstComp, name: '_Ielts.isFirstComp'))
+      .value;
+  Computed<bool>? _$isLastCompComputed;
+
+  @override
+  bool get isLastComp => (_$isLastCompComputed ??=
+          Computed<bool>(() => super.isLastComp, name: '_Ielts.isLastComp'))
+      .value;
+  Computed<List<List<Part>>>? _$allCompsComputed;
+
+  @override
+  List<List<Part>> get allComps =>
+      (_$allCompsComputed ??= Computed<List<List<Part>>>(() => super.allComps,
+              name: '_Ielts.allComps'))
+          .value;
+  Computed<List<Part>>? _$allPartsComputed;
+
+  @override
+  List<Part> get allParts => (_$allPartsComputed ??=
+          Computed<List<Part>>(() => super.allParts, name: '_Ielts.allParts'))
       .value;
 
   late final _$allTestsAtom = Atom(name: '_Ielts.allTests', context: context);
@@ -54,6 +124,21 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$componentAtom = Atom(name: '_Ielts.component', context: context);
+
+  @override
+  String? get component {
+    _$componentAtom.reportRead();
+    return super.component;
+  }
+
+  @override
+  set component(String? value) {
+    _$componentAtom.reportWrite(value, super.component, () {
+      super.component = value;
+    });
+  }
+
   late final _$partAtom = Atom(name: '_Ielts.part', context: context);
 
   @override
@@ -66,6 +151,21 @@ mixin _$Ielts on _Ielts, Store {
   set part(Part? value) {
     _$partAtom.reportWrite(value, super.part, () {
       super.part = value;
+    });
+  }
+
+  late final _$partsAtom = Atom(name: '_Ielts.parts', context: context);
+
+  @override
+  List<Part> get parts {
+    _$partsAtom.reportRead();
+    return super.parts;
+  }
+
+  @override
+  set parts(List<Part> value) {
+    _$partsAtom.reportWrite(value, super.parts, () {
+      super.parts = value;
     });
   }
 
@@ -153,11 +253,44 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void setComp(int idx) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.setComp');
+    try {
+      return super.setComp(idx);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void nextComp(int step) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.nextComp');
+    try {
+      return super.nextComp(step);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void nextPart(int step) {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.nextPart');
     try {
       return super.nextPart(step);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void firstPart() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.firstPart');
+    try {
+      return super.firstPart();
     } finally {
       _$_IeltsActionController.endAction(_$actionInfo);
     }
@@ -180,6 +313,17 @@ mixin _$Ielts on _Ielts, Store {
         _$_IeltsActionController.startAction(name: '_Ielts.fill');
     try {
       return super.fill(num, answer);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void trueFalseSelect(Question q, String answer) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.trueFalseSelect');
+    try {
+      return super.trueFalseSelect(q, answer);
     } finally {
       _$_IeltsActionController.endAction(_$actionInfo);
     }
@@ -245,13 +389,26 @@ mixin _$Ielts on _Ielts, Store {
     return '''
 allTests: ${allTests},
 test: ${test},
+component: ${component},
 part: ${part},
+parts: ${parts},
 group: ${group},
 isPlaying: ${isPlaying},
 isChecking: ${isChecking},
 rc: ${rc},
 tests: ${tests},
-partQuestions: ${partQuestions}
+isCompSelected: ${isCompSelected},
+isPartSelected: ${isPartSelected},
+partIndex: ${partIndex},
+isFirstPart: ${isFirstPart},
+isLastPart: ${isLastPart},
+compIndex: ${compIndex},
+nextComponent: ${nextComponent},
+prevComponent: ${prevComponent},
+isFirstComp: ${isFirstComp},
+isLastComp: ${isLastComp},
+allComps: ${allComps},
+allParts: ${allParts}
     ''';
   }
 }

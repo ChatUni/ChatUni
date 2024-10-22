@@ -3,7 +3,7 @@ import busboy from 'busboy'
 import { tap } from './util'
 
 const FUNC = '/.netlify/functions/'
-const CONTENT_TYPES = { json: 'application/json', html: 'text/html' }
+const CONTENT_TYPES = { json: 'application/json', html: 'text/html', ast: 'application/json' }
 
 let origin = ''
 

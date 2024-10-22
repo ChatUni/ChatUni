@@ -70,9 +70,21 @@ Test _$TestFromJson(Map<String, dynamic> json) => Test()
   ..id = json['id'] as String
   ..listen = (json['listen'] as List<dynamic>)
       .map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..read = (json['read'] as List<dynamic>)
+      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..write = (json['write'] as List<dynamic>)
+      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..speak = (json['speak'] as List<dynamic>)
+      .map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList();
 
 Map<String, dynamic> _$TestToJson(Test instance) => <String, dynamic>{
       'id': instance.id,
       'listen': instance.listen,
+      'read': instance.read,
+      'write': instance.write,
+      'speak': instance.speak,
     };

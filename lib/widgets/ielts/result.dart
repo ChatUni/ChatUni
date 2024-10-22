@@ -20,16 +20,53 @@ Widget result() => scaffold(
       bgColor: Colors.white,
     );
 
-Widget _result() => obs<Ielts>(
-      (ielts) => ccCol([
-        h1('Test Result'),
-        button(
-          () {
-            ielts.checkAnswers();
-            ielts.firstPart();
-            router.go('/listening');
-          },
-          text: 'Check Answers',
-        ),
-      ]),
+Widget _result() => ccCol([
+      h1('Test Results'),
+      _compResult(0),
+      _compResult(1),
+      _compResult(2),
+      _compResult(3),
+      vSpacer(16),
+      _checkAnswerButton(),
+    ]);
+
+Widget _compResult(int comp) => ccCol(
+      [
+        vSpacer(8),
+        left(h3(comps[comp])),
+        _score(comp),
+        _incorrect(comp),
+      ],
     );
+
+Widget _score(int comp) => obs<Ielts>(
+      (ielts) => comp < 2
+          ? _row(
+              'Score',
+              '${ielts.numOfCorrect(comp)}/${ielts.allQuestions(comp).length}',
+            )
+          : vSpacer(1),
+    );
+Widget _incorrect(int comp) => obs<Ielts>(
+      (ielts) => comp < 2
+          ? _row(
+              'Incorrect Questions',
+              ielts.incorrectQuestions(comp).map((x) => 'Q$x').join(', '),
+            )
+          : vSpacer(1),
+    );
+Widget _checkAnswerButton() => obs<Ielts>(
+      (ielts) => button(
+        () {
+          ielts.checkAnswers();
+          ielts.firstPart();
+          router.go('/ielts_component');
+        },
+        text: 'Check Answers',
+      ),
+    );
+
+Widget _row(String title, String content) => ssRow([
+      txt('$title: '),
+      grow(txt(content, color: Colors.red, bold: true)),
+    ]);

@@ -45,5 +45,5 @@ Column _fav = scCol([
 Text _desc(String desc) =>
     Text(desc, maxLines: 2, overflow: TextOverflow.ellipsis);
 
-FilledButton _action(void Function()? action) =>
+ButtonStyleButton _action(void Function()? action) =>
     button(action, icon: Icons.chat, text: 'Chat');

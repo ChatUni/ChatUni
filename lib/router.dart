@@ -1,4 +1,4 @@
-import 'package:chatuni/widgets/ielts/listening.dart';
+import 'package:chatuni/widgets/ielts/component.dart';
 import 'package:chatuni/widgets/ielts/result.dart';
 import 'package:chatuni/widgets/ielts/tests.dart';
 import 'package:go_router/go_router.dart';
@@ -34,8 +34,8 @@ final router = GoRouter(
       builder: (c, s) => test(),
     ),
     GoRoute(
-      path: '/listening',
-      builder: (c, s) => listening(),
+      path: '/ielts_component',
+      builder: (c, s) => component(),
     ),
     GoRoute(
       path: '/ielts_result',

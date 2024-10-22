@@ -9,6 +9,8 @@ Function compose(List<Function> fns) =>
 List<int> range(int from, int to) =>
     Iterable<int>.generate(to - from + 1).map((x) => x + from).toList();
 
+List<int> lidx(List l) => range(0, l.length - 1);
+
 bool notNull(x) => x != null;
 
 Future<void> launch(String url, {bool isNewTab = true}) => launchUrl(

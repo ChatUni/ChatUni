@@ -246,7 +246,7 @@ final hList = _list(false);
 
 final vList = _list(true);
 
-SizedBox box(double width, double height, Widget child) =>
+SizedBox box(double? width, double? height, Widget child) =>
     SizedBox(width: width, height: height, child: child);
 
 Expanded Function(Widget) growN(int n) =>
