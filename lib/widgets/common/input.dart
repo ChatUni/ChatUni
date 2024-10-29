@@ -11,6 +11,8 @@ TextField input(
   void Function()? suffixAction,
   String? labelText,
   Widget? suffix,
+  int? maxLines,
+  int? minLines,
   TextInputType? keyboardType,
   InputStyle style = InputStyle.outline,
   bool isDense = false,
@@ -37,6 +39,8 @@ TextField input(
               )
             : suffixIcon,
       ),
+      maxLines: maxLines,
+      minLines: minLines,
       keyboardType: keyboardType,
       readOnly: readOnly,
     );

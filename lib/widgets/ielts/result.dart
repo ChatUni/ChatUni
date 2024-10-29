@@ -1,6 +1,7 @@
 import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
@@ -13,7 +14,9 @@ Widget result() => scaffold(
         [
           vSpacer(10),
           _result(),
+          vSpacer(50),
         ],
+        scroll: true,
       ),
       title: 'Ielts',
       routeGroup: RouteGroup.course,
@@ -27,7 +30,6 @@ Widget _result() => ccCol([
       _compResult(2),
       _compResult(3),
       vSpacer(16),
-      _checkAnswerButton(),
     ]);
 
 Widget _compResult(int comp) => ccCol(
@@ -36,6 +38,9 @@ Widget _compResult(int comp) => ccCol(
         left(h3(comps[comp])),
         _score(comp),
         _incorrect(comp),
+        vSpacer(8),
+        _checkAnswerButton(comp),
+        vSpacer(8),
       ],
     );
 
@@ -45,8 +50,20 @@ Widget _score(int comp) => obs<Ielts>(
               'Score',
               '${ielts.numOfCorrect(comp)}/${ielts.allQuestions(comp).length}',
             )
-          : vSpacer(1),
+          : comp == 2
+              ? ssCol(
+                  lidx(ielts.writeQuestions)
+                      .map(
+                        (i) => _row(
+                          'Task ${i + 1} Score',
+                          ielts.writeQuestions[i].score ?? '',
+                        ),
+                      )
+                      .toList(),
+                )
+              : vSpacer(1),
     );
+
 Widget _incorrect(int comp) => obs<Ielts>(
       (ielts) => comp < 2
           ? _row(
@@ -55,10 +72,11 @@ Widget _incorrect(int comp) => obs<Ielts>(
             )
           : vSpacer(1),
     );
-Widget _checkAnswerButton() => obs<Ielts>(
+
+Widget _checkAnswerButton(int idx) => obs<Ielts>(
       (ielts) => button(
         () {
-          ielts.checkAnswers();
+          ielts.checkAnswers(idx);
           ielts.firstPart();
           router.go('/ielts_component');
         },

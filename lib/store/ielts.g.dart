@@ -93,6 +93,27 @@ mixin _$Ielts on _Ielts, Store {
   List<Part> get allParts => (_$allPartsComputed ??=
           Computed<List<Part>>(() => super.allParts, name: '_Ielts.allParts'))
       .value;
+  Computed<List<Question>>? _$partQuestionsComputed;
+
+  @override
+  List<Question> get partQuestions => (_$partQuestionsComputed ??=
+          Computed<List<Question>>(() => super.partQuestions,
+              name: '_Ielts.partQuestions'))
+      .value;
+  Computed<Question>? _$writeQuestionComputed;
+
+  @override
+  Question get writeQuestion =>
+      (_$writeQuestionComputed ??= Computed<Question>(() => super.writeQuestion,
+              name: '_Ielts.writeQuestion'))
+          .value;
+  Computed<List<Question>>? _$writeQuestionsComputed;
+
+  @override
+  List<Question> get writeQuestions => (_$writeQuestionsComputed ??=
+          Computed<List<Question>>(() => super.writeQuestions,
+              name: '_Ielts.writeQuestions'))
+      .value;
 
   late final _$allTestsAtom = Atom(name: '_Ielts.allTests', context: context);
 
@@ -199,6 +220,22 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$isRecordingAtom =
+      Atom(name: '_Ielts.isRecording', context: context);
+
+  @override
+  bool get isRecording {
+    _$isRecordingAtom.reportRead();
+    return super.isRecording;
+  }
+
+  @override
+  set isRecording(bool value) {
+    _$isRecordingAtom.reportWrite(value, super.isRecording, () {
+      super.isRecording = value;
+    });
+  }
+
   late final _$isCheckingAtom =
       Atom(name: '_Ielts.isChecking', context: context);
 
@@ -236,6 +273,21 @@ mixin _$Ielts on _Ielts, Store {
   @override
   Future<void> loadTests() {
     return _$loadTestsAsyncAction.run(() => super.loadTests());
+  }
+
+  late final _$partSelectedAsyncAction =
+      AsyncAction('_Ielts.partSelected', context: context);
+
+  @override
+  Future<void> partSelected() {
+    return _$partSelectedAsyncAction.run(() => super.partSelected());
+  }
+
+  late final _$scoreAsyncAction = AsyncAction('_Ielts.score', context: context);
+
+  @override
+  Future<dynamic> score() {
+    return _$scoreAsyncAction.run(() => super.score());
   }
 
   late final _$_IeltsActionController =
@@ -297,17 +349,6 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
-  void partSelected() {
-    final _$actionInfo =
-        _$_IeltsActionController.startAction(name: '_Ielts.partSelected');
-    try {
-      return super.partSelected();
-    } finally {
-      _$_IeltsActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void fill(int num, String answer) {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.fill');
@@ -352,11 +393,11 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
-  void checkAnswers() {
+  void checkAnswers(int idx) {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.checkAnswers');
     try {
-      return super.checkAnswers();
+      return super.checkAnswers(idx);
     } finally {
       _$_IeltsActionController.endAction(_$actionInfo);
     }
@@ -385,6 +426,50 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void startRecording() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.startRecording');
+    try {
+      return super.startRecording();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void stopRecording() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.stopRecording');
+    try {
+      return super.stopRecording();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void write(String t) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.write');
+    try {
+      return super.write(t);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void playVideo(int num) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.playVideo');
+    try {
+      return super.playVideo(num);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 allTests: ${allTests},
@@ -394,6 +479,7 @@ part: ${part},
 parts: ${parts},
 group: ${group},
 isPlaying: ${isPlaying},
+isRecording: ${isRecording},
 isChecking: ${isChecking},
 rc: ${rc},
 tests: ${tests},
@@ -408,7 +494,10 @@ prevComponent: ${prevComponent},
 isFirstComp: ${isFirstComp},
 isLastComp: ${isLastComp},
 allComps: ${allComps},
-allParts: ${allParts}
+allParts: ${allParts},
+partQuestions: ${partQuestions},
+writeQuestion: ${writeQuestion},
+writeQuestions: ${writeQuestions}
     ''';
   }
 }

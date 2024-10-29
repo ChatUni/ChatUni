@@ -33,6 +33,7 @@ class Question {
   int number = 0;
   String? answer = '';
   String? userAnswer = '';
+  String? score;
   String? subject = '';
   List<String>? choices = [];
 

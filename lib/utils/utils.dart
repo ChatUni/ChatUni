@@ -24,7 +24,13 @@ T log<T>(T t, [String msg = '']) {
   return t;
 }
 
-String cdImg(String name) =>
-    'https://res.cloudinary.com/daqc8bim3/image/upload/v$cdVer/$name';
-String cdMp3(String name) =>
-    'https://res.cloudinary.com/daqc8bim3/video/upload/v$cdVer/$name.mp3';
+Map<String, List<String>> _cdTypes = {
+  'img': ['image', ''],
+  'mp3': ['video', '.mp3'],
+  'mp4': ['video', '.mp4'],
+};
+String Function(String) _cd(List<String> type) => (String name) =>
+    'https://res.cloudinary.com/daqc8bim3/${type[0]}/upload/v$cdVer/$name${type[1]}';
+String Function(String) cdImg = _cd(_cdTypes['img']!);
+String Function(String) cdMp3 = _cd(_cdTypes['mp3']!);
+String Function(String) cdMp4 = _cd(_cdTypes['mp4']!);

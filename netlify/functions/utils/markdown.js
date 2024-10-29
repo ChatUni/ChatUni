@@ -88,30 +88,31 @@ const parseTest = a => {
   const writeParts = splitOnEvery(write, 'WRITING TASK ', { start: true })
   const speakParts = splitOnEvery(speak, 'PART ', { start: true })
   return {
-    listen: listenParts.map(a => parsePart(a, 0)),
-    read: readParts.map(a => parsePart(a, 1)),
-    write: writeParts.map(a => parsePart(a, 2)),
-    speak: speakParts.map(a => parsePart(a, 3)),
+    listen: listenParts.map((a, i) => parsePart(a, i, 0)),
+    read: readParts.map((a, i) => parsePart(a, i, 1)),
+    write: writeParts.map((a, i) => parsePart(a, i, 2)),
+    speak: speakParts.map((a, i) => parsePart(a, i, 3)),
   }
 }
 
-const parsePart = (a, comp) => {
+const parsePart = (a, pidx, comp) => {
   const name = paragraph(a[0], { noStyle: true }).join(' ')
   const [from, to] = questionRange(name)
   let groups = splitOnEvery(a, 'Questions ', { start: true, keepFirst: comp == 1 })
   if (groups.length == 0) groups = [a]
   return {
     name, from, to,
-    groups: groups.map(g => parseGroup(g, comp))
+    groups: groups.map(g => parseGroup(g, pidx, comp))
   }
 }
 
-const parseGroup = (a, comp) => {
+const parseGroup = (a, pidx, comp) => {
   const name = paragraph(a[0], { noStyle: true }).join(' ')
   const [from, to] = questionRange(name)
-  const paragraphs = a.slice(1).map(x => parseParagraph(x, from, to)).filter(x => x)
+  let paragraphs = a.slice(1).map(x => parseParagraph(x, from, to)).filter(x => x)
   if (comp == 1) genContainQuestions(paragraphs)
   if (comp < 2) genFillQuestionsForImgOnly(paragraphs, range(from, to))
+  if (comp == 3) paragraphs = genSpeakQuestions(paragraphs, pidx)
   return { name, from, to, paragraphs }
 }
 
@@ -151,6 +152,20 @@ const genContainQuestions = paragraphs => {
       }
     })
   }
+}
+
+const genSpeakQuestions = (paragraphs, pidx) => {
+  let n = 0
+  paragraphs.forEach(p => {
+    const qs = p.content.filter(c => c.startsWith('<ul>'))
+    if (qs.length > 0) {
+      p.type = 'speak'
+      p.questions = qs.map(q => ({ number: ++n, subject: removeStyle(q) }))
+      if (pidx == 0) p.content = p.content.filter(c => !c.startsWith('<ul>'))
+      if (pidx == 2) p.content = []
+    }
+  })
+  return pidx == 0 ? paragraphs.filter((p, i) => p.type === 'speak' || i == 0) : paragraphs
 }
 
 const questionRange = t => {

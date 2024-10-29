@@ -1,4 +1,6 @@
 import 'package:chatuni/io/player.dart';
+import 'package:chatuni/io/recorder.dart';
+import 'package:chatuni/io/videoplayer.dart';
 import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/utils/const.dart';
 import 'package:chatuni/utils/utils.dart';
@@ -16,6 +18,10 @@ const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
 
 abstract class _Ielts with Store {
   final Player _player = Player();
+  final VideoPlayer _videoPlayer = VideoPlayer();
+  final Recorder _recorder = Recorder();
+
+  get videoControllers => _videoPlayer.controllers;
 
   @observable
   var allTests = ObservableList<Test>();
@@ -37,6 +43,9 @@ abstract class _Ielts with Store {
 
   @observable
   bool isPlaying = false;
+
+  @observable
+  bool isRecording = false;
 
   @observable
   bool isChecking = false;
@@ -89,6 +98,16 @@ abstract class _Ielts with Store {
   @computed
   List<Part> get allParts => allComps.expand((c) => c).toList();
 
+  @computed
+  List<Question> get partQuestions => getPartQuestions(part);
+
+  @computed
+  Question get writeQuestion => getQuestion(partIndex + 1)!;
+
+  @computed
+  List<Question> get writeQuestions =>
+      test!.write.expand(getPartQuestions).toList();
+
   @action
   Future<void> loadTests() async {
     allTests.clear();
@@ -100,7 +119,7 @@ abstract class _Ielts with Store {
   void selectTest(Test t) {
     test = t;
     _resetTest();
-    setComp(0);
+    setComp(3);
     isChecking = false;
   }
 
@@ -109,7 +128,7 @@ abstract class _Ielts with Store {
     if (test == null) {
       component = null;
     } else {
-      component = comps[component == null ? 0 : idx];
+      component = comps[idx];
       parts = allComps[idx];
       firstPart();
     }
@@ -128,6 +147,7 @@ abstract class _Ielts with Store {
       part = parts[(partIndex + step).clamp(0, parts.length - 1)];
       partSelected();
     }
+    rc++;
   }
 
   @action
@@ -139,10 +159,17 @@ abstract class _Ielts with Store {
   }
 
   @action
-  void partSelected() {
+  Future<void> partSelected() async {
     group = part!.groups.first;
     // isChecking = false;
     isPlaying = false;
+    if (compIndex == 3) {
+      await _videoPlayer.setUrls(
+        partQuestions
+            .map((q) => cdMp4('${test!.id}-${partIndex + 1}-${q.number}'))
+            .toList(),
+      );
+    }
   }
 
   @action
@@ -189,14 +216,14 @@ abstract class _Ielts with Store {
   }
 
   @action
-  void checkAnswers() {
-    setComp(0);
+  void checkAnswers(int idx) {
+    setComp(idx);
     isChecking = true;
   }
 
   @action
   void play() {
-    _player.play(cdMp3('18-1-1'));
+    _player.play(cdMp3('${test!.id}-${partIndex + 1}'));
     isPlaying = true;
   }
 
@@ -204,6 +231,40 @@ abstract class _Ielts with Store {
   void stop() {
     _player.stop();
     isPlaying = false;
+  }
+
+  @action
+  void startRecording() {
+    _recorder.start();
+    isRecording = true;
+  }
+
+  @action
+  void stopRecording() {
+    _recorder.stop();
+    isRecording = false;
+  }
+
+  @action
+  void write(String t) {
+    writeQuestion.userAnswer = t;
+  }
+
+  @action
+  void playVideo(int num) {
+    _videoPlayer.play(num);
+    rc++;
+  }
+
+  @action
+  Future score() async {
+    for (var q in writeQuestions) {
+      if (q.userAnswer != null && q.userAnswer != '') {
+        q.answer = await writeScore(q.userAnswer!);
+        final m = RegExp('Score: (\\d+)').firstMatch(q.answer!);
+        if (m != null) q.score = m.group(1);
+      }
+    }
   }
 
   List<Question> getPartQuestions(Part? part) => part == null
@@ -265,10 +326,29 @@ abstract class _Ielts with Store {
     return (num, ss[0], ss[1]);
   }
 
+  void _createQuestions() {
+    lidx(test!.write).forEach((i) {
+      final g = test!.write[i].groups[0];
+      if (g.paragraphs.last.type != 'write') {
+        g.paragraphs.add(
+          Paragraph()
+            ..type = 'write'
+            ..content = []
+            ..questions = [
+              Question()..number = i + 1,
+            ],
+        );
+      }
+    });
+  }
+
   void _resetTest() {
+    _createQuestions();
     allParts.forEach(
       (p) => getPartQuestions(p).forEach((q) => q.userAnswer = null),
     );
+    writeQuestions[0].userAnswer = 'How is you doing';
+    writeQuestions[1].userAnswer = 'you do good';
   }
 
   _Ielts() {
