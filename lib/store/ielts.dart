@@ -133,7 +133,7 @@ abstract class _Ielts with Store {
   void selectTest(Test t) {
     test = t;
     _resetTest();
-    setComp(3);
+    setComp(0);
     isChecking = false;
   }
 
@@ -377,8 +377,8 @@ abstract class _Ielts with Store {
     allParts.forEach(
       (p) => getPartQuestions(p).forEach((q) => q.userAnswer = null),
     );
-    writeQuestions[0].userAnswer = 'How is you doing';
-    writeQuestions[1].userAnswer = 'you do good';
+    // writeQuestions[0].userAnswer = 'How is you doing';
+    // writeQuestions[1].userAnswer = 'you do good';
   }
 
   _Ielts() {
