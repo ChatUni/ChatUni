@@ -1,6 +1,6 @@
 import { DB, get, post } from './http'
 import { remark } from 'remark'
-import { tap } from './util'
+import { range, tap } from './util'
 
 const db = DB('algo.ChatUni')
 
@@ -11,13 +11,15 @@ let prevParagraph
 
 export const parseMD = async (file, returnType, save) => {
   const ast = remark.parse(file.content)
+  if (returnType == 'ast') return ast
   const id = findId(ast.children)
   const [p1, p2] = splitBy(ast.children, ['answer key'], { level: 1, keepFirst: true, ci: true })
   let tests = splitOnEvery(p1, 'Test ', { level: 1, start: true })
+  const testCount = tests.length
   const q = tests.map(parseTest).filter(t => t.listen.length > 0).map((t, i) => ({id: `${id}-${i+1}`, ...t}))
   tests = splitOnEvery(p2, 'TEST ', { start: true })
-  const a = tests.map(parseTestAnswer).filter(x => x.length > 0)
-  attachAnswer(q, a)
+  const a = range(0, testCount - 1).map(n => parseTestAnswer(tests[n * 2], tests[n * 2 + 1])).filter(x => x.listen.length > 0 && x.read.length > 0)
+  attachTestAnswer(q, a)
   if (save) await post(db('save', 'ielts'), q)
   return returnType == 'html' ? visual(q) : q
 }
@@ -43,9 +45,9 @@ const paragraph = (n, opt = {}) => {
   } else if (n.type == 'emphasis') {
     return `${opt.noStyle ? '' : `<i>`}${n.children[0].value}`
   } else if (n.type == 'list') {
-    return n.children.map(x => paragraph(x, { ...opt, ul: !n.ordered })).flat(Infinity).filter(x => x)
+    return n.children.map((x, i) => paragraph(x, { ...opt, ul: !n.ordered, idx: n.start ? n.start + i : 0 })).flat(Infinity).filter(x => x)
   } else if (n.type == 'listItem') {
-    return n.children.map(x => paragraph(x, opt)).flat(Infinity).map(x => opt.ul ? `<ul>${x}` : x)
+    return n.children.map(x => paragraph(x, opt)).flat(Infinity).map(x => opt.ul ? `<ul>${x}` : opt.idx ? `${opt.idx}. ${x}` : x)
   } else if (n.type == 'image') {
     return `<img>${n.url}`
   } else {
@@ -81,30 +83,89 @@ const splitAt = (a, ids, keepFirst) => ids
 
 const parseTest = a => {
   const [listen, read, write, speak] = splitBy(a, categories, { exact: true })
-  const parts = splitOnEvery(listen, 'PART ', { start: true })
+  const listenParts = splitOnEvery(listen, 'PART ', { start: true })
+  const readParts = splitOnEvery(read, 'READING PASSAGE ', { start: true })
+  const writeParts = splitOnEvery(write, 'WRITING TASK ', { start: true })
+  const speakParts = splitOnEvery(speak, 'PART ', { start: true })
   return {
-    listen: parts.map(parsePart)
+    listen: listenParts.map((a, i) => parsePart(a, i, 0)),
+    read: readParts.map((a, i) => parsePart(a, i, 1)),
+    write: writeParts.map((a, i) => parsePart(a, i, 2)),
+    speak: speakParts.map((a, i) => parsePart(a, i, 3)),
   }
 }
 
-const parsePart = a => {
+const parsePart = (a, pidx, comp) => {
   const name = paragraph(a[0], { noStyle: true }).join(' ')
   const [from, to] = questionRange(name)
-  let groups = splitOnEvery(a, 'Questions ', { start: true })
+  let groups = splitOnEvery(a, 'Questions ', { start: true, keepFirst: comp == 1 })
   if (groups.length == 0) groups = [a]
   return {
     name, from, to,
-    groups: groups.map(parseGroup)
+    groups: groups.map(g => parseGroup(g, pidx, comp))
   }
 }
 
-const parseGroup = a => {
+const parseGroup = (a, pidx, comp) => {
   const name = paragraph(a[0], { noStyle: true }).join(' ')
   const [from, to] = questionRange(name)
-  return {
-    name, from, to,
-    paragraphs: a.slice(1).map(x => parseParagraph(x, from, to)).filter(x => x)
+  let paragraphs = a.slice(1).map(x => parseParagraph(x, from, to)).filter(x => x)
+  if (comp == 1) genContainQuestions(paragraphs)
+  if (comp < 2) genFillQuestionsForImgOnly(paragraphs, range(from, to))
+  if (comp == 3) paragraphs = genSpeakQuestions(paragraphs, pidx)
+  return { name, from, to, paragraphs }
+}
+
+const genFillQuestionsForImgOnly= (paragraphs, r) => {
+  if (paragraphs.every(p => !p.questions) && paragraphs.some(p => p.content.some(c => c.startsWith('<img>')))) {
+    paragraphs.push({
+      content: r.map(x => `${x} ......`),
+      questions: r.map(x => ({ number: x })),
+      type: 'fill',
+    })
   }
+}
+
+const genContainQuestions = paragraphs => {
+  if (paragraphs.some(p => p.content.some(c => c.match(/^Write the correct letter, .+, in boxes .+ on your answer sheet.$/)))) {
+    paragraphs.filter(x => x.type === 'choice').forEach(x => {
+      x.type = 'instruction'
+      delete x.questions
+    })
+    const mr = x => x.match(/^(\d{1,2}) +(.+)$/)
+    paragraphs.forEach(p => {
+      if (p.content.length === 1) {
+        const m = mr(p.content[0])
+        if (m) {
+          const num = +m[1]
+          p.content = [m[2], `${num} ......`]
+          p.questions = [{ number: num }]
+          p.type = 'fill'
+        }
+      } else if (p.content.length > 1) {
+        const ms = p.content.map(mr)
+        if (ms.every(x => x)) {
+          p.content = ms.map(x => [x[2], `${+x[1]} ......`]).flat()
+          p.questions = ms.map(x => ({ number: +x[1] }))
+          p.type = 'fill'
+        }
+      }
+    })
+  }
+}
+
+const genSpeakQuestions = (paragraphs, pidx) => {
+  let n = 0
+  paragraphs.forEach(p => {
+    const qs = p.content.filter(c => c.startsWith('<ul>'))
+    if (qs.length > 0) {
+      p.type = 'speak'
+      p.questions = qs.map(q => ({ number: ++n, subject: removeStyle(q) }))
+      if (pidx == 0) p.content = p.content.filter(c => !c.startsWith('<ul>'))
+      if (pidx == 2) p.content = []
+    }
+  })
+  return pidx == 0 ? paragraphs.filter((p, i) => p.type === 'speak' || i == 0) : paragraphs
 }
 
 const questionRange = t => {
@@ -126,14 +187,14 @@ const parseParagraph = (n, from, to) => {
       }
       return null
     } else {
-      getOrderedListQuestions(n, target)
+      getOrderedListQuestions(n, target, isTrueFalse(prevParagraph) ? 'bool' : 'choice')
     }
   } else {
     getNonOrderedListQuestions(target.content, from, to, target)
   }
 
   if (target.type == 'instruction') {
-    if (/^(Test|TEST) \d$/.test(target.content)) return null
+    if (target.content.every(x => /^(Test|TEST) \d$/.test(removeStyle(x)))) return null
     if (/[📖➡️📞📑]/.test(target.content)) return null
   }
 
@@ -183,17 +244,23 @@ const getFillQuestions = t => {
   return r.length > 0 ? r.map(x => ({ number: +x[1] })) : null
 }
 
-const getOrderedListQuestions = (n, target) => {
+const getOrderedListQuestions = (n, target, type) => {
   if (target.content.every(x => /[\._…]{6,}/.test(x))) {
     target.type = 'fill'
     target.questions = target.content.map((_, i) => ({ number: i + n.start }))
   } else {
-    target.type = 'choice'  // 11. subject... choices... 12. subject...
-    target.questions = n.children.map((q, i) => ({
-      number: i + n.start,
-      subject: paragraph(q.children[0].children[0]),
-      choices: q.children[0].children.slice(1).filter(c => c.type != 'break').map(paragraph).flat(Infinity)
-    }))
+    target.type = type // 11. subject... choices... 12. subject...
+    target.questions = n.children.map((q, i) => {
+      const cs = q.children[0].children
+      const s = paragraph(cs[0])
+      const r = { number: i + n.start }
+      if (type === 'choice') {
+        const isMultiLine = cs.length == 1 && Array.isArray(s)
+        r.subject = isMultiLine ? s[0] : s
+        r.choices = isMultiLine ? s.slice(1) : cs.slice(1).filter(c => c.type != 'break').map(paragraph).flat(Infinity)
+      }
+      return r
+    })
   }
 }
 
@@ -224,15 +291,29 @@ const getNonOrderedListQuestions = (content, from, to, target) => {
   if (!target.questions) target.type = 'instruction'
 }
 
-const parseTestAnswer = a => {
-  const [listen, read] = splitBy(a, categories.slice(0, 2), { exact: true })
-  const a1 = listen.filter(x => x.type == 'list' && x.ordered)
+const isTrueFalse = p => {
+  let t = []
+  if (p.content.length === 3)
+    t = p.content
+  else if (p.content.length === 6)
+    t = [p.content[0], p.content[2], p.content[4]]
+  const r = t.map(x => removeStyle(x).split(' ')[0]).join()
+  return r === 'TRUE,FALSE,NOT' || r === 'YES,NO,NOT'
+}
+
+const parseTestAnswer = (listen, read) => ({
+  listen: parseAnswer(listen),
+  read: parseAnswer(read),
+})
+
+const parseAnswer = comp => {
+  const a1 = comp.filter(x => x.type == 'list' && x.ordered)
     .map(l => l.children.map((li, i) => ({
       number: l.start + i,
       answer: paragraph(li.children[0]).join('')
     })))
     .flat()
-  const a2 = listen.filter(x => x.type == 'paragraph')
+  const a2 = comp.filter(x => x.type == 'paragraph')
     .map(x => {
       const ms = paragraph(x, { noStyle: true }).map(y => y.match(/^(\d+) (.+)$/))
       return ms.every(y => y)
@@ -244,14 +325,19 @@ const parseTestAnswer = a => {
   return a1.concat(a2)
 }
 
-const attachAnswer = (q, a) => {
+const attachTestAnswer = (q, a) => {
   q.forEach((t, i) => {
-    const qs = t.listen.map(p => p.groups.map(g => g.paragraphs.map(x => x.questions).filter(x => x))).flat(Infinity)
+    attachAnswer(t.listen, a[i].listen)
+    attachAnswer(t.read, a[i].read)
+  })  
+}
+
+const attachAnswer = (comp, a) => {
+    const qs = comp.map(p => p.groups.map(g => g.paragraphs.map(x => x.questions).filter(x => x))).flat(Infinity)
     qs.forEach(q => {
-      const m = a[i].find(x => x.number == q.number)
+      const m = a.find(x => x.number == q.number)
       if (m) q.answer = m.answer
     })
-  })  
 }
 
 const styles = ['<b>', '<i>', '<ul>', '<img>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>']

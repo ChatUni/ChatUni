@@ -3,12 +3,18 @@ import 'package:flutter/material.dart';
 import '/widgets/common/container.dart';
 import 'text.dart';
 
-FilledButton button(
+ButtonStyleButton button(
   void Function()? onPressed, {
   IconData? icon,
   String text = '',
   Color bgColor = Colors.blue,
+  bool outline = false,
+  double size = 16,
 }) {
+  final radius = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  );
+
   final List<Widget> children = [];
 
   if (icon != null) {
@@ -19,17 +25,23 @@ FilledButton button(
   }
 
   children.add(
-    txt(text, color: Colors.white),
+    txt(text, color: outline ? Colors.black : Colors.white, size: size),
   );
 
-  return FilledButton(
-    onPressed: onPressed,
-    style: FilledButton.styleFrom(
-      backgroundColor: bgColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
-    child: ccRow(children),
-  );
+  return outline
+      ? OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            shape: radius,
+          ),
+          child: ccRow(children),
+        )
+      : FilledButton(
+          onPressed: onPressed,
+          style: FilledButton.styleFrom(
+            backgroundColor: bgColor,
+            shape: radius,
+          ),
+          child: ccRow(children),
+        );
 }

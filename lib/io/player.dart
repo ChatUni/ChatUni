@@ -11,6 +11,7 @@ class Player {
 
   Future<void> play(String url) async {
     //await _player.play(UrlSource(url));
+    print(url);
     await _player.setUrl(url);
     await _player.play();
   }

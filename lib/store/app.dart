@@ -1,7 +1,10 @@
 import 'package:app_links/app_links.dart';
+import 'package:chatuni/api/cd.dart';
 import 'package:chatuni/router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:uuid/uuid.dart';
+
+import '/globals.dart' as globals;
 
 part 'app.g.dart';
 
@@ -41,6 +44,7 @@ abstract class _App with Store {
 
   _App() {
     _initAppListeners();
+    _getCDVer();
   }
 
   void _initAppListeners() {
@@ -50,5 +54,9 @@ abstract class _App with Store {
         // raiseEvent(onPaymentRedirectEvent, uri);
       }
     });
+  }
+
+  Future<void> _getCDVer() async {
+    globals.cdVer = await cdVersion();
   }
 }

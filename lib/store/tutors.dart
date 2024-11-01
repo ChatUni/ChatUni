@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:chatuni/api/api.dart';
 import 'package:chatuni/api/openai.dart';
@@ -130,9 +129,6 @@ abstract class _Tutors with Store {
   Future<void> stopRecording() async {
     isRecording = false;
     if (useLocalRecognition) {
-      if (!kIsWeb && Platform.isAndroid) {
-        await Future.delayed(const Duration(seconds: 1));
-      }
       await _stt.stop();
       if (_stt.lastMsg != '') {
         await voice(_stt.lastMsg);

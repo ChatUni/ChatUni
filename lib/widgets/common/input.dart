@@ -4,18 +4,25 @@ enum InputStyle { outline, underline }
 
 TextField input(
   void Function(String) onChanged, {
+  String? initialValue,
   String? error,
   Widget? prefixIcon,
   Widget? suffixIcon,
   void Function()? suffixAction,
   String? labelText,
   Widget? suffix,
+  int? maxLines,
+  int? minLines,
   TextInputType? keyboardType,
   InputStyle style = InputStyle.outline,
   bool isDense = false,
+  bool readOnly = false,
 }) =>
     TextField(
       onChanged: onChanged,
+      controller: initialValue != null
+          ? (TextEditingController()..text = initialValue)
+          : null,
       decoration: InputDecoration(
         border: _inputStyles[style],
         filled: true,
@@ -32,7 +39,10 @@ TextField input(
               )
             : suffixIcon,
       ),
+      maxLines: maxLines,
+      minLines: minLines,
       keyboardType: keyboardType,
+      readOnly: readOnly,
     );
 
 var _inputStyles = {

@@ -10,6 +10,7 @@ Question _$QuestionFromJson(Map<String, dynamic> json) => Question()
   ..number = (json['number'] as num).toInt()
   ..answer = json['answer'] as String?
   ..userAnswer = json['userAnswer'] as String?
+  ..score = json['score'] as String?
   ..subject = json['subject'] as String?
   ..choices =
       (json['choices'] as List<dynamic>?)?.map((e) => e as String).toList();
@@ -18,6 +19,7 @@ Map<String, dynamic> _$QuestionToJson(Question instance) => <String, dynamic>{
       'number': instance.number,
       'answer': instance.answer,
       'userAnswer': instance.userAnswer,
+      'score': instance.score,
       'subject': instance.subject,
       'choices': instance.choices,
     };
@@ -70,9 +72,21 @@ Test _$TestFromJson(Map<String, dynamic> json) => Test()
   ..id = json['id'] as String
   ..listen = (json['listen'] as List<dynamic>)
       .map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..read = (json['read'] as List<dynamic>)
+      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..write = (json['write'] as List<dynamic>)
+      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..speak = (json['speak'] as List<dynamic>)
+      .map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList();
 
 Map<String, dynamic> _$TestToJson(Test instance) => <String, dynamic>{
       'id': instance.id,
       'listen': instance.listen,
+      'read': instance.read,
+      'write': instance.write,
+      'speak': instance.speak,
     };

@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Function pipe(List<Function> fns) => (x) => fns.fold(x, (p, c) => c(p));
@@ -7,6 +8,12 @@ Function compose(List<Function> fns) =>
 
 List<int> range(int from, int to) =>
     Iterable<int>.generate(to - from + 1).map((x) => x + from).toList();
+
+List<int> lidx(List l) => range(0, l.length - 1);
+
+bool notNull(x) => x != null;
+
+Future<void> wait(int ms) => Future.delayed(Duration(milliseconds: ms));
 
 Future<void> launch(String url, {bool isNewTab = true}) => launchUrl(
       Uri.parse(url),
@@ -18,3 +25,14 @@ T log<T>(T t, [String msg = '']) {
   print(t);
   return t;
 }
+
+Map<String, List<String>> _cdTypes = {
+  'img': ['image', ''],
+  'mp3': ['video', '.mp3'],
+  'mp4': ['video', '.mp4'],
+};
+String Function(String) _cd(List<String> type) => (String name) =>
+    'https://res.cloudinary.com/daqc8bim3/${type[0]}/upload/v$cdVer/$name${type[1]}';
+String Function(String) cdImg = _cd(_cdTypes['img']!);
+String Function(String) cdMp3 = _cd(_cdTypes['mp3']!);
+String Function(String) cdMp4 = _cd(_cdTypes['mp4']!);
