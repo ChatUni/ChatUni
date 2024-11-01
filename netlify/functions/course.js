@@ -1,5 +1,5 @@
 import { makeApi } from './utils/http'
-import { getIelts } from './utils/course'
+import { getIelts, getSAT } from './utils/course'
 
 export const handler = makeApi({
   handlers: {
