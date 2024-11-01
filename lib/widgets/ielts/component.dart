@@ -1,3 +1,4 @@
+import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/store/ielts.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
@@ -11,18 +12,35 @@ Widget component() => obs<Ielts>(
           : ieltsScaffold(
               ielts.component!,
               [
-                title(),
-                vSpacer(8),
-                left(h3(ielts.component!)),
-                vSpacer(6),
-                left(h3(ielts.part!.name)),
-                vSpacer(12),
+                ...header(ielts.component!, ielts.part!.name),
                 playButton(),
                 vSpacer(12),
-                ...ielts.part!.groups.map((g) => group(g)),
-                writeBoxAndAnswer(),
-                speak(),
-                prevNext(),
+                ...ielts.isScoring
+                    ? [spinner]
+                    : [
+                        ...body(ielts.part!.groups),
+                        ...nav(ielts.isChecking),
+                      ],
               ],
             ),
     );
+
+List<Widget> header(String comp, String part) => [
+      title(),
+      vSpacer(8),
+      left(h3(comp)),
+      vSpacer(6),
+      left(h3(part)),
+      vSpacer(12),
+    ];
+
+List<Widget> body(List<Group> groups) => [
+      ...groups.map(group),
+      writeBoxAndAnswer(),
+      speak(),
+    ];
+
+List<Widget> nav(bool isChecking) => [
+      prevNext(),
+      showResult(isChecking),
+    ];

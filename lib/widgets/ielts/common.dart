@@ -39,7 +39,7 @@ Widget ieltsScaffold(String comp, List<Widget> ws) => scaffold(
         [
           vSpacer(10),
           ...ws,
-          vSpacer(60),
+          vSpacer(100),
         ],
         padding: 20,
         scroll: true,
@@ -48,6 +48,12 @@ Widget ieltsScaffold(String comp, List<Widget> ws) => scaffold(
       routeGroup: RouteGroup.course,
       bgColor: Colors.white,
     );
+
+Image spinner = Image.asset(
+  'assets/images/gif/dots.gif',
+  width: 200,
+  height: 100,
+);
 
 Widget title() =>
     obs<Ielts>((ielts) => center(h1('Test ${ielts.test!.id.split('-')[1]}')));
@@ -68,9 +74,9 @@ Widget content(String s) => obs<Ielts>((ielts) {
 
       return num > -1
           ? fillQuestion(num, s1!, s2!)
-          : tag != null
-              ? tagHandlers[tag]!(content)
-              : txt(content);
+          : left(
+              tag != null ? tagHandlers[tag]!(content) : txt(content),
+            );
     });
 
 Widget fillQuestion(
@@ -108,7 +114,7 @@ Widget fillInput(
     );
 
 Widget group(Group g) => ssCol(
-      g.paragraphs.expand((p) => paragraph(p)).toList(),
+      g.paragraphs.expand(paragraph).toList(),
     );
 
 List<Widget> paragraph(Paragraph p) {
@@ -116,7 +122,7 @@ List<Widget> paragraph(Paragraph p) {
   if (p.isMultiChoice) {
     ps = [
       bold(p.questionNumbers),
-      ...p.nonChoiceContent.map((c) => content(c)),
+      ...p.nonChoiceContent.map(content),
       vSpacer(8),
       ...p.choiceList.map(multiChoice),
     ];
@@ -126,7 +132,7 @@ List<Widget> paragraph(Paragraph p) {
     ps = lidx(p.questions!)
         .expand((i) => trueFalse(p.questions![i], p.content[i]));
   } else {
-    ps = p.content.map((c) => content(c));
+    ps = p.content.map(content);
   }
   return [...ps, vSpacer(12)];
 }
@@ -211,14 +217,16 @@ Widget prevNext() => obs<Ielts>(
         grow(
           button(
             ielts.isLastPart
-                ? () async {
-                    if (ielts.isLastComp) {
-                      await ielts.score();
-                      router.go('/ielts_result');
-                    } else {
-                      ielts.nextComp(1);
-                    }
-                  }
+                ? ielts.isChecking
+                    ? null
+                    : () async {
+                        if (ielts.isLastComp) {
+                          await ielts.score();
+                          router.go('/ielts_result');
+                        } else {
+                          ielts.nextComp(1);
+                        }
+                      }
                 : () => ielts.nextPart(1),
             text: ielts.isLastPart
                 ? ielts.isLastComp
@@ -229,6 +237,14 @@ Widget prevNext() => obs<Ielts>(
         ),
       ]),
     );
+
+Widget showResult(bool isChecking) => isChecking
+    ? button(
+        () => router.go('/ielts_result'),
+        text: 'Show Results',
+        bgColor: Colors.orange,
+      )
+    : vSpacer(1);
 
 Widget writeBox(
   void Function(String) onChanged,
@@ -243,6 +259,14 @@ Widget writeBox(
       style: InputStyle.outline,
     );
 
+Widget analysis(String? t, bool isChecking) => isChecking && t != null
+    ? ssCol([
+        vSpacer(8),
+        bold('Score and Analysis:'),
+        txt(t),
+      ])
+    : vSpacer(1);
+
 Widget writeBoxAndAnswer() => obs<Ielts>(
       (ielts) => ielts.compIndex == 2
           ? ssCol([
@@ -250,57 +274,77 @@ Widget writeBoxAndAnswer() => obs<Ielts>(
                 ielts.write,
                 ielts.writeQuestion.userAnswer,
               ),
-              ielts.isChecking
-                  ? ssCol([
-                      vSpacer(8),
-                      bold('Score and Analysis:'),
-                      txt(ielts.writeQuestion.answer!),
-                    ])
-                  : vSpacer(1),
+              analysis(ielts.writeQuestion.answer, ielts.isChecking),
               vSpacer(16),
               txt(ielts.rc > 0 ? '' : ''),
             ])
           : vSpacer(1),
     );
 
-Widget speak() => obs<Ielts>(
-      (ielts) => ielts.compIndex == 3
-          ? ssCol([
-              center(
-                box(
-                  426,
-                  240,
-                  VideoPlayer(ielts.videoControllers[0]),
-                ),
-              ),
-              ...ielts.partQuestions.map(speakQuestion),
-              vSpacer(16 + (ielts.rc < 0 ? 0 : 0)),
-            ])
-          : vSpacer(1),
-    );
+Widget speak() => obs<Ielts>((ielts) {
+      if (ielts.compIndex != 3) return vSpacer(1);
+      final c = ielts.videoControllers[ielts.questionIndex];
+      final q = ielts.partQuestions[ielts.questionIndex];
+      return ssCol(
+        ielts.partIndex == 1
+            ? [
+                recordAnswerButton(q, ielts.isChecking),
+                analysis(q.answer, ielts.isChecking),
+                vSpacer(8),
+              ]
+            : [
+                center(AspectRatio(aspectRatio: 1.778, child: VideoPlayer(c))),
+                speakQuestion(q),
+                nextQuestionButton(q),
+                analysis(q.answer, ielts.isChecking),
+                vSpacer(8),
+              ],
+      );
+    });
 
 Widget speakQuestion(Question q) => obs<Ielts>(
-      (ielts) => pBox(bEdge(8))(
+      (ielts) => pBox(vEdge(8))(
         scRow([
           bold('Q${q.number}: '),
           hSpacer(8),
-          grow(
-            button(
-              () => ielts.playVideo(q.number),
-              icon: Icons.play_arrow,
-              text: 'Listen',
-              bgColor: Colors.teal,
-            ),
-          ),
+          grow(playVideoButton(q, ielts.isChecking)),
           hSpacer(8),
-          grow(
-            button(
-              ielts.isRecording ? ielts.stop : ielts.play,
-              icon: Icons.mic,
-              text: ielts.isRecording ? 'Stop' : 'Answer',
-              bgColor: ielts.isRecording ? Colors.red : Colors.green,
-            ),
-          ),
+          grow(recordAnswerButton(q, ielts.isChecking)),
         ]),
+      ),
+    );
+
+Widget playVideoButton(Question q, bool isChecking) => obs<Ielts>(
+      (ielts) => button(
+        isChecking ? null : () => ielts.playVideo(q.number),
+        icon: Icons.play_arrow,
+        text: 'Listen',
+        bgColor: Colors.teal,
+      ),
+    );
+
+Widget recordAnswerButton(Question q, bool isChecking) => obs<Ielts>(
+      (ielts) => button(
+        isChecking
+            ? null
+            : ielts.isRecording
+                ? () => ielts.stopRecording(q)
+                : ielts.startRecording,
+        icon: Icons.mic,
+        text: ielts.isRecording
+            ? 'Stop'
+            : q.userAnswer == null
+                ? 'Answer'
+                : 'Replace',
+        bgColor: ielts.isRecording ? Colors.red : Colors.green,
+      ),
+    );
+
+Widget nextQuestionButton(Question q) => obs<Ielts>(
+      (ielts) => button(
+        ielts.isLastQuestion ? null : ielts.nextQuestion,
+        icon: Icons.arrow_forward,
+        text: 'Next Question',
+        bgColor: Colors.blue,
       ),
     );

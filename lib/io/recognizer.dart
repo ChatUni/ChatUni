@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:chatuni/utils/utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -16,6 +20,9 @@ class Recognizer {
   }
 
   Future<void> stop() async {
+    if (!kIsWeb && Platform.isAndroid) {
+      await wait(1000);
+    }
     await _stt.stop();
   }
 

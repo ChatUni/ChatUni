@@ -13,6 +13,8 @@ List<int> lidx(List l) => range(0, l.length - 1);
 
 bool notNull(x) => x != null;
 
+Future<void> wait(int ms) => Future.delayed(Duration(milliseconds: ms));
+
 Future<void> launch(String url, {bool isNewTab = true}) => launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',

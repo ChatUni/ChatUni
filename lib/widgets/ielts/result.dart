@@ -61,7 +61,27 @@ Widget _score(int comp) => obs<Ielts>(
                       )
                       .toList(),
                 )
-              : vSpacer(1),
+              : ssCol(
+                  lidx(ielts.test!.speak)
+                      .expand(
+                        (i) => [
+                          h4('Part ${i + 1}'),
+                          ...ielts
+                              .getPartQuestions(ielts.test!.speak[i])
+                              .where(
+                                (q) =>
+                                    ielts.partIndex == 1 ? q.number == 0 : true,
+                              )
+                              .map(
+                                (q) => _row(
+                                  'Question ${q.number} Score',
+                                  q.score ?? '',
+                                ),
+                              ),
+                        ],
+                      )
+                      .toList(),
+                ),
     );
 
 Widget _incorrect(int comp) => obs<Ielts>(

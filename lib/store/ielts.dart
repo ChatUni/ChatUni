@@ -1,5 +1,5 @@
 import 'package:chatuni/io/player.dart';
-import 'package:chatuni/io/recorder.dart';
+import 'package:chatuni/io/recognizer.dart';
 import 'package:chatuni/io/videoplayer.dart';
 import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/utils/const.dart';
@@ -19,7 +19,8 @@ const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
 abstract class _Ielts with Store {
   final Player _player = Player();
   final VideoPlayer _videoPlayer = VideoPlayer();
-  final Recorder _recorder = Recorder();
+  // final Recorder _recorder = Recorder();
+  final Recognizer _stt = Recognizer();
 
   get videoControllers => _videoPlayer.controllers;
 
@@ -42,6 +43,9 @@ abstract class _Ielts with Store {
   Group? group;
 
   @observable
+  int questionIndex = 0;
+
+  @observable
   bool isPlaying = false;
 
   @observable
@@ -49,6 +53,9 @@ abstract class _Ielts with Store {
 
   @observable
   bool isChecking = false;
+
+  @observable
+  bool isScoring = false;
 
   @observable
   int rc = 0;
@@ -108,6 +115,13 @@ abstract class _Ielts with Store {
   List<Question> get writeQuestions =>
       test!.write.expand(getPartQuestions).toList();
 
+  @computed
+  List<Question> get speakQuestions =>
+      test!.speak.expand(getPartQuestions).toList();
+
+  @computed
+  bool get isLastQuestion => questionIndex == partQuestions.length - 1;
+
   @action
   Future<void> loadTests() async {
     allTests.clear();
@@ -164,11 +178,14 @@ abstract class _Ielts with Store {
     // isChecking = false;
     isPlaying = false;
     if (compIndex == 3) {
-      await _videoPlayer.setUrls(
-        partQuestions
-            .map((q) => cdMp4('${test!.id}-${partIndex + 1}-${q.number}'))
-            .toList(),
-      );
+      questionIndex = 0;
+      if (partIndex != 1) {
+        await _videoPlayer.setUrls(
+          partQuestions
+              .map((q) => cdMp4('${test!.id}-${partIndex + 1}-${q.number}'))
+              .toList(),
+        );
+      }
     }
   }
 
@@ -234,15 +251,22 @@ abstract class _Ielts with Store {
   }
 
   @action
-  void startRecording() {
-    _recorder.start();
+  Future<void> startRecording() async {
+    // _recorder.start();
+    await _stt.start('en');
     isRecording = true;
   }
 
   @action
-  void stopRecording() {
-    _recorder.stop();
+  Future<void> stopRecording(Question q) async {
+    //await _recorder.stop();
+    await _stt.stop();
+    if (_stt.lastMsg != '') {
+      q.userAnswer = _stt.lastMsg;
+      _stt.clear();
+    }
     isRecording = false;
+    //await _player.play(_recorder.playPath);
   }
 
   @action
@@ -252,19 +276,25 @@ abstract class _Ielts with Store {
 
   @action
   void playVideo(int num) {
-    _videoPlayer.play(num);
-    rc++;
+    _videoPlayer.play(num - 1);
+  }
+
+  @action
+  void nextQuestion() {
+    questionIndex = (questionIndex + 1).clamp(0, partQuestions.length - 1);
   }
 
   @action
   Future score() async {
-    for (var q in writeQuestions) {
+    isScoring = true;
+    for (var q in [...writeQuestions, ...speakQuestions]) {
       if (q.userAnswer != null && q.userAnswer != '') {
         q.answer = await writeScore(q.userAnswer!);
         final m = RegExp('Score: (\\d+)').firstMatch(q.answer!);
         if (m != null) q.score = m.group(1);
       }
     }
+    isScoring = false;
   }
 
   List<Question> getPartQuestions(Part? part) => part == null

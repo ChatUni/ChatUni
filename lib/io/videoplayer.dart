@@ -29,6 +29,10 @@ class VideoPlayer {
     await controllers[n].pause();
   }
 
+  void clear() {
+    controllers.clear();
+  }
+
   VideoPlayer() {
     // setUrl(url);
     // _player.onPlayerStateChanged

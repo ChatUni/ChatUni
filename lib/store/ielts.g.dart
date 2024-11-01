@@ -114,6 +114,20 @@ mixin _$Ielts on _Ielts, Store {
           Computed<List<Question>>(() => super.writeQuestions,
               name: '_Ielts.writeQuestions'))
       .value;
+  Computed<List<Question>>? _$speakQuestionsComputed;
+
+  @override
+  List<Question> get speakQuestions => (_$speakQuestionsComputed ??=
+          Computed<List<Question>>(() => super.speakQuestions,
+              name: '_Ielts.speakQuestions'))
+      .value;
+  Computed<bool>? _$isLastQuestionComputed;
+
+  @override
+  bool get isLastQuestion =>
+      (_$isLastQuestionComputed ??= Computed<bool>(() => super.isLastQuestion,
+              name: '_Ielts.isLastQuestion'))
+          .value;
 
   late final _$allTestsAtom = Atom(name: '_Ielts.allTests', context: context);
 
@@ -205,6 +219,22 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$questionIndexAtom =
+      Atom(name: '_Ielts.questionIndex', context: context);
+
+  @override
+  int get questionIndex {
+    _$questionIndexAtom.reportRead();
+    return super.questionIndex;
+  }
+
+  @override
+  set questionIndex(int value) {
+    _$questionIndexAtom.reportWrite(value, super.questionIndex, () {
+      super.questionIndex = value;
+    });
+  }
+
   late final _$isPlayingAtom = Atom(name: '_Ielts.isPlaying', context: context);
 
   @override
@@ -252,6 +282,21 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$isScoringAtom = Atom(name: '_Ielts.isScoring', context: context);
+
+  @override
+  bool get isScoring {
+    _$isScoringAtom.reportRead();
+    return super.isScoring;
+  }
+
+  @override
+  set isScoring(bool value) {
+    _$isScoringAtom.reportWrite(value, super.isScoring, () {
+      super.isScoring = value;
+    });
+  }
+
   late final _$rcAtom = Atom(name: '_Ielts.rc', context: context);
 
   @override
@@ -281,6 +326,22 @@ mixin _$Ielts on _Ielts, Store {
   @override
   Future<void> partSelected() {
     return _$partSelectedAsyncAction.run(() => super.partSelected());
+  }
+
+  late final _$startRecordingAsyncAction =
+      AsyncAction('_Ielts.startRecording', context: context);
+
+  @override
+  Future<void> startRecording() {
+    return _$startRecordingAsyncAction.run(() => super.startRecording());
+  }
+
+  late final _$stopRecordingAsyncAction =
+      AsyncAction('_Ielts.stopRecording', context: context);
+
+  @override
+  Future<void> stopRecording(Question q) {
+    return _$stopRecordingAsyncAction.run(() => super.stopRecording(q));
   }
 
   late final _$scoreAsyncAction = AsyncAction('_Ielts.score', context: context);
@@ -426,28 +487,6 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
-  void startRecording() {
-    final _$actionInfo =
-        _$_IeltsActionController.startAction(name: '_Ielts.startRecording');
-    try {
-      return super.startRecording();
-    } finally {
-      _$_IeltsActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void stopRecording() {
-    final _$actionInfo =
-        _$_IeltsActionController.startAction(name: '_Ielts.stopRecording');
-    try {
-      return super.stopRecording();
-    } finally {
-      _$_IeltsActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void write(String t) {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.write');
@@ -470,6 +509,17 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void nextQuestion() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.nextQuestion');
+    try {
+      return super.nextQuestion();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 allTests: ${allTests},
@@ -478,9 +528,11 @@ component: ${component},
 part: ${part},
 parts: ${parts},
 group: ${group},
+questionIndex: ${questionIndex},
 isPlaying: ${isPlaying},
 isRecording: ${isRecording},
 isChecking: ${isChecking},
+isScoring: ${isScoring},
 rc: ${rc},
 tests: ${tests},
 isCompSelected: ${isCompSelected},
@@ -497,7 +549,9 @@ allComps: ${allComps},
 allParts: ${allParts},
 partQuestions: ${partQuestions},
 writeQuestion: ${writeQuestion},
-writeQuestions: ${writeQuestions}
+writeQuestions: ${writeQuestions},
+speakQuestions: ${speakQuestions},
+isLastQuestion: ${isLastQuestion}
     ''';
   }
 }
