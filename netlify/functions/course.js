@@ -5,6 +5,7 @@ export const handler = makeApi({
   handlers: {
     get: {
       ielts: q => getIelts(),
+      sat: q => getSAT(),
     },
   },
 })
