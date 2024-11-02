@@ -132,14 +132,9 @@ abstract class _Ielts with Store {
   @action
   void selectTest(Test t) {
     test = t;
-<<<<<<< HEAD
-    part = t.listen[1];
-    group = part!.groups.first;
-=======
     _resetTest();
     setComp(0);
     isChecking = false;
->>>>>>> 8468654325068d43b91c353b51e1dee963bc0e6d
   }
 
   @action
