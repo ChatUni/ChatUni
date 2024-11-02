@@ -13,5 +13,10 @@ Future<List<Test>> fetchIelts() async {
   return (r as List).map((t) => Test.fromJson(t)).toList();
 }
 
+Future<List<Test>> fetchsat() async {
+  final r = await get('course', params: {'type': 'sat'});
+  return (r as List).map((t) => Test.fromJson(t)).toList();
+}
+
 Future<String> writeScore(String txt) async =>
     await get('score', params: {'type': 'score', 'msg': txt});

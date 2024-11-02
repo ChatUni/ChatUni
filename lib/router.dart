@@ -1,6 +1,7 @@
 import 'package:chatuni/widgets/ielts/component.dart';
 import 'package:chatuni/widgets/ielts/result.dart';
 import 'package:chatuni/widgets/ielts/tests.dart';
+import 'package:chatuni/widgets/sat/satcomponent.dart';
 import 'package:go_router/go_router.dart';
 
 import 'widgets/my/account.dart';
@@ -40,6 +41,10 @@ final router = GoRouter(
     GoRoute(
       path: '/ielts_result',
       builder: (c, s) => result(),
+    ),
+    GoRoute(
+      path: '/sat_component',
+      builder: (c, s) => satcomponent(),
     ),
   ],
 );
