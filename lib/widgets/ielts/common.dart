@@ -335,7 +335,7 @@ Widget recordAnswerButton(Question q, bool isChecking) => obs<Ielts>(
             ? 'Stop'
             : q.userAnswer == null
                 ? 'Answer'
-                : 'Replace',
+                : 'Retake',
         bgColor: ielts.isRecording ? Colors.red : Colors.green,
       ),
     );

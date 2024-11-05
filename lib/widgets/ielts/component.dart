@@ -1,13 +1,16 @@
 import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/utils/event.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
 import 'package:chatuni/widgets/common/text.dart';
 import 'package:chatuni/widgets/ielts/common.dart';
 import 'package:flutter/material.dart';
 
-Widget component() => obs<Ielts>(
-      (ielts) => ielts.component == null
+Widget component() => obs<Ielts>((ielts) {
+      listenToEvent(onCountdownEvent, (e) => print('time'));
+
+      return ielts.component == null
           ? vSpacer(1)
           : ieltsScaffold(
               ielts.component!,
@@ -22,8 +25,8 @@ Widget component() => obs<Ielts>(
                         ...nav(ielts.isChecking),
                       ],
               ],
-            ),
-    );
+            );
+    });
 
 List<Widget> header(String comp, String part) => [
       title(),

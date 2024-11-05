@@ -20,7 +20,7 @@ Future<Msg> chatComplete(List<Msg> msgs) async {
         {
           'role': 'system',
           'content':
-              'You are a English tutor, correct user\'s grammar error if needed during conversation'
+              'You are a English tutor, correct user\'s grammar error if needed during conversation',
         },
         ...msgs.where((m) => m.text != '').map(
               (m) => {

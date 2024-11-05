@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:chatuni/globals.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+Map<int, Timer> _timers = {};
 
 Function pipe(List<Function> fns) => (x) => fns.fold(x, (p, c) => c(p));
 
@@ -24,6 +28,20 @@ T log<T>(T t, [String msg = '']) {
   print(msg);
   print(t);
   return t;
+}
+
+int timer(int sec, bool Function() update) {
+  final n = _timers.length + 1;
+  final t = Timer.periodic(Duration(seconds: sec), (_) {
+    if (update()) stopTimer(n);
+  });
+  _timers[n] = t;
+  return n;
+}
+
+void stopTimer(int tid) {
+  _timers[tid]?.cancel();
+  _timers.remove(tid);
 }
 
 Map<String, List<String>> _cdTypes = {
