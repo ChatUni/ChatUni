@@ -9,17 +9,14 @@ let origin = ''
 
 export const getOrigin = () => origin
 
-export const PORT = process?.env.PORT || 3000
 export const isDev =
   process?.env.NODE_ENV &&
   ['development', 'dev'].includes(process.env.NODE_ENV.toLowerCase())
 export const isProd = process?.env.NODE_ENV
   ? true
   : ['production', 'prod'].includes(process.env.NODE_ENV.toLowerCase())
-export const HOST = isDev ? `http://localhost:${PORT}/` : '/'
-export const API = HOST + 'api/'
-export const ADMIN = HOST + 'admin/'
-export const DB  = db => (type, doc) => `https://sace-mongodb.netlify.app/.netlify/functions/api?type=${type}&db=${db}&doc=${doc}`
+export const HOST = isDev ? 'http://localhost:701/' : '/'
+export const DB  = (type, doc) => `${HOST}.netlify/functions/api?type=${type}&db=1&doc=${doc}`
 export const get = (url, headers) => axios.get(tap(url), { headers: headers || {}}).then(r => r.data)
 export const post = (url, data, headers) => axios.post(tap(url), data, { headers: headers || {}}).then(r => r.data)
 export const patch = (url, data, headers) => axios.patch(tap(url), data, { headers: headers || {}}).then(r => r.data)
@@ -53,6 +50,7 @@ export const makeApi =
 
     return tryc(
       async () => {
+        if (q.db) await connectDB()
         initAI && (await initAI())
         const t = handlers[method]?.[q.type]
         if (!t) return res('', 404)

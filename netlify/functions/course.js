@@ -8,4 +8,5 @@ export const handler = makeApi({
       sat: q => getSAT(),
     },
   },
+  nocache: true,
 })

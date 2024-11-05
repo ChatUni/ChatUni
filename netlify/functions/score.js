@@ -7,4 +7,5 @@ export const handler = makeApi({
       score: q => score(q.msg),
     },
   },
+  nocache: true,
 })
