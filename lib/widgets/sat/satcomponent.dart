@@ -13,7 +13,6 @@ Widget satcomponent() => obs<Sat>(
               sat.component!,
               [
                 //...header(sat.component!, sat.part!.name),
-                playButton(),
                 vSpacer(12),
                 ...sat.isScoring
                     ? [spinner]
@@ -37,7 +36,6 @@ List<Widget> header(String comp, String part) => [
 List<Widget> body(List<Group> g) => [
       ...g.map(group),
       writeBoxAndAnswer(),
-      speak(),
     ];
 
 List<Widget> nav(bool isChecking) => [
