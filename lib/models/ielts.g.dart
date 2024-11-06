@@ -13,7 +13,9 @@ Question _$QuestionFromJson(Map<String, dynamic> json) => Question()
   ..score = json['score'] as String?
   ..subject = json['subject'] as String?
   ..choices =
-      (json['choices'] as List<dynamic>?)?.map((e) => e as String).toList();
+      (json['choices'] as List<dynamic>?)?.map((e) => e as String).toList()
+  ..images =
+      (json['images'] as List<dynamic>?)?.map((e) => e as String).toList();
 
 Map<String, dynamic> _$QuestionToJson(Question instance) => <String, dynamic>{
       'number': instance.number,
@@ -22,6 +24,7 @@ Map<String, dynamic> _$QuestionToJson(Question instance) => <String, dynamic>{
       'score': instance.score,
       'subject': instance.subject,
       'choices': instance.choices,
+      'images': instance.images,
     };
 
 Paragraph _$ParagraphFromJson(Map<String, dynamic> json) => Paragraph()
