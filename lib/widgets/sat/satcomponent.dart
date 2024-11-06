@@ -12,7 +12,7 @@ Widget satcomponent() => obs<Sat>(
           : ieltsScaffold(
               sat.component!,
               [
-                ...header(sat.component!, sat.part!.name),
+                //...header(sat.component!, sat.part!.name),
                 playButton(),
                 vSpacer(12),
                 ...sat.isScoring
@@ -28,20 +28,20 @@ Widget satcomponent() => obs<Sat>(
 List<Widget> header(String comp, String part) => [
       title(),
       vSpacer(8),
-      left(h3(comp)),
+      left(h3('SAT')),
       vSpacer(6),
-      left(h3(part)),
+      left(h3('SAT')),
       vSpacer(12),
     ];
 
-List<Widget> body(List<Group> groups) => [
-      ...groups.map(group),
+List<Widget> body(List<Group> g) => [
+      ...g.map(group),
       writeBoxAndAnswer(),
       speak(),
     ];
 
 List<Widget> nav(bool isChecking) => [
-      prevNext(),
+      prevNextSat(),
       vSpacer(8),
       showResult(isChecking),
     ];

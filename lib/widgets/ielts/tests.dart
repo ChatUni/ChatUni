@@ -49,31 +49,30 @@ Widget _tests() => obs<Ielts>(
             .toList(),
       ),
     );
-
 Widget _sattests() => obs<Sat>(
-      (sat) => ccCol(
-        sat.tests
-            .map(
-              (e) => pBox(bEdge(8))(
-                vCard([
-                  pipe([bold, left, pBox(aEdge(8))])('SAT'),
-                  grid(
-                    2,
-                    e.value
-                        .map(
-                          (c) => button(
-                            () {
-                              sat.selectTest(c);
-                              router.go('/ielts_component');
-                            },
-                            text: 'Test ${c.id}',
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ]),
-              ),
-            )
-            .toList(),
+      (sat) => button(
+        () {
+          sat.nextTest();
+
+          //display
+          router.go('/sat_component');
+        },
+        text: 'Sat Practice Test 1',
       ),
     );
+// Widget _sattests() => obs<Sat>(
+//       (sat) => ccCol(
+//         sat.tests
+//             .map(
+//               (e) => pBox(bEdge(8))(
+//                 vCard([
+//                   pipe([bold, left, pBox(aEdge(8))])('SAT'),
+//                   grid(
+                    
+//                   ),
+//                 ]),
+//               ),
+//             )
+//             .toList(),
+//       ),
+//     );

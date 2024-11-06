@@ -1,13 +1,13 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'ielts.g.dart';
+part 'sat.g.dart';
 
-RegExp _choicePattern = RegExp(r'^(<.+>)?([A-Z])[.)]? (.+)$');
+RegExp _choicePattern = RegExp(r'^(<.+>)?([A-Z])\.? (.+)$');
 
 bool isChoice(String s) => _choicePattern.hasMatch(s);
 
 Choice getChoice(String s, Question q1, Question q2) {
-  final m = _choicePattern.firstMatch(s.replaceAll('"', ''));
+  final m = _choicePattern.firstMatch(s);
   return Choice(m!.group(2)!, m.group(3)!, q1, q2);
 }
 
@@ -118,16 +118,15 @@ class Part {
 }
 
 @JsonSerializable()
-class Test {
-  String id = '';
-  List<Part> listen = [];
-  List<Part> read = [];
-  List<Part> write = [];
-  List<Part> speak = [];
+class SatTest {
+  String name = '';
+  int from = 0;
+  int to = 0;
+  List<Part> part = [];
 
-  Test();
+  SatTest();
 
-  factory Test.fromJson(Map<String, dynamic> json) => _$TestFromJson(json);
+  factory SatTest.fromJson(Map<String, dynamic> json) => _$TestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TestToJson(this);
 }

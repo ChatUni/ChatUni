@@ -14,7 +14,7 @@ part 'sat.g.dart';
 // ignore: library_private_types_in_public_api
 class Sat = _Sat with _$Sat;
 
-const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
+// const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
 const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
 
 abstract class _Sat with Store {
@@ -22,6 +22,7 @@ abstract class _Sat with Store {
   final VideoPlayer _videoPlayer = VideoPlayer();
   // final Recorder _recorder = Recorder();
   final Recognizer _stt = Recognizer();
+  int currentIndex = 0;
 
   get videoControllers => _videoPlayer.controllers;
 
@@ -38,7 +39,13 @@ abstract class _Sat with Store {
   Part? part;
 
   @observable
+  Paragraph? currentParagraph;
+
+  @observable
   List<Part> parts = [];
+
+  @observable
+  List<Paragraph> paragraphs = [];
 
   @observable
   Group? group;
@@ -126,8 +133,9 @@ abstract class _Sat with Store {
   @action
   Future<void> loadTests() async {
     allTests.clear();
-    var ts = await fetchIelts();
+    var ts = await fetchsat();
     allTests.addAll(ts);
+    //part = allTests[0].write.first;
   }
 
   @action
@@ -135,6 +143,34 @@ abstract class _Sat with Store {
     test = t;
     _resetTest();
     setComp(0);
+    isChecking = false;
+  }
+
+  @action
+  void nextTest() {
+    print("""'Next Test' ${allTests.length}""");
+    test = allTests[(currentIndex + 1) % allTests.length];
+
+    test!.read.forEach((s) {
+      s.groups.forEach((g) {
+        paragraphs.addAll(g.paragraphs);
+      });
+    });
+    test!.read.clear();
+    int index = 0;
+    paragraphs.forEach((para) {
+      Group group1 = Group();
+      group1.paragraphs = [para];
+      Part part1 = Part();
+      part1.name = index.toString();
+      part1.groups = [group1];
+      test!.read.add(part1);
+      index++;
+    });
+    //currentParagraph = part!.groups.write.paragraphs.first;
+    part = test!.read.first;
+    _resetTest();
+    setComp(1);
     isChecking = false;
   }
 
@@ -175,6 +211,45 @@ abstract class _Sat with Store {
 
   @action
   Future<void> partSelected() async {
+    group = part!.groups.first;
+    // isChecking = false;
+    isPlaying = false;
+    if (compIndex == 3) {
+      questionIndex = 0;
+      if (partIndex != 1) {
+        // await _videoPlayer.setUrls(
+        //   partQuestions
+        //       .map((q) => cdMp4('${test!.id}-${partIndex + 1}-${q.number}'))
+        //       .toList(),
+        // );
+      }
+    }
+  }
+
+  @action
+  void nextParagraph(int step) {
+    if (test == null || paragraphs.isEmpty) {
+      currentParagraph = null;
+    } else if (currentParagraph == null) {
+      currentParagraph = paragraphs.first;
+    } else {
+      currentParagraph =
+          paragraphs[(partIndex + step).clamp(0, paragraphs.length - 1)];
+      partSelected();
+    }
+    rc++;
+  }
+
+  @action
+  void firstParagraph() {
+    if (paragraphs.isNotEmpty) {
+      currentParagraph = paragraphs.first;
+      paragraphSelected();
+    }
+  }
+
+  @action
+  Future<void> paragraphSelected() async {
     group = part!.groups.first;
     // isChecking = false;
     isPlaying = false;
@@ -342,10 +417,10 @@ abstract class _Sat with Store {
 
   bool boldChoice(Choice c) => isChecking && c.isActual || c.isSelected;
 
-  (String, String?) contentTag(String s) {
-    final tag = tags.firstWhereOrNull((t) => s.startsWith('<$t>'));
-    return (tag != null ? s.replaceFirst('<$tag>', '') : s, tag);
-  }
+  // (String, String?) contentTag(String s) {
+  //   final tag = tags.firstWhereOrNull((t) => s.startsWith('<$t>'));
+  //   return (tag != null ? s.replaceFirst('<$tag>', '') : s, tag);
+  // }
 
   (int, String?, String?) parseFill(String s) {
     RegExp re = RegExp(r'(\d{1,2}).*?([\._…]{6,})');
@@ -382,7 +457,7 @@ abstract class _Sat with Store {
     // writeQuestions[1].userAnswer = 'you do good';
   }
 
-  _Ielts() {
+  _Sat() {
     loadTests();
   }
 

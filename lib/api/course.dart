@@ -15,7 +15,17 @@ Future<List<Test>> fetchIelts() async {
 
 Future<List<Test>> fetchsat() async {
   final r = await get('course', params: {'type': 'sat'});
-  return (r as List).map((t) => Test.fromJson(t)).toList();
+  Test t = Test();
+  t.id = '1-1';
+  final sections = (r as List)[0]['sections'];
+  //Part p1 = Part.fromJson(sections[0]);
+  //Part p = Part.fromJson(sections[1]);
+  sections.forEach((s) {
+    t.read.add(Part.fromJson(s));
+  });
+  //t.speak.add(p1);
+  //t.speak.addAll(sections.map((t1) => Part.fromJson(t1)).toList());
+  return [t];
 }
 
 Future<String> writeScore(String txt) async =>

@@ -4,6 +4,7 @@ import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/store/sat.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
@@ -232,6 +233,39 @@ Widget prevNext() => obs<Ielts>(
                 ? ielts.isLastComp
                     ? 'Finish'
                     : ielts.nextComponent
+                : 'Next Part',
+          ),
+        ),
+      ]),
+    );
+
+Widget prevNextSat() => obs<Sat>(
+      (sat) => ccRow([
+        grow(
+          button(
+            sat.isFirstPart ? null : () => sat.nextPart(-1),
+            text: 'Prev Part',
+          ),
+        ),
+        hSpacer(16),
+        grow(
+          button(
+            sat.isLastPart
+                ? sat.isChecking
+                    ? null
+                    : () async {
+                        if (sat.isLastComp) {
+                          await sat.score();
+                          router.go('/ielts_result');
+                        } else {
+                          sat.nextComp(1);
+                        }
+                      }
+                : () => sat.nextPart(1),
+            text: sat.isLastPart
+                ? sat.isLastComp
+                    ? 'Finish'
+                    : sat.nextComponent
                 : 'Next Part',
           ),
         ),

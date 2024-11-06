@@ -365,6 +365,17 @@ mixin _$Sat on _Sat, Store {
   }
 
   @override
+  void nextTest() {
+    final _$actionInfo =
+        _$_SatActionController.startAction(name: '_Sat.nextTest');
+    try {
+      return super.nextTest();
+    } finally {
+      _$_SatActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setComp(int idx) {
     final _$actionInfo =
         _$_SatActionController.startAction(name: '_Sat.setComp');
