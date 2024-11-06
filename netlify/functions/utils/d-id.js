@@ -5,7 +5,6 @@ const headers = {
   Authorization: `Basic ${process.env.D_ID_API_KEY}`,
   'content-type': 'application/json'
 }
-const db = DB('algo.ChatUni')
 
 export const createAgent = (name, voice, img, desc) => post(`${DID}/agents`, {
   "presenter": {
@@ -27,7 +26,7 @@ export const createAgent = (name, voice, img, desc) => post(`${DID}/agents`, {
 }, headers)
 
 export const importAgent = async () => {
-  const tutors = await get(db('doc', 'tutors'))
+  const tutors = await get(DB('doc', 'tutors'))
   const { agents } = await get(`${DID}/agents/me`, headers)
   for (t of tutors) {
     // await createAgent(t.name, t.gender == '男' ? 'en-US-RyanMultilingualNeural' : 'en-US-JennyMultilingualNeural', `${window.HOST}/icons/${t.id}.png`, t.system)
@@ -37,12 +36,12 @@ export const importAgent = async () => {
     t.idleVideo = agent.presenter.idle_video
     t.stillImage = agent.presenter.source_url
     t.chatId = ''
-    await post(db('save', 'tutors'), t)
+    await post(DB('save', 'tutors'), t)
   }
 }
 
 export const updateAgent = async (id, { prompt, personality, skill, desc }) => {
-  const tutors = await get(db('doc', 'tutors'))
+  const tutors = await get(DB('doc', 'tutors'))
   const tutor = tutors.find((x) => x.id == id)
   if (!tutor) return 'Tutor not found'
 
@@ -63,7 +62,7 @@ export const updateAgent = async (id, { prompt, personality, skill, desc }) => {
   if (skill) tutor.skill = skill
   if (desc) tutor.desc = desc
 
-  await post(db('save', 'tutors'), tutor)
+  await post(DB('save', 'tutors'), tutor)
 
   return tutor
 }
