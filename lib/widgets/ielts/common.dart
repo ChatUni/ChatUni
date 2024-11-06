@@ -171,8 +171,8 @@ Widget trueFalseButton(String text, Question q) => obs<Ielts>(
     );
 
 List<Widget> singleChoice(Question q) => [
-      ...(q.images ?? []).map(tagHandlers['img']!),
       bold('${q.number}. ${q.subject!}'),
+      ...(q.images ?? []).map(tagHandlers['img']!),
       ...q.choiceList.map(
         (c) => obs<Ielts>(
           (ielts) => tap(
