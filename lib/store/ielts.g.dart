@@ -128,6 +128,25 @@ mixin _$Ielts on _Ielts, Store {
       (_$isLastQuestionComputed ??= Computed<bool>(() => super.isLastQuestion,
               name: '_Ielts.isLastQuestion'))
           .value;
+  Computed<bool>? _$hasTimerComputed;
+
+  @override
+  bool get hasTimer => (_$hasTimerComputed ??=
+          Computed<bool>(() => super.hasTimer, name: '_Ielts.hasTimer'))
+      .value;
+  Computed<String>? _$timeLeftComputed;
+
+  @override
+  String get timeLeft => (_$timeLeftComputed ??=
+          Computed<String>(() => super.timeLeft, name: '_Ielts.timeLeft'))
+      .value;
+  Computed<bool>? _$isTimeLeftAlertComputed;
+
+  @override
+  bool get isTimeLeftAlert =>
+      (_$isTimeLeftAlertComputed ??= Computed<bool>(() => super.isTimeLeftAlert,
+              name: '_Ielts.isTimeLeftAlert'))
+          .value;
 
   late final _$allTestsAtom = Atom(name: '_Ielts.allTests', context: context);
 
@@ -294,6 +313,21 @@ mixin _$Ielts on _Ielts, Store {
   set isScoring(bool value) {
     _$isScoringAtom.reportWrite(value, super.isScoring, () {
       super.isScoring = value;
+    });
+  }
+
+  late final _$countDownAtom = Atom(name: '_Ielts.countDown', context: context);
+
+  @override
+  int get countDown {
+    _$countDownAtom.reportRead();
+    return super.countDown;
+  }
+
+  @override
+  set countDown(int value) {
+    _$countDownAtom.reportWrite(value, super.countDown, () {
+      super.countDown = value;
     });
   }
 
@@ -520,6 +554,28 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void startTimer() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.startTimer');
+    try {
+      return super.startTimer();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  bool updateTimer() {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.updateTimer');
+    try {
+      return super.updateTimer();
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 allTests: ${allTests},
@@ -533,6 +589,7 @@ isPlaying: ${isPlaying},
 isRecording: ${isRecording},
 isChecking: ${isChecking},
 isScoring: ${isScoring},
+countDown: ${countDown},
 rc: ${rc},
 tests: ${tests},
 isCompSelected: ${isCompSelected},
@@ -551,7 +608,10 @@ partQuestions: ${partQuestions},
 writeQuestion: ${writeQuestion},
 writeQuestions: ${writeQuestions},
 speakQuestions: ${speakQuestions},
-isLastQuestion: ${isLastQuestion}
+isLastQuestion: ${isLastQuestion},
+hasTimer: ${hasTimer},
+timeLeft: ${timeLeft},
+isTimeLeftAlert: ${isTimeLeftAlert}
     ''';
   }
 }

@@ -36,6 +36,7 @@ class Question {
   String? score;
   String? subject = '';
   List<String>? choices = [];
+  List<String>? images = [];
 
   List<Choice> get choiceList =>
       (choices ?? []).map((x) => getChoice(x, this, this)).toList();
