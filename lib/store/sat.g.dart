@@ -189,6 +189,22 @@ mixin _$Sat on _Sat, Store {
     });
   }
 
+  late final _$currentParagraphAtom =
+      Atom(name: '_Sat.currentParagraph', context: context);
+
+  @override
+  Paragraph? get currentParagraph {
+    _$currentParagraphAtom.reportRead();
+    return super.currentParagraph;
+  }
+
+  @override
+  set currentParagraph(Paragraph? value) {
+    _$currentParagraphAtom.reportWrite(value, super.currentParagraph, () {
+      super.currentParagraph = value;
+    });
+  }
+
   late final _$partsAtom = Atom(name: '_Sat.parts', context: context);
 
   @override
@@ -201,6 +217,21 @@ mixin _$Sat on _Sat, Store {
   set parts(List<Part> value) {
     _$partsAtom.reportWrite(value, super.parts, () {
       super.parts = value;
+    });
+  }
+
+  late final _$paragraphsAtom = Atom(name: '_Sat.paragraphs', context: context);
+
+  @override
+  List<Paragraph> get paragraphs {
+    _$paragraphsAtom.reportRead();
+    return super.paragraphs;
+  }
+
+  @override
+  set paragraphs(List<Paragraph> value) {
+    _$paragraphsAtom.reportWrite(value, super.paragraphs, () {
+      super.paragraphs = value;
     });
   }
 
@@ -327,6 +358,14 @@ mixin _$Sat on _Sat, Store {
     return _$partSelectedAsyncAction.run(() => super.partSelected());
   }
 
+  late final _$paragraphSelectedAsyncAction =
+      AsyncAction('_Sat.paragraphSelected', context: context);
+
+  @override
+  Future<void> paragraphSelected() {
+    return _$paragraphSelectedAsyncAction.run(() => super.paragraphSelected());
+  }
+
   late final _$startRecordingAsyncAction =
       AsyncAction('_Sat.startRecording', context: context);
 
@@ -414,6 +453,28 @@ mixin _$Sat on _Sat, Store {
         _$_SatActionController.startAction(name: '_Sat.firstPart');
     try {
       return super.firstPart();
+    } finally {
+      _$_SatActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void nextParagraph(int step) {
+    final _$actionInfo =
+        _$_SatActionController.startAction(name: '_Sat.nextParagraph');
+    try {
+      return super.nextParagraph(step);
+    } finally {
+      _$_SatActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void firstParagraph() {
+    final _$actionInfo =
+        _$_SatActionController.startAction(name: '_Sat.firstParagraph');
+    try {
+      return super.firstParagraph();
     } finally {
       _$_SatActionController.endAction(_$actionInfo);
     }
@@ -532,7 +593,9 @@ allTests: ${allTests},
 test: ${test},
 component: ${component},
 part: ${part},
+currentParagraph: ${currentParagraph},
 parts: ${parts},
+paragraphs: ${paragraphs},
 group: ${group},
 questionIndex: ${questionIndex},
 isPlaying: ${isPlaying},
