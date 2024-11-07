@@ -2,12 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'ielts.g.dart';
 
-RegExp _choicePattern = RegExp(r'^(<.+>)?([A-Z])\.? (.+)$');
+RegExp _choicePattern = RegExp(r'^(<.+>)?([A-Z])[.)]? (.+)$');
 
 bool isChoice(String s) => _choicePattern.hasMatch(s);
 
 Choice getChoice(String s, Question q1, Question q2) {
-  final m = _choicePattern.firstMatch(s);
+  final m = _choicePattern.firstMatch(s.replaceAll('"', ''));
   return Choice(m!.group(2)!, m.group(3)!, q1, q2);
 }
 
