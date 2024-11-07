@@ -1,6 +1,8 @@
 import 'package:chatuni/widgets/ielts/component.dart';
+import 'package:chatuni/widgets/ielts/exams.dart';
+import 'package:chatuni/widgets/ielts/ielts_tests.dart';
 import 'package:chatuni/widgets/ielts/result.dart';
-import 'package:chatuni/widgets/ielts/tests.dart';
+import 'package:chatuni/widgets/sat/sat_tests.dart';
 import 'package:chatuni/widgets/sat/satcomponent.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,8 +33,12 @@ final router = GoRouter(
       builder: (c, s) => membership(),
     ),
     GoRoute(
+      path: '/exams',
+      builder: (c, s) => exams(),
+    ),
+    GoRoute(
       path: '/ielts',
-      builder: (c, s) => test(),
+      builder: (c, s) => ieltsTests(),
     ),
     GoRoute(
       path: '/ielts_component',
@@ -41,6 +47,10 @@ final router = GoRouter(
     GoRoute(
       path: '/ielts_result',
       builder: (c, s) => result(),
+    ),
+    GoRoute(
+      path: '/sat',
+      builder: (c, s) => satTests(),
     ),
     GoRoute(
       path: '/sat_component',

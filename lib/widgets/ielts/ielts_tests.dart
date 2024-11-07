@@ -1,7 +1,6 @@
 import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/ielts.dart';
-import 'package:chatuni/store/sat.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
@@ -10,12 +9,11 @@ import 'package:chatuni/widgets/common/text.dart';
 import 'package:chatuni/widgets/scaffold/scaffold.dart';
 import 'package:flutter/widgets.dart';
 
-Widget test() => scaffold(
+Widget ieltsTests() => scaffold(
       vContainer(
         [
           vSpacer(10),
           _tests(),
-          _sattests(),
         ],
       ),
       title: 'Ielts',
@@ -49,30 +47,3 @@ Widget _tests() => obs<Ielts>(
             .toList(),
       ),
     );
-Widget _sattests() => obs<Sat>(
-      (sat) => button(
-        () {
-          sat.nextTest();
-
-          //display
-          router.go('/sat_component');
-        },
-        text: 'Sat Practice Test 1',
-      ),
-    );
-// Widget _sattests() => obs<Sat>(
-//       (sat) => ccCol(
-//         sat.tests
-//             .map(
-//               (e) => pBox(bEdge(8))(
-//                 vCard([
-//                   pipe([bold, left, pBox(aEdge(8))])('SAT'),
-//                   grid(
-                    
-//                   ),
-//                 ]),
-//               ),
-//             )
-//             .toList(),
-//       ),
-//     );

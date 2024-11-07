@@ -8,6 +8,7 @@ ButtonStyleButton button(
   IconData? icon,
   String text = '',
   Color bgColor = Colors.blue,
+  Color color = Colors.white,
   bool outline = false,
   double size = 16,
 }) {
@@ -25,7 +26,7 @@ ButtonStyleButton button(
   }
 
   children.add(
-    txt(text, color: outline ? Colors.black : Colors.white, size: size),
+    txt(text, color: outline ? Colors.black : color, size: size),
   );
 
   return outline

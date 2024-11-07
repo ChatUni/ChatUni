@@ -58,8 +58,8 @@ List<InkWell> buildIcons(App app, BuildContext context) {
   );
   InkWell courseIcon = menuIcon(
     Icons.menu_book_rounded,
-    'Ielts',
-    () => context.go('/ielts'),
+    'Exam',
+    () => context.go('/exams'),
     // () => launch('https://en.chatuni.com.cn/#/level', isNewTab: true),
     isSelected: app.routeGroup == RouteGroup.course,
   );
