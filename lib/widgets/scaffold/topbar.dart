@@ -1,5 +1,5 @@
 import 'package:chatuni/store/app.dart';
-import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/store/sat.dart';
 import 'package:chatuni/store/tutors.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
@@ -52,11 +52,11 @@ BoxDecoration _headerImg = const BoxDecoration(
 );
 
 List<Widget> _actions = [
-  obs<Ielts>(
-    (ielts) => pBox(rEdge(8))(
+  obs<Sat>(
+    (sat) => pBox(rEdge(8))(
       txt(
-        '${ielts.timeLeft}${ielts.rc > 0 ? '' : ''}',
-        color: ielts.isTimeLeftAlert ? Colors.red : Colors.white,
+        '${sat.timeLeftSat}${sat.rc > 0 ? '' : ''}',
+        color: sat.isTimeLeftAlertSat ? Colors.red : Colors.white,
         bold: true,
       ),
     ),

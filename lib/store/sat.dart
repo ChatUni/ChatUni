@@ -3,6 +3,7 @@ import 'package:chatuni/io/recognizer.dart';
 import 'package:chatuni/io/videoplayer.dart';
 import 'package:chatuni/models/ielts.dart';
 import 'package:chatuni/utils/const.dart';
+import 'package:chatuni/utils/event.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:mobx/mobx.dart';
@@ -15,7 +16,16 @@ part 'sat.g.dart';
 class Sat = _Sat with _$Sat;
 
 // const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
-const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
+const List<String> comps = [
+  'Listening',
+  'Reading and Writing',
+  'Writing',
+  'Speaking'
+];
+const int _timeLimit = 10;
+const int _timeAlert = 5;
+
+const onCountdownEvent = 'SAT_Countdown';
 
 abstract class _Sat with Store {
   final Player _player = Player();
@@ -23,6 +33,7 @@ abstract class _Sat with Store {
   // final Recorder _recorder = Recorder();
   final Recognizer _stt = Recognizer();
   int currentIndex = 0;
+  int _tid = 0;
 
   get videoControllers => _videoPlayer.controllers;
 
@@ -64,6 +75,9 @@ abstract class _Sat with Store {
 
   @observable
   bool isScoring = false;
+
+  @observable
+  int countDown = 0;
 
   @observable
   int rc = 0;
@@ -130,6 +144,19 @@ abstract class _Sat with Store {
   @computed
   bool get isLastQuestion => questionIndex == partQuestions.length - 1;
 
+  @computed
+  bool get hasTimer => !isChecking && compIndex > 0 && compIndex < 3;
+
+  @computed
+  String get timeLeftSat => hasTimer
+      ? RegExp('^\\d{1,2}:(\\d+):(\\d+)\\.')
+          .firstMatch(Duration(seconds: countDown).toString())!
+          .groups([1, 2]).join(':')
+      : '';
+
+  @computed
+  bool get isTimeLeftAlertSat => countDown < _timeAlert;
+
   @action
   Future<void> loadTests() async {
     allTests.clear();
@@ -181,6 +208,7 @@ abstract class _Sat with Store {
     } else {
       component = comps[idx];
       parts = allComps[idx];
+      startTimer();
       firstPart();
     }
   }
@@ -371,6 +399,30 @@ abstract class _Sat with Store {
       }
     }
     isScoring = false;
+  }
+
+  @action
+  void startTimer() {
+    if (_tid > 0) stopTimer(_tid);
+    if (hasTimer) {
+      countDown = _timeLimit;
+      _tid = timer(1, updateTimer);
+    }
+  }
+
+  @action
+  bool updateTimer() {
+    if (countDown > 0) {
+      countDown--;
+      rc++;
+    }
+    if (countDown == 0) {
+      _tid = 0;
+      raiseEvent(onCountdownEvent, true);
+      nextComp(1);
+      return true;
+    }
+    return false;
   }
 
   List<Question> getPartQuestions(Part? part) => part == null
