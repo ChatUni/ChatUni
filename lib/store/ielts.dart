@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/io/player.dart';
 import 'package:chatuni/io/recognizer.dart';
 import 'package:chatuni/io/videoplayer.dart';
@@ -113,6 +114,10 @@ abstract class _Ielts with Store {
 
   @computed
   List<Part> get allParts => allComps.expand((c) => c).toList();
+
+  @computed
+  List<Question> get allQuestions =>
+      lidx(comps).expand(getCompQuestions).toList();
 
   @computed
   List<Question> get partQuestions => getPartQuestions(part);
@@ -321,6 +326,31 @@ abstract class _Ielts with Store {
   }
 
   @action
+  Future saveTestResult() async {
+    final qs = allQuestions
+        .where(
+          (q) =>
+              q.userAnswer != null &&
+              q.answer != null &&
+              q.userAnswer != q.answer,
+        )
+        .map(
+          (q) => Question()
+            ..number = q.number
+            ..score = q.score
+            ..answer = q.answer
+            ..userAnswer = q.userAnswer,
+        )
+        .toList();
+    final result = Result()
+      ..userId = auth.user!.id
+      ..type = 'ielts'
+      ..testId = test!.id
+      ..questions = qs;
+    await saveResult(result);
+  }
+
+  @action
   void startTimer() {
     if (_tid > 0) stopTimer(_tid);
     if (hasTimer) {
@@ -365,13 +395,13 @@ abstract class _Ielts with Store {
 
   int nextCompIndex(int step) => (compIndex + step).clamp(0, comps.length - 1);
 
-  List<Question> allQuestions(int comp) =>
+  List<Question> getCompQuestions(int comp) =>
       allComps[comp].expand(getPartQuestions).toList();
 
   int numOfCorrect(int comp) =>
-      allQuestions(comp).where((q) => q.answer == q.userAnswer).length;
+      getCompQuestions(comp).where((q) => q.answer == q.userAnswer).length;
 
-  List<int> incorrectQuestions(int comp) => allQuestions(comp)
+  List<int> incorrectQuestions(int comp) => getCompQuestions(comp)
       .where((q) => q.answer != q.userAnswer)
       .map((q) => q.number)
       .toList();

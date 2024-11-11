@@ -132,3 +132,18 @@ class Test {
 
   Map<String, dynamic> toJson() => _$TestToJson(this);
 }
+
+@JsonSerializable()
+class Result {
+  String userId = '';
+  String testId = '';
+  String type = '';
+  String date = '';
+  List<Question> questions = [];
+
+  Result();
+
+  factory Result.fromJson(Map<String, dynamic> json) => _$ResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ResultToJson(this);
+}

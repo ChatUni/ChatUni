@@ -15,8 +15,8 @@ export const isDev =
 export const isProd = process?.env.NODE_ENV
   ? true
   : ['production', 'prod'].includes(process.env.NODE_ENV.toLowerCase())
-export const HOST = isDev ? 'http://localhost:701/' : 'https://chatuni.netlify.app/'
-export const DB  = (type, doc) => `${HOST}.netlify/functions/api?type=${type}&db=1&doc=${doc}`
+//export const HOST = isDev ? 'http://localhost:701/' : 'https://chatuni.netlify.app/'
+export const DB  = (type, doc) => `/.netlify/functions/api?type=${type}&db=1&doc=${doc}`
 export const get = (url, headers) => axios.get(tap(url), { headers: headers || {}}).then(r => r.data)
 export const post = (url, data, headers) => axios.post(tap(url), data, { headers: headers || {}}).then(r => r.data)
 export const patch = (url, data, headers) => axios.patch(tap(url), data, { headers: headers || {}}).then(r => r.data)
@@ -47,6 +47,8 @@ export const makeApi =
     const isForm = (event.headers?.['content-type'] || '').includes('multipart/form-data')
     let body = method === 'post' && !isForm && tryc(() => JSON.parse(event.body))
     origin = event.rawUrl.slice(0, event.rawUrl.indexOf(FUNC) + FUNC.length)
+
+    if (method === 'options') return res('');
 
     return tryc(
       async () => {

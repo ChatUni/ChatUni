@@ -93,3 +93,20 @@ Map<String, dynamic> _$TestToJson(Test instance) => <String, dynamic>{
       'write': instance.write,
       'speak': instance.speak,
     };
+
+Result _$ResultFromJson(Map<String, dynamic> json) => Result()
+  ..userId = json['userId'] as String
+  ..testId = json['testId'] as String
+  ..type = json['type'] as String
+  ..date = json['date'] as String
+  ..questions = (json['questions'] as List<dynamic>)
+      .map((e) => Question.fromJson(e as Map<String, dynamic>))
+      .toList();
+
+Map<String, dynamic> _$ResultToJson(Result instance) => <String, dynamic>{
+      'userId': instance.userId,
+      'testId': instance.testId,
+      'type': instance.type,
+      'date': instance.date,
+      'questions': instance.questions,
+    };

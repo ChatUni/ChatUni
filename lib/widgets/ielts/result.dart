@@ -48,7 +48,7 @@ Widget _score(int comp) => obs<Ielts>(
       (ielts) => comp < 2
           ? _row(
               'Score',
-              '${ielts.numOfCorrect(comp)}/${ielts.allQuestions(comp).length}',
+              '${ielts.numOfCorrect(comp)}/${ielts.getCompQuestions(comp).length}',
             )
           : comp == 2
               ? ssCol(

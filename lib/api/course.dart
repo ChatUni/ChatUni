@@ -29,4 +29,14 @@ Future<List<Test>> fetchsat() async {
 }
 
 Future<String> writeScore(String txt) async =>
-    await get('score', params: {'type': 'score', 'msg': txt});
+    await get('course', params: {'type': 'score', 'msg': txt});
+
+Future<List<Test>> saveResult(Result result) async {
+  result.date = DateTime.now().toUtc().toString();
+  final r = await post(
+    'course',
+    params: {'type': 'saveResult'},
+    data: {'result': result},
+  );
+  return (r as List).map((t) => Test.fromJson(t)).toList();
+}

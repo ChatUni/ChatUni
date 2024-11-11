@@ -93,6 +93,13 @@ mixin _$Ielts on _Ielts, Store {
   List<Part> get allParts => (_$allPartsComputed ??=
           Computed<List<Part>>(() => super.allParts, name: '_Ielts.allParts'))
       .value;
+  Computed<List<Question>>? _$allQuestionsComputed;
+
+  @override
+  List<Question> get allQuestions => (_$allQuestionsComputed ??=
+          Computed<List<Question>>(() => super.allQuestions,
+              name: '_Ielts.allQuestions'))
+      .value;
   Computed<List<Question>>? _$partQuestionsComputed;
 
   @override
@@ -385,6 +392,14 @@ mixin _$Ielts on _Ielts, Store {
     return _$scoreAsyncAction.run(() => super.score());
   }
 
+  late final _$saveTestResultAsyncAction =
+      AsyncAction('_Ielts.saveTestResult', context: context);
+
+  @override
+  Future<dynamic> saveTestResult() {
+    return _$saveTestResultAsyncAction.run(() => super.saveTestResult());
+  }
+
   late final _$_IeltsActionController =
       ActionController(name: '_Ielts', context: context);
 
@@ -604,6 +619,7 @@ isFirstComp: ${isFirstComp},
 isLastComp: ${isLastComp},
 allComps: ${allComps},
 allParts: ${allParts},
+allQuestions: ${allQuestions},
 partQuestions: ${partQuestions},
 writeQuestion: ${writeQuestion},
 writeQuestions: ${writeQuestions},

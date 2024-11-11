@@ -16,8 +16,8 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider<App>(create: (_) => App()),
-        Provider<Auth>(create: (_) => Auth()),
+        Provider<App>(create: (_) => globals.app),
+        Provider<Auth>(create: (_) => globals.auth),
         Provider<Ielts>(create: (_) => Ielts()),
         Provider<Tutors>(create: (_) => Tutors()),
         Provider<Sat>(create: (_) => Sat()),

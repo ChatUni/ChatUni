@@ -26,7 +26,7 @@ Widget tutor() => obs<Tutors>(
       ),
     );
 
-Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
+Widget _tutors(bool isScenario) => obs<Tutors>((tutors) {
       tutors.clearTutor();
       tutors.setScenario(isScenario);
 
@@ -36,3 +36,6 @@ Widget tutors(bool isScenario) => obs<Tutors>((tutors) {
         routeGroup: isScenario ? RouteGroup.scenario : RouteGroup.tutor,
       );
     });
+
+Widget tutors() => _tutors(false);
+Widget scenarios() => _tutors(true);
