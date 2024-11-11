@@ -471,6 +471,7 @@ abstract class _Ielts with Store {
 
   _Ielts() {
     loadTests();
+    loadResults();
   }
 
   void dispose() {
