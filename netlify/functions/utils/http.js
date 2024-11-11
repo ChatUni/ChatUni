@@ -53,21 +53,17 @@ export const makeApi =
 
     return tryc(
       async () => {
-        let h = db_handlers[method]
-        if (h) await connect()
-        else h = handlers[method]
-        if (h) {
-          const t = h[q.type]
-          if (t) {
-            initAI && (await initAI())
-            if (q.params) q.params = JSON.parse(q.params)
-            if (isForm) body = await parseForm(event)
-            // const r = await t(q, body, event, Response)
-            const r = await t(q, body, event)
-            return res(r || 'done', 200, nocache, q.returnType)
-          }
-        }
-        return res('', 404)        
+        let t = db_handlers[method]?.[q.type]
+        if (t) await connect()
+        else t = handlers[method]?.[q.type]
+        if (!t) return res('', 404)        
+
+        initAI && (await initAI())
+        if (q.params) q.params = JSON.parse(q.params)
+        if (isForm) body = await parseForm(event)
+        // const r = await t(q, body, event, Response)
+        const r = await t(q, body, event)
+        return res(r || 'done', 200, nocache, q.returnType)
       },
       e => res(e, 500)
     )
