@@ -4,6 +4,7 @@ import 'package:chatuni/widgets/ielts/component.dart';
 import 'package:chatuni/widgets/ielts/exams.dart';
 import 'package:chatuni/widgets/ielts/ielts_tests.dart';
 import 'package:chatuni/widgets/ielts/result.dart';
+import 'package:chatuni/widgets/my/history.dart';
 import 'package:chatuni/widgets/my/login.dart';
 import 'package:chatuni/widgets/my/profile.dart';
 import 'package:chatuni/widgets/sat/sat_tests.dart';
@@ -46,6 +47,10 @@ final router = GoRouter(
     GoRoute(
       path: '/membership',
       builder: go(membership),
+    ),
+    GoRoute(
+      path: '/history',
+      builder: go(history),
     ),
     GoRoute(
       path: '/exams',

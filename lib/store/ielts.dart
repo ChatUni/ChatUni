@@ -68,6 +68,12 @@ abstract class _Ielts with Store {
   int countDown = 0;
 
   @observable
+  List<Result> results = [];
+
+  @observable
+  Result? result;
+
+  @observable
   int rc = 0;
 
   @computed
@@ -323,6 +329,11 @@ abstract class _Ielts with Store {
       }
     }
     isScoring = false;
+  }
+
+  @action
+  Future loadResults() async {
+    results = await fetchResults();
   }
 
   @action

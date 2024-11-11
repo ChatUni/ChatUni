@@ -1,5 +1,5 @@
 import { makeApi } from './utils/http'
-import { getIelts, getSAT, saveResult } from './utils/course'
+import { getIelts, getSAT, getResults, saveResult } from './utils/course'
 import { score } from './utils/gemini'
 
 export const handler = makeApi({
@@ -7,6 +7,7 @@ export const handler = makeApi({
     get: {
       ielts: q => getIelts(),
       sat: q => getSAT(),
+      results: q => getResults(),
     },
     post: {
       saveResult: (q, b) => saveResult(b.result),
