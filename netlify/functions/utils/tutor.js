@@ -1,10 +1,10 @@
-import { DB, get, post } from './http'
 import { sortBy } from 'lodash'
+import { get, getById, save } from './db'
 
-export const getTutors = () => get(DB('doc', 'tutors')).then(r => sortBy(r, [x => x.lang === 'English' ? 0 : 1, 'id']))
+export const getTutors = () => get('tutors').then(r => sortBy(r, [x => x.lang === 'English' ? 0 : 1, 'id']))
 
 export const saveChatId = async (id, chatId) => {
-  const tutor = await get(`${DB('getById', 'tutors')}&params={"id":${id}}`)
+  const tutor = await getById('tutors', id)
   tutor.chatId = chatId
-  await post(DB('save', 'tutors'), tutor)
+  await save('tutors', tutor)
 }

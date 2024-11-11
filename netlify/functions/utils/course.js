@@ -1,11 +1,11 @@
 import { sortBy } from 'lodash'
-import { DB, get, post } from './http'
+import { get, maxId, save } from './db'
 
-export const getIelts = () => get(DB('doc', 'ielts')).then(r => sortBy(r, 'id'))
-export const getSAT = () => get(DB('doc', 'sat')).then(r => sortBy(r, 'id'))
+export const getIelts = () => get('ielts').then(r => sortBy(r, 'id'))
+export const getSAT = () => get('sat').then(r => sortBy(r, 'id'))
 
 export const saveResult = async result => {
-  if (!result.id) result.id = (await get(DB('maxId', 'result'))) + 1
-  await post(DB('save', 'result'), result)
+  if (!result.id) result.id = (await maxId('result')) + 1
+  await save('result', result)
   return result
 }
