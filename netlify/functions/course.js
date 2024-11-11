@@ -3,15 +3,19 @@ import { getIelts, getSAT, saveResult } from './utils/course'
 import { score } from './utils/gemini'
 
 export const handler = makeApi({
-  handlers: {
+  db_handlers: {
     get: {
       ielts: q => getIelts(),
       sat: q => getSAT(),
-      score: q => score(q.msg),
     },
     post: {
       saveResult: (q, b) => saveResult(b.result),
-    }
+    },
+  },
+  handlers: {
+    get: {
+      score: q => score(q.msg),
+    },
   },
   nocache: true,
 })
