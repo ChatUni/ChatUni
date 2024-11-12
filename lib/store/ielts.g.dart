@@ -338,6 +338,36 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$resultsAtom = Atom(name: '_Ielts.results', context: context);
+
+  @override
+  List<Result> get results {
+    _$resultsAtom.reportRead();
+    return super.results;
+  }
+
+  @override
+  set results(List<Result> value) {
+    _$resultsAtom.reportWrite(value, super.results, () {
+      super.results = value;
+    });
+  }
+
+  late final _$resultAtom = Atom(name: '_Ielts.result', context: context);
+
+  @override
+  Result? get result {
+    _$resultAtom.reportRead();
+    return super.result;
+  }
+
+  @override
+  set result(Result? value) {
+    _$resultAtom.reportWrite(value, super.result, () {
+      super.result = value;
+    });
+  }
+
   late final _$rcAtom = Atom(name: '_Ielts.rc', context: context);
 
   @override
@@ -390,6 +420,14 @@ mixin _$Ielts on _Ielts, Store {
   @override
   Future<dynamic> score() {
     return _$scoreAsyncAction.run(() => super.score());
+  }
+
+  late final _$loadResultsAsyncAction =
+      AsyncAction('_Ielts.loadResults', context: context);
+
+  @override
+  Future<dynamic> loadResults() {
+    return _$loadResultsAsyncAction.run(() => super.loadResults());
   }
 
   late final _$saveTestResultAsyncAction =
@@ -569,6 +607,17 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void loadResult(Result result) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.loadResult');
+    try {
+      return super.loadResult(result);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void startTimer() {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.startTimer');
@@ -605,6 +654,8 @@ isRecording: ${isRecording},
 isChecking: ${isChecking},
 isScoring: ${isScoring},
 countDown: ${countDown},
+results: ${results},
+result: ${result},
 rc: ${rc},
 tests: ${tests},
 isCompSelected: ${isCompSelected},

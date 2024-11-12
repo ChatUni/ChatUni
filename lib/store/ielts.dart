@@ -17,8 +17,8 @@ class Ielts = _Ielts with _$Ielts;
 
 const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
 const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
-const int _timeLimit = 10;
-const int _timeAlert = 5;
+const int _timeLimit = 60 * 60;
+const int _timeAlert = 5 * 60;
 
 const onCountdownEvent = 'Ielts_Countdown';
 
@@ -334,6 +334,18 @@ abstract class _Ielts with Store {
   @action
   Future loadResults() async {
     results = await fetchResults();
+  }
+
+  @action
+  void loadResult(Result result) {
+    final t = allTests.firstWhere((x) => x.id == result.testId);
+    selectTest(t);
+    result.questions.forEach((q) {
+      final q1 =
+          getCompQuestions(q.comp!).firstWhere((x) => x.number == q.number);
+      q1.userAnswer = q.userAnswer;
+      q1.score = q.score;
+    });
   }
 
   @action

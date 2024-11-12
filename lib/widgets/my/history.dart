@@ -1,4 +1,6 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -22,7 +24,16 @@ Widget history() => scaffold(
 Observer _history = obs<Ielts>(
   (ielts) => vCard(
     ielts.results
-        .map((r) => menuItem(Icons.logout, r.testId, onTap: () {}))
+        .map(
+          (r) => menuItem(
+            Icons.history,
+            'IELTS ${r.testId} ${dateString(r.date)}',
+            onTap: () {
+              ielts.loadResult(r);
+              router.go('/ielts_result');
+            },
+          ),
+        )
         .toList(),
   ),
 );
