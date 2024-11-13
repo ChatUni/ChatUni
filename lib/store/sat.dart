@@ -12,6 +12,7 @@ import '/api/course.dart';
 
 part 'sat.g.dart';
 
+//test change
 // ignore: library_private_types_in_public_api
 class Sat = _Sat with _$Sat;
 
