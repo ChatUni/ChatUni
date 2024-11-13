@@ -10,7 +10,25 @@ Widget satcomponent() => obs<Sat>(
       (sat) => sat.component == null
           ? vSpacer(1)
           : ieltsScaffold(
-              sat.component!,
+              sat.part!.name.split('-')[0], //sat.component!,
+              [
+                //...header(sat.component!, sat.part!.name),
+                vSpacer(12),
+                ...sat.isScoring
+                    ? [spinner]
+                    : [
+                        ...body(sat.part!.groups),
+                        ...nav(sat.isChecking),
+                      ],
+              ],
+            ),
+    );
+
+Widget satcomponent1() => obs<Sat>(
+      (sat) => sat.component == null
+          ? vSpacer(1)
+          : ieltsScaffold(
+              sat.part!.name.split('-')[0], //sat.component!,
               [
                 //...header(sat.component!, sat.part!.name),
                 vSpacer(12),
@@ -25,11 +43,11 @@ Widget satcomponent() => obs<Sat>(
     );
 
 List<Widget> header(String comp, String part) => [
-      title(),
+      //title(),
       vSpacer(8),
-      left(h3('SAT')),
-      vSpacer(6),
-      left(h3('SAT')),
+      //left(h3('SAT')),
+      //vSpacer(6),
+      left(h3(part)),
       vSpacer(12),
     ];
 

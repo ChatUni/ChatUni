@@ -12,6 +12,8 @@ Widget satTests() => scaffold(
         [
           vSpacer(10),
           _tests(),
+          vSpacer(5),
+          _tests1(),
         ],
       ),
       title: 'SAT',
@@ -27,5 +29,17 @@ Widget _tests() => obs<Sat>(
           router.go('/sat_component');
         },
         text: 'Sat Practice Test 1',
+      ),
+    );
+
+Widget _tests1() => obs<Sat>(
+      (sat) => button(
+        () {
+          sat.nextTest();
+
+          //display
+          router.go('/sat_component1');
+        },
+        text: 'Sat Practice Test 2',
       ),
     );

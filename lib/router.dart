@@ -78,6 +78,10 @@ final router = GoRouter(
       builder: go(satcomponent),
     ),
     GoRoute(
+      path: '/sat_component1',
+      builder: go(satcomponent1),
+    ),
+    GoRoute(
       path: '/ielts_sat_result',
       builder: (c, s) => resultSat(),
     ),

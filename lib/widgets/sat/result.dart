@@ -25,7 +25,7 @@ Widget resultSat() => scaffold(
 
 Widget _resultSat() => ccCol([
       h1('Test Sat Results'),
-      _compResult(3),
+      _compResult(1),
       vSpacer(16),
     ]);
 

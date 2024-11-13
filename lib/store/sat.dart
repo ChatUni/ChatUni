@@ -18,11 +18,13 @@ class Sat = _Sat with _$Sat;
 // const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
 const List<String> comps = [
   'Listening',
-  'Reading and Writing', // Reading and Writing , Math
-  'Writing',
-  'Speaking',
+  'Reading Writing',
+  //'Math',
+  // Reading and Writing , Math
+  // 'Writing',
+  // 'Speaking',
 ];
-const int _timeLimit = 10;
+const int _timeLimit = 100 * 100;
 const int _timeAlert = 5;
 
 const onCountdownEvent = 'SAT_Countdown';
@@ -179,26 +181,26 @@ abstract class _Sat with Store {
     print("""'Next Test' ${allTests.length}""");
     test = allTests[(currentIndex + 1) % allTests.length];
 
-    test!.speak.forEach((s) {
-      s.groups.forEach((g) {
-        paragraphs.addAll(g.paragraphs);
+    int index = 0;
+    test!.write.forEach((p) {
+      p.groups.forEach((g) {
+        g.paragraphs.forEach((p1) {
+          Group group1 = Group();
+          group1.paragraphs = [p1];
+          Part part1 = Part();
+          part1.name = '${p.name}-$index';
+          part1.groups = [group1];
+          test!.read.add(part1);
+          index++;
+        });
       });
     });
-    test!.speak.clear();
-    int index = 0;
-    paragraphs.forEach((para) {
-      Group group1 = Group();
-      group1.paragraphs = [para];
-      Part part1 = Part();
-      part1.name = index.toString();
-      part1.groups = [group1];
-      test!.speak.add(part1);
-      index++;
-    });
+    test!.write.clear();
+
     //currentParagraph = part!.groups.write.paragraphs.first;
-    part = test!.speak.first;
+    part = test!.read.first;
     _resetTest();
-    setComp(3);
+    setComp(1);
     isChecking = false;
   }
 
