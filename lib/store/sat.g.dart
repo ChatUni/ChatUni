@@ -128,6 +128,25 @@ mixin _$Sat on _Sat, Store {
       (_$isLastQuestionComputed ??= Computed<bool>(() => super.isLastQuestion,
               name: '_Sat.isLastQuestion'))
           .value;
+  Computed<bool>? _$hasTimerComputed;
+
+  @override
+  bool get hasTimer => (_$hasTimerComputed ??=
+          Computed<bool>(() => super.hasTimer, name: '_Sat.hasTimer'))
+      .value;
+  Computed<String>? _$timeLeftSatComputed;
+
+  @override
+  String get timeLeftSat => (_$timeLeftSatComputed ??=
+          Computed<String>(() => super.timeLeftSat, name: '_Sat.timeLeftSat'))
+      .value;
+  Computed<bool>? _$isTimeLeftAlertSatComputed;
+
+  @override
+  bool get isTimeLeftAlertSat => (_$isTimeLeftAlertSatComputed ??=
+          Computed<bool>(() => super.isTimeLeftAlertSat,
+              name: '_Sat.isTimeLeftAlertSat'))
+      .value;
 
   late final _$allTestsAtom = Atom(name: '_Sat.allTests', context: context);
 
@@ -324,6 +343,21 @@ mixin _$Sat on _Sat, Store {
   set isScoring(bool value) {
     _$isScoringAtom.reportWrite(value, super.isScoring, () {
       super.isScoring = value;
+    });
+  }
+
+  late final _$countDownAtom = Atom(name: '_Sat.countDown', context: context);
+
+  @override
+  int get countDown {
+    _$countDownAtom.reportRead();
+    return super.countDown;
+  }
+
+  @override
+  set countDown(int value) {
+    _$countDownAtom.reportWrite(value, super.countDown, () {
+      super.countDown = value;
     });
   }
 
@@ -587,6 +621,28 @@ mixin _$Sat on _Sat, Store {
   }
 
   @override
+  void startTimer() {
+    final _$actionInfo =
+        _$_SatActionController.startAction(name: '_Sat.startTimer');
+    try {
+      return super.startTimer();
+    } finally {
+      _$_SatActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  bool updateTimer() {
+    final _$actionInfo =
+        _$_SatActionController.startAction(name: '_Sat.updateTimer');
+    try {
+      return super.updateTimer();
+    } finally {
+      _$_SatActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 allTests: ${allTests},
@@ -602,6 +658,7 @@ isPlaying: ${isPlaying},
 isRecording: ${isRecording},
 isChecking: ${isChecking},
 isScoring: ${isScoring},
+countDown: ${countDown},
 rc: ${rc},
 tests: ${tests},
 isCompSelected: ${isCompSelected},
@@ -620,7 +677,10 @@ partQuestions: ${partQuestions},
 writeQuestion: ${writeQuestion},
 writeQuestions: ${writeQuestions},
 speakQuestions: ${speakQuestions},
-isLastQuestion: ${isLastQuestion}
+isLastQuestion: ${isLastQuestion},
+hasTimer: ${hasTimer},
+timeLeftSat: ${timeLeftSat},
+isTimeLeftAlertSat: ${isTimeLeftAlertSat}
     ''';
   }
 }

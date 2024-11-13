@@ -257,7 +257,7 @@ Widget prevNextSat() => obs<Sat>(
                     : () async {
                         if (sat.isLastComp) {
                           await sat.score();
-                          router.go('/ielts_result');
+                          router.go('/ielts_sat_result');
                         } else {
                           sat.nextComp(1);
                         }
@@ -277,6 +277,14 @@ Widget showResult(bool isChecking) => isChecking
     ? button(
         () => router.go('/ielts_result'),
         text: 'Show Results',
+        bgColor: Colors.orange,
+      )
+    : vSpacer(1);
+
+Widget showSatResult(bool isChecking) => isChecking
+    ? button(
+        () => router.go('/ielts_sat_result'),
+        text: 'Show Sat Results',
         bgColor: Colors.orange,
       )
     : vSpacer(1);

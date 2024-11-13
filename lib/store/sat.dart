@@ -18,9 +18,9 @@ class Sat = _Sat with _$Sat;
 // const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
 const List<String> comps = [
   'Listening',
-  'Reading and Writing',
+  'Reading and Writing', // Reading and Writing , Math
   'Writing',
-  'Speaking'
+  'Speaking',
 ];
 const int _timeLimit = 10;
 const int _timeAlert = 5;
@@ -103,7 +103,8 @@ abstract class _Sat with Store {
   bool get isFirstPart => partIndex == 0;
 
   @computed
-  bool get isLastPart => isPartSelected && partIndex == parts.length - 1;
+  bool get isLastPart =>
+      (isPartSelected && partIndex == parts.length - 1) || parts.isEmpty;
 
   @computed
   int get compIndex => isCompSelected ? comps.indexOf(component!) : -1;
@@ -178,12 +179,12 @@ abstract class _Sat with Store {
     print("""'Next Test' ${allTests.length}""");
     test = allTests[(currentIndex + 1) % allTests.length];
 
-    test!.read.forEach((s) {
+    test!.speak.forEach((s) {
       s.groups.forEach((g) {
         paragraphs.addAll(g.paragraphs);
       });
     });
-    test!.read.clear();
+    test!.speak.clear();
     int index = 0;
     paragraphs.forEach((para) {
       Group group1 = Group();
@@ -191,13 +192,13 @@ abstract class _Sat with Store {
       Part part1 = Part();
       part1.name = index.toString();
       part1.groups = [group1];
-      test!.read.add(part1);
+      test!.speak.add(part1);
       index++;
     });
     //currentParagraph = part!.groups.write.paragraphs.first;
-    part = test!.read.first;
+    part = test!.speak.first;
     _resetTest();
-    setComp(1);
+    setComp(3);
     isChecking = false;
   }
 

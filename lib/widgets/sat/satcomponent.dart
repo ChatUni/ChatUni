@@ -41,5 +41,5 @@ List<Widget> body(List<Group> g) => [
 List<Widget> nav(bool isChecking) => [
       prevNextSat(),
       vSpacer(8),
-      showResult(isChecking),
+      showSatResult(isChecking),
     ];

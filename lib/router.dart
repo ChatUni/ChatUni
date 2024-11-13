@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'widgets/my/account.dart';
 import 'widgets/my/membership.dart';
+import 'widgets/sat/result.dart';
 import 'widgets/tutor/tutor.dart';
 
 final router = GoRouter(
@@ -55,6 +56,10 @@ final router = GoRouter(
     GoRoute(
       path: '/sat_component',
       builder: (c, s) => satcomponent(),
+    ),
+    GoRoute(
+      path: '/ielts_sat_result',
+      builder: (c, s) => resultSat(),
     ),
   ],
 );
