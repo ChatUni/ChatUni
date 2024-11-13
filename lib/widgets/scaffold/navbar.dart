@@ -1,5 +1,5 @@
+import 'package:chatuni/router.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '/store/app.dart';
 import '/widgets/common/container.dart';
@@ -9,15 +9,15 @@ import '/widgets/common/text.dart';
 Color selectedColor = Colors.blue;
 Color nonSelectedColor = Colors.black45;
 
-Widget navBar() => obsc<App>(
-      (app, context) => BottomAppBar(
+Widget navBar() => obs<App>(
+      (app) => BottomAppBar(
         padding: hEdge(30),
         height: 50,
         shape: app.showMic ? const CircularNotchedRectangle() : null,
         notchMargin: 5,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: buildIcons(app, context),
+          children: buildIcons(app),
         ),
       ),
     );
@@ -47,33 +47,33 @@ InkWell menuIcon(
       ),
     );
 
-List<InkWell> buildIcons(App app, BuildContext context) {
+List<InkWell> buildIcons(App app) {
   List<InkWell> menuIcons = [];
 
   InkWell tutorIcon = menuIcon(
     Icons.school,
     'Tutor',
-    () => context.go('/'),
+    () => router.go('/tutors'),
     isSelected: app.routeGroup == RouteGroup.tutor,
   );
   InkWell courseIcon = menuIcon(
     Icons.menu_book_rounded,
     'Exam',
-    () => context.go('/exams'),
+    () => router.go('/exams'),
     // () => launch('https://en.chatuni.com.cn/#/level', isNewTab: true),
     isSelected: app.routeGroup == RouteGroup.course,
   );
   InkWell metaIcon = menuIcon(
     Icons.language,
     'Scene', // '元宇宙',
-    () => context.go('/scenario'),
+    () => router.go('/scenario'),
     // () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
     isSelected: app.routeGroup == RouteGroup.scenario,
   );
   InkWell accountIcon = menuIcon(
     Icons.person,
     'My',
-    () => context.go('/my'),
+    () => router.go('/profile'),
     isSelected: app.routeGroup == RouteGroup.my,
   );
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);

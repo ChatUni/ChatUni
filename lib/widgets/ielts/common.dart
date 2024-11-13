@@ -224,6 +224,7 @@ Widget prevNext() => obs<Ielts>(
                     : () async {
                         if (ielts.isLastComp) {
                           await ielts.score();
+                          ielts.saveTestResult();
                           router.go('/ielts_result');
                         } else {
                           ielts.nextComp(1);

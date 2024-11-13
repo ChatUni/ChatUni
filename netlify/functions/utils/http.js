@@ -1,6 +1,7 @@
 import axios from 'axios'
 import busboy from 'busboy'
 import { tap } from './util'
+import { connect } from './db'
 
 const FUNC = '/.netlify/functions/'
 const CONTENT_TYPES = { json: 'application/json', html: 'text/html', ast: 'application/json' }
@@ -39,7 +40,7 @@ export const res = (body, code, nocache, returnType) => ({
 })
 
 export const makeApi =
-  ({ handlers, connectDB, initAI, nocache }) =>
+  ({ handlers, db_handlers, initAI, nocache }) =>
   async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false
     const q = event.queryStringParameters
@@ -48,12 +49,16 @@ export const makeApi =
     let body = method === 'post' && !isForm && tryc(() => JSON.parse(event.body))
     origin = event.rawUrl.slice(0, event.rawUrl.indexOf(FUNC) + FUNC.length)
 
+    if (method === 'options') return res('');
+
     return tryc(
       async () => {
-        if (q.db) await connectDB()
+        let t = db_handlers[method]?.[q.type]
+        if (t) await connect()
+        else t = handlers[method]?.[q.type]
+        if (!t) return res('', 404)        
+
         initAI && (await initAI())
-        const t = handlers[method]?.[q.type]
-        if (!t) return res('', 404)
         if (q.params) q.params = JSON.parse(q.params)
         if (isForm) body = await parseForm(event)
         // const r = await t(q, body, event, Response)

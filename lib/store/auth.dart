@@ -8,7 +8,7 @@ import '/models/user.dart';
 
 part 'auth.g.dart';
 
-final countryCodes = ['+86', '+1'];
+final countryCodes = ['+1', '+86'];
 final paymentMethods = ['Wechat', 'Alipay'];
 
 class Auth = _Auth with _$Auth;

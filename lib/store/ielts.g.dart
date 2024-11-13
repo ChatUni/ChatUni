@@ -93,6 +93,13 @@ mixin _$Ielts on _Ielts, Store {
   List<Part> get allParts => (_$allPartsComputed ??=
           Computed<List<Part>>(() => super.allParts, name: '_Ielts.allParts'))
       .value;
+  Computed<List<Question>>? _$allQuestionsComputed;
+
+  @override
+  List<Question> get allQuestions => (_$allQuestionsComputed ??=
+          Computed<List<Question>>(() => super.allQuestions,
+              name: '_Ielts.allQuestions'))
+      .value;
   Computed<List<Question>>? _$partQuestionsComputed;
 
   @override
@@ -331,6 +338,36 @@ mixin _$Ielts on _Ielts, Store {
     });
   }
 
+  late final _$resultsAtom = Atom(name: '_Ielts.results', context: context);
+
+  @override
+  List<Result> get results {
+    _$resultsAtom.reportRead();
+    return super.results;
+  }
+
+  @override
+  set results(List<Result> value) {
+    _$resultsAtom.reportWrite(value, super.results, () {
+      super.results = value;
+    });
+  }
+
+  late final _$resultAtom = Atom(name: '_Ielts.result', context: context);
+
+  @override
+  Result? get result {
+    _$resultAtom.reportRead();
+    return super.result;
+  }
+
+  @override
+  set result(Result? value) {
+    _$resultAtom.reportWrite(value, super.result, () {
+      super.result = value;
+    });
+  }
+
   late final _$rcAtom = Atom(name: '_Ielts.rc', context: context);
 
   @override
@@ -383,6 +420,22 @@ mixin _$Ielts on _Ielts, Store {
   @override
   Future<dynamic> score() {
     return _$scoreAsyncAction.run(() => super.score());
+  }
+
+  late final _$loadResultsAsyncAction =
+      AsyncAction('_Ielts.loadResults', context: context);
+
+  @override
+  Future<dynamic> loadResults() {
+    return _$loadResultsAsyncAction.run(() => super.loadResults());
+  }
+
+  late final _$saveTestResultAsyncAction =
+      AsyncAction('_Ielts.saveTestResult', context: context);
+
+  @override
+  Future<dynamic> saveTestResult() {
+    return _$saveTestResultAsyncAction.run(() => super.saveTestResult());
   }
 
   late final _$_IeltsActionController =
@@ -554,6 +607,17 @@ mixin _$Ielts on _Ielts, Store {
   }
 
   @override
+  void loadResult(Result result) {
+    final _$actionInfo =
+        _$_IeltsActionController.startAction(name: '_Ielts.loadResult');
+    try {
+      return super.loadResult(result);
+    } finally {
+      _$_IeltsActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void startTimer() {
     final _$actionInfo =
         _$_IeltsActionController.startAction(name: '_Ielts.startTimer');
@@ -590,6 +654,8 @@ isRecording: ${isRecording},
 isChecking: ${isChecking},
 isScoring: ${isScoring},
 countDown: ${countDown},
+results: ${results},
+result: ${result},
 rc: ${rc},
 tests: ${tests},
 isCompSelected: ${isCompSelected},
@@ -604,6 +670,7 @@ isFirstComp: ${isFirstComp},
 isLastComp: ${isLastComp},
 allComps: ${allComps},
 allParts: ${allParts},
+allQuestions: ${allQuestions},
 partQuestions: ${partQuestions},
 writeQuestion: ${writeQuestion},
 writeQuestions: ${writeQuestions},

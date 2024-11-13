@@ -54,3 +54,8 @@ String Function(String) _cd(List<String> type) => (String name) =>
 String Function(String) cdImg = _cd(_cdTypes['img']!);
 String Function(String) cdMp3 = _cd(_cdTypes['mp3']!);
 String Function(String) cdMp4 = _cd(_cdTypes['mp4']!);
+
+String dateString(String utc) {
+  final d = DateTime.parse(utc).toLocal().toString();
+  return d.substring(0, d.length - 4);
+}

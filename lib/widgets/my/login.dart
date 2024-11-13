@@ -1,3 +1,4 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -74,6 +75,7 @@ Observer _loginButton = obs<Auth>(
         ? () async {
             await auth.login();
             snack('Login successful!');
+            router.go('/tutors');
           }
         : null,
     text: auth.isLoggingIn ? '' : 'Login',
