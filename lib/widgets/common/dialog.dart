@@ -11,8 +11,9 @@ Future dialog(BuildContext context, Widget d) => showDialog(
 SimpleDialog confirmDialog(
   String title,
   List<Widget> children,
-  void Function() onConfirm,
-) =>
+  void Function() onConfirm, {
+  bool hasCancel = true,
+}) =>
     SimpleDialog(
       title: Text(title),
       shape: const RoundedRectangleBorder(
@@ -22,10 +23,12 @@ SimpleDialog confirmDialog(
         ...children,
         vSpacer(10),
         ecRow([
-          SimpleDialogOption(
-            onPressed: () => router.pop(),
-            child: txt('Cancel', color: Colors.blueAccent, bold: true),
-          ),
+          hasCancel
+              ? SimpleDialogOption(
+                  onPressed: () => router.pop(),
+                  child: txt('Cancel', color: Colors.blueAccent, bold: true),
+                )
+              : hSpacer(1),
           SimpleDialogOption(
             onPressed: () {
               onConfirm();

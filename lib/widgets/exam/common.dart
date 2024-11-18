@@ -1,10 +1,7 @@
-import 'dart:convert';
-
-import 'package:chatuni/models/ielts.dart';
+import 'package:chatuni/models/exam.dart';
 import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
-import 'package:chatuni/store/ielts.dart';
-import 'package:chatuni/store/sat.dart';
+import 'package:chatuni/store/exam.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
@@ -25,17 +22,11 @@ var tagHandlers = Map.fromIterables(
     bold,
     italic,
     txt,
-    (String x) {
-      print(x);
-      return Image.network(cdImg(x));
-      return x.contains('base64')
-          ? Image.memory(base64Decode(x))
-          : Image.network(cdImg(x));
-    },
+    (String x) => Image.network(cdImg(x)),
   ],
 );
 
-Widget ieltsScaffold(String comp, List<Widget> ws) => scaffold(
+Widget examScaffold(String title, List<Widget> ws) => scaffold(
       vContainer(
         [
           vSpacer(10),
@@ -45,8 +36,8 @@ Widget ieltsScaffold(String comp, List<Widget> ws) => scaffold(
         padding: 20,
         scroll: true,
       ),
-      title: comp,
-      routeGroup: RouteGroup.course,
+      title: title,
+      routeGroup: RouteGroup.exam,
       bgColor: Colors.white,
     );
 
@@ -57,21 +48,21 @@ Image spinner = Image.asset(
 );
 
 Widget title() =>
-    obs<Ielts>((ielts) => center(h1('Test ${ielts.test!.id.split('-')[1]}')));
+    obs<Exam>((exam) => center(h1('Test ${exam.test!.id.split('-')[1]}')));
 
-Widget playButton() => obs<Ielts>(
-      (ielts) => ielts.compIndex == 0
+Widget playButton() => obs<Exam>(
+      (exam) => exam.component!.isListen
           ? button(
-              ielts.isPlaying ? ielts.stop : ielts.play,
-              icon: ielts.isPlaying ? Icons.stop : Icons.play_arrow,
-              bgColor: ielts.isPlaying ? Colors.red : Colors.green,
+              exam.isPlaying ? exam.stop : exam.play,
+              icon: exam.isPlaying ? Icons.stop : Icons.play_arrow,
+              bgColor: exam.isPlaying ? Colors.red : Colors.green,
             )
           : vSpacer(1),
     );
 
-Widget content(String s) => obs<Ielts>((ielts) {
-      final (content, tag) = ielts.contentTag(s);
-      final (num, s1, s2) = ielts.parseFill(content);
+Widget content(String s) => obs<Exam>((exam) {
+      final (content, tag) = exam.contentTag(s);
+      final (num, s1, s2) = exam.parseFill(content);
 
       return num > -1
           ? fillQuestion(num, s1!, s2!)
@@ -85,15 +76,15 @@ Widget fillQuestion(
   String s1,
   String s2,
 ) =>
-    obs<Ielts>(
-      (ielts) => scRow([
+    obs<Exam>(
+      (exam) => scRow([
         txt(s1),
         hSpacer(8),
         grow(
           fillInput(
-            (t) => ielts.fill(num, t),
-            ielts.getQuestion(num)?.userAnswer,
-            ielts.isChecking ? ielts.checkAnswer(num) : null,
+            (t) => exam.fill(num, t),
+            exam.getQuestion(num)?.userAnswer,
+            exam.isChecking ? exam.checkAnswer(num) : null,
           ),
         ),
         hSpacer(8),
@@ -155,14 +146,13 @@ List<Widget> trueFalse(Question q, String c) => [
       vSpacer(8),
     ];
 
-Widget trueFalseButton(String text, Question q) => obs<Ielts>(
-      (ielts) => button(
-        () => ielts.trueFalseSelect(q, text),
-        text: '$text${ielts.rc < 0 ? '' : ''}',
+Widget trueFalseButton(String text, Question q) => obs<Exam>(
+      (exam) => button(
+        () => exam.trueFalseSelect(q, text),
+        text: '$text${exam.rc < 0 ? '' : ''}',
         size: 10,
-        outline:
-            !(ielts.isChecking && q.isActual(text) || q.userAnswer == text),
-        bgColor: ielts.isChecking
+        outline: !(exam.isChecking && q.isActual(text) || q.userAnswer == text),
+        bgColor: exam.isChecking
             ? q.isActual(text)
                 ? Colors.green
                 : Colors.red
@@ -174,13 +164,13 @@ List<Widget> singleChoice(Question q) => [
       bold('${q.number}. ${q.subject!}'),
       ...(q.images ?? []).map(tagHandlers['img']!),
       ...q.choiceList.map(
-        (c) => obs<Ielts>(
-          (ielts) => tap(
-            () => ielts.singleSelect(q, c.key),
+        (c) => obs<Exam>(
+          (exam) => tap(
+            () => exam.singleSelect(q, c.key),
             txt(
-              '${c.key} ${c.value}${ielts.rc < 0 ? '' : ''}',
-              color: Color(ielts.choiceColor(c)),
-              bold: ielts.boldChoice(c),
+              '${c.key} ${c.value}${exam.rc < 0 ? '' : ''}',
+              color: Color(exam.choiceColor(c)),
+              bold: exam.boldChoice(c),
             ),
           ),
         ),
@@ -188,86 +178,53 @@ List<Widget> singleChoice(Question q) => [
       vSpacer(8),
     ];
 
-Widget multiChoice(Choice choice) => obs<Ielts>(
-      (ielts) => tap(
-        () => ielts.multiSelect(choice.q1, choice.q2, choice.key),
+Widget multiChoice(Choice choice) => obs<Exam>(
+      (exam) => tap(
+        () => exam.multiSelect(choice.q1, choice.q2, choice.key),
         txt(
-          '${choice.key} ${choice.value}${ielts.rc < 0 ? '' : ''}',
-          color: Color(ielts.choiceColor(choice)),
-          bold: ielts.boldChoice(choice),
+          '${choice.key} ${choice.value}${exam.rc < 0 ? '' : ''}',
+          color: Color(exam.choiceColor(choice)),
+          bold: exam.boldChoice(choice),
         ),
       ),
     );
 
-// Widget checkButton() => obs<Ielts>(
-//       (ielts) => button(
-//         ielts.checkAnswers,
+// Widget checkButton() => obs<Exam>(
+//       (exam) => button(
+//         exam.checkAnswers,
 //         text: 'Check Answers',
 //         bgColor: Colors.green,
 //       ),
 //     );
 
-Widget prevNext() => obs<Ielts>(
-      (ielts) => ccRow([
+Widget prevNext() => obs<Exam>(
+      (exam) => ccRow([
         grow(
           button(
-            ielts.isFirstPart ? null : () => ielts.nextPart(-1),
+            exam.isFirstPart ? null : () => exam.nextPart(-1),
             text: 'Prev Part',
           ),
         ),
         hSpacer(16),
         grow(
           button(
-            ielts.isLastPart
-                ? ielts.isChecking
+            exam.isLastPart
+                ? exam.isChecking
                     ? null
                     : () async {
-                        if (ielts.isLastComp) {
-                          await ielts.score();
-                          ielts.saveTestResult();
-                          router.go('/ielts_result');
+                        if (exam.isLastComp) {
+                          await exam.score();
+                          exam.saveTestResult();
+                          router.go('/exam_result');
                         } else {
-                          ielts.nextComp(1);
+                          exam.nextComp(1);
                         }
                       }
-                : () => ielts.nextPart(1),
-            text: ielts.isLastPart
-                ? ielts.isLastComp
+                : () => exam.nextPart(1),
+            text: exam.isLastPart
+                ? exam.isLastComp
                     ? 'Finish'
-                    : ielts.nextComponent
-                : 'Next Part',
-          ),
-        ),
-      ]),
-    );
-
-Widget prevNextSat() => obs<Sat>(
-      (sat) => ccRow([
-        grow(
-          button(
-            sat.isFirstPart ? null : () => sat.nextPart(-1),
-            text: 'Prev Part',
-          ),
-        ),
-        hSpacer(16),
-        grow(
-          button(
-            sat.isLastPart
-                ? sat.isChecking
-                    ? null
-                    : () async {
-                        if (sat.isLastComp) {
-                          await sat.score();
-                          router.go('/ielts_result');
-                        } else {
-                          sat.nextComp(1);
-                        }
-                      }
-                : () => sat.nextPart(1),
-            text: sat.isLastPart
-                ? sat.isLastComp
-                    ? 'Finish'
-                    : sat.nextComponent
+                    : exam.nextComponent.title
                 : 'Next Part',
           ),
         ),
@@ -276,7 +233,7 @@ Widget prevNextSat() => obs<Sat>(
 
 Widget showResult(bool isChecking) => isChecking
     ? button(
-        () => router.go('/ielts_result'),
+        () => router.go('/exam_result'),
         text: 'Show Results',
         bgColor: Colors.orange,
       )
@@ -303,82 +260,82 @@ Widget analysis(String? t, bool isChecking) => isChecking && t != null
       ])
     : vSpacer(1);
 
-Widget writeBoxAndAnswer() => obs<Ielts>(
-      (ielts) => ielts.compIndex == 2
+Widget writeBoxAndAnswer() => obs<Exam>(
+      (exam) => exam.compIndex == 2
           ? ssCol([
               writeBox(
-                ielts.write,
-                ielts.writeQuestion.userAnswer,
+                exam.write,
+                exam.writeQuestion.userAnswer,
               ),
-              analysis(ielts.writeQuestion.answer, ielts.isChecking),
+              analysis(exam.writeQuestion.answer, exam.isChecking),
               vSpacer(16),
-              txt(ielts.rc > 0 ? '' : ''),
+              txt(exam.rc > 0 ? '' : ''),
             ])
           : vSpacer(1),
     );
 
-Widget speak() => obs<Ielts>((ielts) {
-      if (ielts.compIndex != 3) return vSpacer(1);
-      final c = ielts.videoControllers[ielts.questionIndex];
-      final q = ielts.partQuestions[ielts.questionIndex];
+Widget speak() => obs<Exam>((exam) {
+      if (exam.compIndex != 3) return vSpacer(1);
+      final c = exam.videoControllers[exam.questionIndex];
+      final q = exam.partQuestions[exam.questionIndex];
       return ssCol(
-        ielts.partIndex == 1
+        exam.partIndex == 1
             ? [
-                recordAnswerButton(q, ielts.isChecking),
-                analysis(q.answer, ielts.isChecking),
+                recordAnswerButton(q, exam.isChecking),
+                analysis(q.answer, exam.isChecking),
                 vSpacer(8),
               ]
             : [
                 center(AspectRatio(aspectRatio: 1.778, child: VideoPlayer(c))),
                 speakQuestion(q),
                 nextQuestionButton(q),
-                analysis(q.answer, ielts.isChecking),
+                analysis(q.answer, exam.isChecking),
                 vSpacer(8),
               ],
       );
     });
 
-Widget speakQuestion(Question q) => obs<Ielts>(
-      (ielts) => pBox(vEdge(8))(
+Widget speakQuestion(Question q) => obs<Exam>(
+      (exam) => pBox(vEdge(8))(
         scRow([
           bold('Q${q.number}: '),
           hSpacer(8),
-          grow(playVideoButton(q, ielts.isChecking)),
+          grow(playVideoButton(q, exam.isChecking)),
           hSpacer(8),
-          grow(recordAnswerButton(q, ielts.isChecking)),
+          grow(recordAnswerButton(q, exam.isChecking)),
         ]),
       ),
     );
 
-Widget playVideoButton(Question q, bool isChecking) => obs<Ielts>(
-      (ielts) => button(
-        isChecking ? null : () => ielts.playVideo(q.number),
+Widget playVideoButton(Question q, bool isChecking) => obs<Exam>(
+      (exam) => button(
+        isChecking ? null : () => exam.playVideo(q.number),
         icon: Icons.play_arrow,
         text: 'Listen',
         bgColor: Colors.teal,
       ),
     );
 
-Widget recordAnswerButton(Question q, bool isChecking) => obs<Ielts>(
-      (ielts) => button(
+Widget recordAnswerButton(Question q, bool isChecking) => obs<Exam>(
+      (exam) => button(
         isChecking
             ? null
-            : ielts.isRecording
-                ? () => ielts.stopRecording(q)
-                : ielts.startRecording,
+            : exam.isRecording
+                ? () => exam.stopRecording(q)
+                : exam.startRecording,
         icon: Icons.mic,
-        text: ielts.isRecording
+        text: exam.isRecording
             ? 'Stop'
             : q.userAnswer == null
                 ? 'Answer'
                 : 'Retake',
-        bgColor: ielts.isRecording ? Colors.red : Colors.green,
+        bgColor: exam.isRecording ? Colors.red : Colors.green,
       ),
     );
 
-Widget nextQuestionButton(Question q) => obs<Ielts>(
-      (ielts) => button(
-        ielts.isLastQuestion ? null : ielts.nextQuestion,
+Widget nextQuestionButton(Question q) => obs<Exam>(
+      (exam) => button(
+        exam.isLastQuestion ? null : exam.nextQuestion,
         icon: Icons.arrow_forward,
         text: 'Next Question',
         bgColor: Colors.blue,

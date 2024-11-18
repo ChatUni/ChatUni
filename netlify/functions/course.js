@@ -7,7 +7,7 @@ export const handler = makeApi({
     get: {
       ielts: q => getIelts(),
       sat: q => getSAT(),
-      results: q => getResults(),
+      results: q => getResults(q.userId),
     },
     post: {
       saveResult: (q, b) => saveResult(b.result),

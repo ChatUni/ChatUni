@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'ielts.g.dart';
+part 'exam.g.dart';
 
 RegExp _choicePattern = RegExp(r'^(<.+>)?([A-Z])[.)]? (.+)$');
 
@@ -120,18 +120,50 @@ class Part {
 }
 
 @JsonSerializable()
+class TestJ {
+  String id = '';
+  List<Part>? listen = [];
+  List<Part>? read = [];
+  List<Part>? write = [];
+  List<Part>? speak = [];
+  List<Part>? math = [];
+
+  TestJ();
+
+  List<Part> getComp(String comp) =>
+      {
+        'listen': listen,
+        'read': read,
+        'write': write,
+        'speak': speak,
+        'math': math,
+      }[comp] ??
+      [];
+
+  factory TestJ.fromJson(Map<String, dynamic> json) => _$TestJFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TestJToJson(this);
+}
+
+class Component {
+  String name = '';
+  String title = '';
+  int timeLimit = 0;
+  List<Part> parts = [];
+
+  bool get isListen => name == 'listen';
+  bool get isWrite => name == 'write';
+  bool get isSpeak => name == 'speak';
+  bool get isQA => !isWrite && !isSpeak;
+
+  Component(this.name, this.title, this.timeLimit);
+}
+
 class Test {
   String id = '';
-  List<Part> listen = [];
-  List<Part> read = [];
-  List<Part> write = [];
-  List<Part> speak = [];
+  List<Component> components = [];
 
-  Test();
-
-  factory Test.fromJson(Map<String, dynamic> json) => _$TestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TestToJson(this);
+  Test(this.id);
 }
 
 @JsonSerializable()

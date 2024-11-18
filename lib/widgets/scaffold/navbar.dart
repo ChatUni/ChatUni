@@ -61,7 +61,7 @@ List<InkWell> buildIcons(App app) {
     'Exam',
     () => router.go('/exams'),
     // () => launch('https://en.chatuni.com.cn/#/level', isNewTab: true),
-    isSelected: app.routeGroup == RouteGroup.course,
+    isSelected: app.routeGroup == RouteGroup.exam,
   );
   InkWell metaIcon = menuIcon(
     Icons.language,

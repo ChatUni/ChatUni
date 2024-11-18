@@ -1,5 +1,5 @@
 import 'package:chatuni/router.dart';
-import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/store/exam.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -21,16 +21,16 @@ Widget history() => scaffold(
       routeGroup: RouteGroup.my,
     );
 
-Observer _history = obs<Ielts>(
-  (ielts) => vCard(
-    ielts.results
+Observer _history = obs<Exam>(
+  (exam) => vCard(
+    exam.results
         .map(
           (r) => menuItem(
             Icons.history,
-            'IELTS ${r.testId} ${dateString(r.date)}',
+            '${r.type.toUpperCase()} ${r.testId} ${dateString(r.date)}',
             onTap: () {
-              ielts.loadResult(r);
-              router.go('/ielts_result');
+              exam.loadResult(r);
+              router.go('/exam_result');
             },
           ),
         )
