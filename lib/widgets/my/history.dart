@@ -28,7 +28,8 @@ Observer _history = obs<Exam>(
           (r) => menuItem(
             Icons.history,
             '${r.type.toUpperCase()} ${r.testId} ${dateString(r.date)}',
-            onTap: () {
+            onTap: () async {
+              await exam.loadTests(r.type);
               exam.loadResult(r);
               router.go('/exam_result');
             },
