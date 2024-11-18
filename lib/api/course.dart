@@ -21,7 +21,7 @@ Future<List<Test>> fetchsat() async {
   //final sections = (r as List)[0]['sections'];
   List<dynamic> sections = [];
   (r as List).forEach((element) {
-    sections.addAll(element['sections']);
+    // sections.addAll(element['sections']);
   });
   //Part p1 = Part.fromJson(sections[0]);
   //Part p = Part.fromJson(sections[1]);
