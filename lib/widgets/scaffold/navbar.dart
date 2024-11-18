@@ -71,9 +71,12 @@ List<InkWell> buildIcons(App app) {
     isSelected: app.routeGroup == RouteGroup.scenario,
   );
   InkWell accountIcon = menuIcon(
-    Icons.person,
-    'My',
-    () => router.go('/profile'),
+    Icons.book_online_outlined,
+    'immigration',
+    () => router.go('/immigration'),
+    //Icons.person,
+    //'My',
+    //() => router.go('/profile'),
     isSelected: app.routeGroup == RouteGroup.my,
   );
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);

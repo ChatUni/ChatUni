@@ -4,6 +4,7 @@ import 'package:chatuni/widgets/exam/component.dart';
 import 'package:chatuni/widgets/exam/exams.dart';
 import 'package:chatuni/widgets/exam/result.dart';
 import 'package:chatuni/widgets/exam/tests.dart';
+import 'package:chatuni/widgets/immigration/guide.dart';
 import 'package:chatuni/widgets/my/history.dart';
 import 'package:chatuni/widgets/my/login.dart';
 import 'package:chatuni/widgets/my/profile.dart';
@@ -65,6 +66,10 @@ final router = GoRouter(
     GoRoute(
       path: '/exam_result',
       builder: go(result),
+    ),
+    GoRoute(
+      path: '/immigration',
+      builder: go(immigration),
     ),
   ],
 );
