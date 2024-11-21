@@ -1,5 +1,4 @@
 import 'package:chatuni/router.dart';
-import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 import '/store/app.dart';
@@ -67,9 +66,8 @@ List<InkWell> buildIcons(App app) {
   InkWell metaIcon = menuIcon(
     Icons.menu_book_rounded,
     'Course', // '元宇宙',
-    // () => router.go('/scenario'),
-    () => launch('https://en.chatuni.com.cn/#/level', isNewTab: true),
-    isSelected: app.routeGroup == RouteGroup.scenario,
+    () => router.go('/course'),
+    isSelected: app.routeGroup == RouteGroup.course,
   );
   InkWell accountIcon = menuIcon(
     Icons.book_online_outlined,

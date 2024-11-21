@@ -22,7 +22,7 @@ Widget tutor() => obs<Tutors>(
               ),
         title: 'Tutor',
         showMic: true,
-        routeGroup: tutors.isScenario ? RouteGroup.scenario : RouteGroup.tutor,
+        routeGroup: RouteGroup.tutor,
       ),
     );
 
@@ -33,7 +33,7 @@ Widget _tutors(bool isScenario) => obs<Tutors>((tutors) {
       return scaffold(
         vTutorList(isScenario),
         title: 'Tutors',
-        routeGroup: isScenario ? RouteGroup.scenario : RouteGroup.tutor,
+        routeGroup: RouteGroup.tutor,
       );
     });
 

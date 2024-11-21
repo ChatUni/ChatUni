@@ -1,5 +1,6 @@
 import 'package:chatuni/store/auth.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
+import 'package:chatuni/widgets/course/course.dart';
 import 'package:chatuni/widgets/exam/component.dart';
 import 'package:chatuni/widgets/exam/exams.dart';
 import 'package:chatuni/widgets/exam/result.dart';
@@ -26,10 +27,6 @@ final router = GoRouter(
     GoRoute(
       path: '/tutors',
       builder: go(tutors),
-    ),
-    GoRoute(
-      path: '/scenario',
-      builder: go(scenarios),
     ),
     GoRoute(
       path: '/tutor',
@@ -68,8 +65,12 @@ final router = GoRouter(
       builder: go(result),
     ),
     GoRoute(
-      path: '/immigration',
+      path: '/resource',
       builder: go(immigration),
+    ),
+    GoRoute(
+      path: '/course',
+      builder: go(course),
     ),
   ],
 );

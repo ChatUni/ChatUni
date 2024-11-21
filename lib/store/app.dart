@@ -10,7 +10,7 @@ part 'app.g.dart';
 
 class App = _App with _$App;
 
-enum RouteGroup { tutor, exam, scenario, my }
+enum RouteGroup { tutor, exam, course, resource, my }
 
 final _appLinks = AppLinks();
 const _uuid = Uuid();
