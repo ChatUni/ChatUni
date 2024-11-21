@@ -29,7 +29,8 @@ Widget hTutorList() => vContainer(
     );
 
 Widget vTutorList(bool isScenario) => obs<Tutors>((tutors) {
-      final cards = (isScenario ? tutors.scenarioTutors : tutors.langTutors)
+      final cards = tutors
+          .tutors // (isScenario ? tutors.scenarioTutors : tutors.langTutors)
           .map((t) => tutorCard(t))
           .toList();
 
