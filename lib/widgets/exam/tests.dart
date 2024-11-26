@@ -1,13 +1,11 @@
 import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/exam.dart';
-import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
-import 'package:chatuni/widgets/common/text.dart';
 import 'package:chatuni/widgets/scaffold/scaffold.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 Widget tests() => obs<Exam>(
       (exam) => scaffold(
@@ -15,28 +13,18 @@ Widget tests() => obs<Exam>(
           [
             vSpacer(10),
             ccCol(
-              exam.tests
+              exam.allTests
                   .map(
-                    (e) => pBox(bEdge(8))(
-                      vCard([
-                        pipe([bold, left, pBox(aEdge(8))])(
-                          '${examConfig[exam.name]!['title']} ${e.key}',
-                        ),
-                        grid(
-                          2,
-                          e.value
-                              .map(
-                                (t) => button(
-                                  () {
-                                    exam.selectTest(t);
-                                    router.go('/exam_component');
-                                  },
-                                  text: 'Test ${t.id}',
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ]),
+                    (t) => pBox(bEdge(8))(
+                      button(
+                        () async {
+                          exam.selectTest(t);
+                          router.go('/exam_component');
+                        },
+                        text: 'Test ${t.id}',
+                        bgColor: Colors.white,
+                        color: Colors.black,
+                      ),
                     ),
                   )
                   .toList(),

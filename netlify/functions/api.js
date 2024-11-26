@@ -1,4 +1,4 @@
-import { cdVersion } from './utils/cloudinary'
+import { cdVersion, cdUploadFolder } from './utils/cloudinary'
 import { makeApi } from './utils/http'
 import { parseMD } from './utils/markdown'
 import pusher from './utils/pusher'
@@ -24,6 +24,7 @@ export const handler = makeApi({
     },
     post: {
       pusher: (q, b) => pusher.trigger(q.channel, q.event, b),
+      cdupload: (q, b) => cdUploadFolder(b.local, b.remote),
     },
   },
   nocache: true,

@@ -1,3 +1,4 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/store/exam.dart';
 import 'package:chatuni/store/tutors.dart';
@@ -60,6 +61,10 @@ List<Widget> _actions = [
         bold: true,
       ),
     ),
+  ),
+  IconButton(
+    onPressed: () => router.go('/profile'),
+    icon: const Icon(Icons.person, color: Colors.white),
   ),
   // const IconButton(
   //   onPressed: null,

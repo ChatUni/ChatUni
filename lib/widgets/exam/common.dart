@@ -47,8 +47,7 @@ Image spinner = Image.asset(
   height: 100,
 );
 
-Widget title() =>
-    obs<Exam>((exam) => center(h1('Test ${exam.test!.id.split('-')[1]}')));
+Widget title() => obs<Exam>((exam) => center(h1('Test ${exam.test!.id}')));
 
 Widget playButton() => obs<Exam>(
       (exam) => exam.component!.isListen

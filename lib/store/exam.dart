@@ -104,11 +104,11 @@ abstract class _Exam with Store {
   @computed
   List<String> get compNames => comps.map((c) => c.name).toList();
 
-  @computed
-  List<MapEntry<int, List<Test>>> get tests =>
-      groupBy(allTests, (x) => int.parse(x.id.split('-').first))
-          .entries
-          .toList();
+  // @computed
+  // List<MapEntry<int, List<Test>>> get tests =>
+  //     groupBy(allTests, (x) => int.parse(x.id.split('-').first))
+  //         .entries
+  //         .toList();
 
   @computed
   bool get isCompSelected =>

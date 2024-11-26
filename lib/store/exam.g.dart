@@ -22,13 +22,6 @@ mixin _$Exam on _Exam, Store {
       (_$compNamesComputed ??= Computed<List<String>>(() => super.compNames,
               name: '_Exam.compNames'))
           .value;
-  Computed<List<MapEntry<int, List<Test>>>>? _$testsComputed;
-
-  @override
-  List<MapEntry<int, List<Test>>> get tests => (_$testsComputed ??=
-          Computed<List<MapEntry<int, List<Test>>>>(() => super.tests,
-              name: '_Exam.tests'))
-      .value;
   Computed<bool>? _$isCompSelectedComputed;
 
   @override
@@ -718,7 +711,6 @@ result: ${result},
 rc: ${rc},
 comps: ${comps},
 compNames: ${compNames},
-tests: ${tests},
 isCompSelected: ${isCompSelected},
 part: ${part},
 isPartSelected: ${isPartSelected},
