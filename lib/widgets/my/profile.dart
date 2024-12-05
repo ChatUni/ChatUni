@@ -1,3 +1,5 @@
+import 'package:chatuni/globals.dart';
+import 'package:chatuni/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -62,7 +64,14 @@ Observer _settings = obsc<Auth>(
     //   onTap: () => context.go('/membership'),
     // ),
     menuItem(Icons.verified_user, 'Security'),
-    menuItem(Icons.history, 'History'),
+    menuItem(
+      Icons.history,
+      'History',
+      onTap: () async {
+        await exam.loadResults();
+        router.go('/history');
+      },
+    ),
     menuItem(Icons.logout, 'Logout', onTap: auth.logout),
     menuItem(
       Icons.delete,

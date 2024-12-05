@@ -1,12 +1,14 @@
-import { DB, get, post } from './http'
 import { sortBy } from 'lodash'
+import { get, getById, replace } from './db'
 
-const db = DB('algo.ChatUni')
-
-export const getTutors = () => get(db('doc', 'tutors')).then(r => sortBy(r, [x => x.lang === 'English' ? 0 : 1, 'id']))
+export const getTutors = () => get('tutors').then(r => sortBy(r, [
+  x => x.id >= 1000 ? 0 : 1,
+  x => x.lang === 'English' ? 0 : 1,
+  'id'
+]))
 
 export const saveChatId = async (id, chatId) => {
-  const tutor = await get(`${db('getById', 'tutors')}&params={"id":${id}}`)
+  const tutor = await getById('tutors', id)
   tutor.chatId = chatId
-  await post(db('save', 'tutors'), tutor)
+  await replace('tutors', tutor)
 }

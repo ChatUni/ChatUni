@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:chatuni/globals.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+Map<int, Timer> _timers = {};
 
 Function pipe(List<Function> fns) => (x) => fns.fold(x, (p, c) => c(p));
 
@@ -26,6 +30,20 @@ T log<T>(T t, [String msg = '']) {
   return t;
 }
 
+int timer(int sec, bool Function() update) {
+  final n = _timers.length + 1;
+  final t = Timer.periodic(Duration(seconds: sec), (_) {
+    if (update()) stopTimer(n);
+  });
+  _timers[n] = t;
+  return n;
+}
+
+void stopTimer(int tid) {
+  _timers[tid]?.cancel();
+  _timers.remove(tid);
+}
+
 Map<String, List<String>> _cdTypes = {
   'img': ['image', ''],
   'mp3': ['video', '.mp3'],
@@ -36,3 +54,8 @@ String Function(String) _cd(List<String> type) => (String name) =>
 String Function(String) cdImg = _cd(_cdTypes['img']!);
 String Function(String) cdMp3 = _cd(_cdTypes['mp3']!);
 String Function(String) cdMp4 = _cd(_cdTypes['mp4']!);
+
+String dateString(String utc) {
+  final d = DateTime.parse(utc).toLocal().toString();
+  return d.substring(0, d.length - 4);
+}

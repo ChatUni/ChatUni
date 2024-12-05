@@ -1,7 +1,12 @@
-import { sortBy } from 'lodash'
-import { DB, get, post } from './http'
+import { sortBy, orderBy } from 'lodash'
+import { get, maxId, replace } from './db'
 
-const db = DB('algo.ChatUni')
+export const getIelts = () => get('ielts').then(r => orderBy(r, [x => x.id.split('-')[0], x => x.id.split('-')[1]], ['desc', 'asc']))
+export const getSAT = () => get('sat').then(r => orderBy(r, 'id', 'desc'))
+export const getResults = id => get('result').then(r => orderBy(r.filter(x => x.userId == id), 'id', 'desc'))
 
-export const getIelts = () => get(db('doc', 'ielts')).then(r => sortBy(r, 'id'))
-export const getSAT = () => get(db('doc', 'sat')).then(r => sortBy(r, 'id'))
+export const saveResult = async result => {
+  if (!result.id) result.id = (await maxId('result')) + 1
+  await replace('result', result)
+  return result
+}

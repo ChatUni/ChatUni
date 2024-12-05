@@ -1,7 +1,8 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/io/player.dart';
 import 'package:chatuni/io/recognizer.dart';
 import 'package:chatuni/io/videoplayer.dart';
-import 'package:chatuni/models/ielts.dart';
+import 'package:chatuni/models/exam.dart';
 import 'package:chatuni/utils/const.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:collection/collection.dart';
@@ -9,20 +10,45 @@ import 'package:mobx/mobx.dart';
 
 import '/api/course.dart';
 
-part 'ielts.g.dart';
+part 'exam.g.dart';
 
-class Ielts = _Ielts with _$Ielts;
+class Exam = _Exam with _$Exam;
+
+final examConfig = {
+  'Ielts': {
+    'title': 'IELTS Academy',
+    'components': [
+      Component('listen', 'Listening', 0),
+      Component('read', 'Reading', 3600),
+      Component('write', 'Writing', 3600),
+      Component('speak', 'Speaking', 0),
+    ],
+  },
+  'SAT': {
+    'title': 'SAT Practice Test',
+    'components': [
+      Component('read', 'Read & Write', 3600),
+      Component('math', 'Math', 3600),
+    ],
+  },
+};
 
 const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
-const List<String> comps = ['Listening', 'Reading', 'Writing', 'Speaking'];
+const int _timeAlert = 5 * 60;
 
-abstract class _Ielts with Store {
+const onCountdownEvent = 'Exam_Countdown';
+
+abstract class _Exam with Store {
   final Player _player = Player();
   final VideoPlayer _videoPlayer = VideoPlayer();
   // final Recorder _recorder = Recorder();
   final Recognizer _stt = Recognizer();
+  int _tid = 0;
 
   get videoControllers => _videoPlayer.controllers;
+
+  @observable
+  String name = '';
 
   @observable
   var allTests = ObservableList<Test>();
@@ -31,10 +57,10 @@ abstract class _Ielts with Store {
   Test? test;
 
   @observable
-  String? component;
+  Component? component;
 
   @observable
-  Part? part;
+  int partIndex = 0;
 
   @observable
   List<Part> parts = [];
@@ -58,24 +84,41 @@ abstract class _Ielts with Store {
   bool isScoring = false;
 
   @observable
+  int countDown = 0;
+
+  @observable
+  bool timeIsUp = false;
+
+  @observable
+  List<Result> results = [];
+
+  @observable
+  Result? result;
+
+  @observable
   int rc = 0;
 
   @computed
-  List<MapEntry<int, List<Test>>> get tests =>
-      groupBy(allTests, (x) => int.parse(x.id.split('-').first))
-          .entries
-          .toList();
+  List<Component> get comps => test == null ? [] : test!.components;
+
+  @computed
+  List<String> get compNames => comps.map((c) => c.name).toList();
+
+  // @computed
+  // List<MapEntry<int, List<Test>>> get tests =>
+  //     groupBy(allTests, (x) => int.parse(x.id.split('-').first))
+  //         .entries
+  //         .toList();
 
   @computed
   bool get isCompSelected =>
       test != null && component != null && parts.isNotEmpty;
 
   @computed
-  bool get isPartSelected => isCompSelected && part != null;
+  Part? get part => parts.isNotEmpty ? parts[partIndex] : null;
 
   @computed
-  int get partIndex =>
-      isPartSelected ? parts.indexWhere((p) => p.name == part!.name) : -1;
+  bool get isPartSelected => isCompSelected && part != null;
 
   @computed
   bool get isFirstPart => partIndex == 0;
@@ -87,10 +130,10 @@ abstract class _Ielts with Store {
   int get compIndex => isCompSelected ? comps.indexOf(component!) : -1;
 
   @computed
-  String get nextComponent => comps[nextCompIndex(1)];
+  Component get nextComponent => comps[nextCompIndex(1)];
 
   @computed
-  String get prevComponent => comps[nextCompIndex(-1)];
+  Component get prevComponent => comps[nextCompIndex(-1)];
 
   @computed
   bool get isFirstComp => compIndex == 0;
@@ -100,10 +143,13 @@ abstract class _Ielts with Store {
 
   @computed
   List<List<Part>> get allComps =>
-      test == null ? [] : [test!.listen, test!.read, test!.write, test!.speak];
+      test == null ? [] : test!.components.map((c) => c.parts).toList();
 
   @computed
   List<Part> get allParts => allComps.expand((c) => c).toList();
+
+  @computed
+  List<Question> get allQuestions => comps.expand(getCompQuestions).toList();
 
   @computed
   List<Question> get partQuestions => getPartQuestions(part);
@@ -112,20 +158,43 @@ abstract class _Ielts with Store {
   Question get writeQuestion => getQuestion(partIndex + 1)!;
 
   @computed
+  Component? get writeComponent =>
+      test?.components.firstWhereOrNull((c) => c.name == 'write');
+
+  @computed
   List<Question> get writeQuestions =>
-      test!.write.expand(getPartQuestions).toList();
+      writeComponent?.parts.expand(getPartQuestions).toList() ?? [];
+
+  @computed
+  Component? get speakComponent =>
+      test?.components.firstWhereOrNull((c) => c.name == 'speak');
 
   @computed
   List<Question> get speakQuestions =>
-      test!.speak.expand(getPartQuestions).toList();
+      speakComponent?.parts.expand(getPartQuestions).toList() ?? [];
 
   @computed
   bool get isLastQuestion => questionIndex == partQuestions.length - 1;
 
+  @computed
+  int get timeLimit =>
+      isChecking || component == null ? 0 : component!.timeLimit;
+
+  @computed
+  String get timeLeft => timeLimit > 0
+      ? RegExp('^\\d{1,2}:(\\d+):(\\d+)\\.')
+          .firstMatch(Duration(seconds: countDown).toString())!
+          .groups([1, 2]).join(':')
+      : '';
+
+  @computed
+  bool get isTimeLeftAlert => countDown < _timeAlert;
+
   @action
-  Future<void> loadTests() async {
+  Future<void> loadTests(String exam) async {
+    name = exam;
     allTests.clear();
-    var ts = await fetchIelts();
+    var ts = await fetchExam(name);
     allTests.addAll(ts);
   }
 
@@ -133,32 +202,31 @@ abstract class _Ielts with Store {
   void selectTest(Test t) {
     test = t;
     _resetTest();
-    setComp(0);
+    setComp(test!.components[0]);
     isChecking = false;
   }
 
   @action
-  void setComp(int idx) {
+  void setComp(Component comp) {
     if (test == null) {
       component = null;
     } else {
-      component = comps[idx];
-      parts = allComps[idx];
+      component = comp;
+      parts = comp.parts;
+      startTimer();
       firstPart();
     }
   }
 
   @action
-  void nextComp(int step) => setComp(nextCompIndex(step));
+  void nextComp(int step) => setComp(comps[nextCompIndex(step)]);
 
   @action
   void nextPart(int step) {
     if (test == null || parts.isEmpty) {
-      part = null;
-    } else if (part == null) {
-      part = parts.first;
+      partIndex = 0;
     } else {
-      part = parts[(partIndex + step).clamp(0, parts.length - 1)];
+      partIndex = (partIndex + step).clamp(0, parts.length - 1);
       partSelected();
     }
     rc++;
@@ -167,7 +235,7 @@ abstract class _Ielts with Store {
   @action
   void firstPart() {
     if (parts.isNotEmpty) {
-      part = parts.first;
+      partIndex = 0;
       partSelected();
     }
   }
@@ -177,7 +245,7 @@ abstract class _Ielts with Store {
     group = part!.groups.first;
     // isChecking = false;
     isPlaying = false;
-    if (compIndex == 3) {
+    if (component!.isSpeak) {
       questionIndex = 0;
       if (partIndex != 1) {
         await _videoPlayer.setUrls(
@@ -233,8 +301,8 @@ abstract class _Ielts with Store {
   }
 
   @action
-  void checkAnswers(int idx) {
-    setComp(idx);
+  void checkAnswers(Component comp) {
+    setComp(comp);
     isChecking = true;
   }
 
@@ -297,6 +365,72 @@ abstract class _Ielts with Store {
     isScoring = false;
   }
 
+  @action
+  Future loadResults() async {
+    results = await fetchResults(auth.user!.id);
+  }
+
+  @action
+  void loadResult(Result result) {
+    final t = allTests.firstWhere((x) => x.id == result.testId);
+    selectTest(t);
+    result.questions.forEach((q) {
+      final q1 = getCompQuestions(comps[q.comp!])
+          .firstWhere((x) => x.number == q.number);
+      q1.userAnswer = q.userAnswer;
+      q1.score = q.score;
+    });
+  }
+
+  @action
+  Future saveTestResult() async {
+    final qs = allQuestions
+        .where(
+          (q) =>
+              q.userAnswer != null &&
+              q.answer != null &&
+              q.userAnswer != q.answer,
+        )
+        .map(
+          (q) => Question()
+            ..number = q.number
+            ..score = q.score
+            ..answer = q.answer
+            ..userAnswer = q.userAnswer,
+        )
+        .toList();
+    final result = Result()
+      ..userId = auth.user!.id
+      ..type = name
+      ..testId = test!.id
+      ..questions = qs;
+    await saveResult(result);
+  }
+
+  @action
+  void startTimer() {
+    if (_tid > 0) stopTimer(_tid);
+    if (timeLimit > 0) {
+      countDown = timeLimit;
+      _tid = timer(1, updateTimer);
+    }
+  }
+
+  @action
+  bool updateTimer() {
+    if (countDown > 0) {
+      countDown--;
+      rc++;
+    }
+    if (countDown == 0) {
+      _tid = 0;
+      timeIsUp = true;
+      //nextComp(1);
+      return true;
+    }
+    return false;
+  }
+
   List<Question> getPartQuestions(Part? part) => part == null
       ? []
       : part.groups
@@ -318,13 +452,13 @@ abstract class _Ielts with Store {
 
   int nextCompIndex(int step) => (compIndex + step).clamp(0, comps.length - 1);
 
-  List<Question> allQuestions(int comp) =>
-      allComps[comp].expand(getPartQuestions).toList();
+  List<Question> getCompQuestions(Component comp) =>
+      comp.parts.expand(getPartQuestions).toList();
 
-  int numOfCorrect(int comp) =>
-      allQuestions(comp).where((q) => q.answer == q.userAnswer).length;
+  int numOfCorrect(Component comp) =>
+      getCompQuestions(comp).where((q) => q.answer == q.userAnswer).length;
 
-  List<int> incorrectQuestions(int comp) => allQuestions(comp)
+  List<int> incorrectQuestions(Component comp) => getCompQuestions(comp)
       .where((q) => q.answer != q.userAnswer)
       .map((q) => q.number)
       .toList();
@@ -357,19 +491,21 @@ abstract class _Ielts with Store {
   }
 
   void _createQuestions() {
-    lidx(test!.write).forEach((i) {
-      final g = test!.write[i].groups[0];
-      if (g.paragraphs.last.type != 'write') {
-        g.paragraphs.add(
-          Paragraph()
-            ..type = 'write'
-            ..content = []
-            ..questions = [
-              Question()..number = i + 1,
-            ],
-        );
-      }
-    });
+    if (writeComponent != null) {
+      lidx(writeComponent!.parts).forEach((i) {
+        final g = writeComponent!.parts[i].groups[0];
+        if (g.paragraphs.last.type != 'write') {
+          g.paragraphs.add(
+            Paragraph()
+              ..type = 'write'
+              ..content = []
+              ..questions = [
+                Question()..number = i + 1,
+              ],
+          );
+        }
+      });
+    }
   }
 
   void _resetTest() {
@@ -377,13 +513,9 @@ abstract class _Ielts with Store {
     allParts.forEach(
       (p) => getPartQuestions(p).forEach((q) => q.userAnswer = null),
     );
-    // writeQuestions[0].userAnswer = 'How is you doing';
-    // writeQuestions[1].userAnswer = 'you do good';
   }
 
-  _Ielts() {
-    loadTests();
-  }
+  _Exam();
 
   void dispose() {
     _player.dispose();

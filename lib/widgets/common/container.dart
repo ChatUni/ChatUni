@@ -1,5 +1,6 @@
 import 'package:chatuni/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 
 SizedBox vSpacer(double height) => SizedBox(height: height);
@@ -271,4 +272,14 @@ ClipRRect _clipBottom(Widget child, double radius) => ClipRRect(
         bottomRight: Radius.circular(radius),
       ),
       child: child,
+    );
+
+InAppWebView webView(String url) => InAppWebView(
+      initialSettings: InAppWebViewSettings(
+        mediaPlaybackRequiresUserGesture: false,
+        allowsInlineMediaPlayback: true,
+      ),
+      initialUrlRequest: URLRequest(
+        url: WebUri(url),
+      ),
     );

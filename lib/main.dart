@@ -1,4 +1,4 @@
-import 'package:chatuni/store/ielts.dart';
+import 'package:chatuni/store/exam.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +15,9 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider<App>(create: (_) => App()),
-        Provider<Auth>(create: (_) => Auth()),
-        Provider<Ielts>(create: (_) => Ielts()),
+        Provider<App>(create: (_) => globals.app),
+        Provider<Auth>(create: (_) => globals.auth),
+        Provider<Exam>(create: (_) => globals.exam),
         Provider<Tutors>(create: (_) => Tutors()),
       ],
       child: MaterialApp.router(

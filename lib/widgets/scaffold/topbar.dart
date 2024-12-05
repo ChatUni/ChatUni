@@ -1,9 +1,11 @@
+import 'package:chatuni/router.dart';
+import 'package:chatuni/store/app.dart';
+import 'package:chatuni/store/exam.dart';
+import 'package:chatuni/store/tutors.dart';
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/common/hoc.dart';
+import 'package:chatuni/widgets/common/text.dart';
 import 'package:flutter/material.dart';
-
-import '/store/app.dart';
-import '/store/tutors.dart';
-import '/widgets/common/hoc.dart';
 
 List<String> langs = ['en', 'zh'];
 
@@ -51,6 +53,19 @@ BoxDecoration _headerImg = const BoxDecoration(
 );
 
 List<Widget> _actions = [
+  obs<Exam>(
+    (exam) => pBox(rEdge(8))(
+      txt(
+        '${exam.timeLeft}${exam.rc > 0 ? '' : ''}',
+        color: exam.isTimeLeftAlert ? Colors.red : Colors.white,
+        bold: true,
+      ),
+    ),
+  ),
+  IconButton(
+    onPressed: () => router.go('/profile'),
+    icon: const Icon(Icons.person, color: Colors.white),
+  ),
   // const IconButton(
   //   onPressed: null,
   //   icon: Icon(Icons.search, color: Colors.white),

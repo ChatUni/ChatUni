@@ -509,6 +509,6 @@ Widget immigration() => DefaultTabController(
           ],
         ),
         title: 'Guide',
-        routeGroup: RouteGroup.guide,
+        routeGroup: RouteGroup.my,
       ),
     );
