@@ -70,18 +70,10 @@ List<InkWell> buildIcons(App app) {
     () => goto('course'),
     isSelected: app.routeGroup == RouteGroup.course,
   );
-  InkWell guideIcon = menuIcon(
-    Icons.book_online_outlined,
-    'Immigration', // '元宇宙',
-    () => router.go('/immigration'),
-    // () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
-    isSelected: app.routeGroup == RouteGroup.guide,
-  );
-
   InkWell accountIcon = menuIcon(
     Icons.book_online_outlined,
     'Immigration',
-    () => goto('resource'),
+    () => goto('immigration'),
     // Icons.person,
     // 'My',
     // () => router.go('/profile'),
@@ -92,7 +84,6 @@ List<InkWell> buildIcons(App app) {
   menuIcons.add(tutorIcon);
   menuIcons.add(courseIcon);
   if (app.showMic) menuIcons.add(invisibleIcon);
-  menuIcons.add(guideIcon);
   menuIcons.add(metaIcon);
   menuIcons.add(accountIcon);
 

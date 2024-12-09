@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'widgets/my/membership.dart';
-import 'widgets/sat/result.dart';
 import 'widgets/tutor/tutor.dart';
 
 Widget Function(BuildContext, GoRouterState) go(Widget Function() builder) =>
@@ -72,18 +71,6 @@ final router = GoRouter(
     GoRoute(
       path: '/course',
       builder: go(course),
-    ),
-    GoRoute(
-      path: '/sat_component1',
-      builder: go(satcomponent1),
-    ),
-    GoRoute(
-      path: '/ielts_sat_result',
-      builder: (c, s) => resultSat(),
-    ),
-    GoRoute(
-      path: '/immigration',
-      builder: go(immigration),
     ),
   ],
 );
