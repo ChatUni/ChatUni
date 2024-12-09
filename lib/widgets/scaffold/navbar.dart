@@ -73,7 +73,7 @@ List<InkWell> buildIcons(App app) {
   InkWell accountIcon = menuIcon(
     Icons.book_online_outlined,
     'Immigration',
-    () => goto('immigration'),
+    () => goto('resource'),
     // Icons.person,
     // 'My',
     // () => router.go('/profile'),
