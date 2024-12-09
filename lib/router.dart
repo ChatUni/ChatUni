@@ -1,15 +1,14 @@
 import 'package:chatuni/store/auth.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
-import 'package:chatuni/widgets/ielts/component.dart';
-import 'package:chatuni/widgets/ielts/exams.dart';
-import 'package:chatuni/widgets/ielts/ielts_tests.dart';
-import 'package:chatuni/widgets/ielts/result.dart';
+import 'package:chatuni/widgets/course/course.dart';
+import 'package:chatuni/widgets/exam/component.dart';
+import 'package:chatuni/widgets/exam/exams.dart';
+import 'package:chatuni/widgets/exam/result.dart';
+import 'package:chatuni/widgets/exam/tests.dart';
 import 'package:chatuni/widgets/immigration/guide.dart';
 import 'package:chatuni/widgets/my/history.dart';
 import 'package:chatuni/widgets/my/login.dart';
 import 'package:chatuni/widgets/my/profile.dart';
-import 'package:chatuni/widgets/sat/sat_tests.dart';
-import 'package:chatuni/widgets/sat/satcomponent.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,10 +28,6 @@ final router = GoRouter(
     GoRoute(
       path: '/tutors',
       builder: go(tutors),
-    ),
-    GoRoute(
-      path: '/scenario',
-      builder: go(scenarios),
     ),
     GoRoute(
       path: '/tutor',
@@ -59,24 +54,24 @@ final router = GoRouter(
       builder: go(exams),
     ),
     GoRoute(
-      path: '/ielts',
-      builder: go(ieltsTests),
+      path: '/exam_tests',
+      builder: go(tests),
     ),
     GoRoute(
-      path: '/ielts_component',
+      path: '/exam_component',
       builder: go(component),
     ),
     GoRoute(
-      path: '/ielts_result',
+      path: '/exam_result',
       builder: go(result),
     ),
     GoRoute(
-      path: '/sat',
-      builder: go(satTests),
+      path: '/immigration',
+      builder: go(immigration),
     ),
     GoRoute(
-      path: '/sat_component',
-      builder: go(satcomponent),
+      path: '/course',
+      builder: go(course),
     ),
     GoRoute(
       path: '/sat_component1',

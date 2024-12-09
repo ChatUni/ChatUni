@@ -1,5 +1,6 @@
+import 'package:chatuni/router.dart';
 import 'package:chatuni/store/app.dart';
-import 'package:chatuni/store/sat.dart';
+import 'package:chatuni/store/exam.dart';
 import 'package:chatuni/store/tutors.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
@@ -52,14 +53,18 @@ BoxDecoration _headerImg = const BoxDecoration(
 );
 
 List<Widget> _actions = [
-  obs<Sat>(
-    (sat) => pBox(rEdge(8))(
+  obs<Exam>(
+    (exam) => pBox(rEdge(8))(
       txt(
-        '${sat.timeLeftSat}${sat.rc > 0 ? '' : ''}',
-        color: sat.isTimeLeftAlertSat ? Colors.red : Colors.white,
+        '${exam.timeLeft}${exam.rc > 0 ? '' : ''}',
+        color: exam.isTimeLeftAlert ? Colors.red : Colors.white,
         bold: true,
       ),
     ),
+  ),
+  IconButton(
+    onPressed: () => router.go('/profile'),
+    icon: const Icon(Icons.person, color: Colors.white),
   ),
   // const IconButton(
   //   onPressed: null,

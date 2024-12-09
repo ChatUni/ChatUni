@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'ielts.dart';
+part of 'exam.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -73,27 +73,43 @@ Map<String, dynamic> _$PartToJson(Part instance) => <String, dynamic>{
       'groups': instance.groups,
     };
 
-Test _$TestFromJson(Map<String, dynamic> json) => Test()
+TestJ _$TestJFromJson(Map<String, dynamic> json) => TestJ()
   ..id = json['id'] as String
-  ..listen = (json['listen'] as List<dynamic>)
-      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+  ..listen = (json['listen'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
-  ..read = (json['read'] as List<dynamic>)
-      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+  ..read = (json['read'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
-  ..write = (json['write'] as List<dynamic>)
-      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+  ..read1 = (json['read1'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
-  ..speak = (json['speak'] as List<dynamic>)
-      .map((e) => Part.fromJson(e as Map<String, dynamic>))
+  ..read2 = (json['read2'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..write = (json['write'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..speak = (json['speak'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..math1 = (json['math1'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..math2 = (json['math2'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList();
 
-Map<String, dynamic> _$TestToJson(Test instance) => <String, dynamic>{
+Map<String, dynamic> _$TestJToJson(TestJ instance) => <String, dynamic>{
       'id': instance.id,
       'listen': instance.listen,
       'read': instance.read,
+      'read1': instance.read1,
+      'read2': instance.read2,
       'write': instance.write,
       'speak': instance.speak,
+      'math1': instance.math1,
+      'math2': instance.math2,
     };
 
 Result _$ResultFromJson(Map<String, dynamic> json) => Result()

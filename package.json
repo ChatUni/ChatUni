@@ -4,8 +4,8 @@
   "description": "",
   "main": "api.js",
   "scripts": {
-    "dev1": "netlify env:import .env & netlify functions:serve --port 701",
-    "dev": "netlify env:import .env & netlify dev --live"
+    "dev": "netlify env:import .env & netlify functions:serve --port 701",
+    "dev1": "netlify env:import .env & netlify dev --live"
   },
   "author": "",
   "license": "ISC",

@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/router.dart';
 import 'package:flutter/material.dart';
 
@@ -53,22 +54,21 @@ List<InkWell> buildIcons(App app) {
   InkWell tutorIcon = menuIcon(
     Icons.school,
     'Tutor',
-    () => router.go('/tutors'),
+    () => goto('tutors'),
     isSelected: app.routeGroup == RouteGroup.tutor,
   );
   InkWell courseIcon = menuIcon(
-    Icons.menu_book_rounded,
+    Icons.edit_note_rounded,
     'Exam',
-    () => router.go('/exams'),
+    () => goto('exams'),
     // () => launch('https://en.chatuni.com.cn/#/level', isNewTab: true),
-    isSelected: app.routeGroup == RouteGroup.course,
+    isSelected: app.routeGroup == RouteGroup.exam,
   );
   InkWell metaIcon = menuIcon(
-    Icons.language,
-    'Scene', // '元宇宙',
-    () => router.go('/scenario'),
-    // () => launch('https://chatuni.smartkit.vip/webgl/', isNewTab: false),
-    isSelected: app.routeGroup == RouteGroup.scenario,
+    Icons.menu_book_rounded,
+    'Course', // '元宇宙',
+    () => goto('course'),
+    isSelected: app.routeGroup == RouteGroup.course,
   );
   InkWell guideIcon = menuIcon(
     Icons.book_online_outlined,
@@ -79,9 +79,12 @@ List<InkWell> buildIcons(App app) {
   );
 
   InkWell accountIcon = menuIcon(
-    Icons.person,
-    'My',
-    () => router.go('/profile'),
+    Icons.book_online_outlined,
+    'Immigration',
+    () => goto('resource'),
+    // Icons.person,
+    // 'My',
+    // () => router.go('/profile'),
     isSelected: app.routeGroup == RouteGroup.my,
   );
   InkWell invisibleIcon = menuIcon(Icons.menu, '', () {}, isPlaceholder: true);
@@ -94,4 +97,9 @@ List<InkWell> buildIcons(App app) {
   menuIcons.add(accountIcon);
 
   return menuIcons;
+}
+
+void goto(String route) {
+  exam.cancelTimer();
+  router.go('/$route');
 }

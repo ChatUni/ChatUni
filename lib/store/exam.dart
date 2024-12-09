@@ -1,44 +1,62 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/io/player.dart';
 import 'package:chatuni/io/recognizer.dart';
 import 'package:chatuni/io/videoplayer.dart';
-import 'package:chatuni/models/ielts.dart';
+import 'package:chatuni/models/exam.dart';
 import 'package:chatuni/utils/const.dart';
-import 'package:chatuni/utils/event.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:mobx/mobx.dart';
 
 import '/api/course.dart';
 
-part 'sat.g.dart';
+part 'exam.g.dart';
 
-//test change
-// ignore: library_private_types_in_public_api
-class Sat = _Sat with _$Sat;
+class Exam = _Exam with _$Exam;
 
-// const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
-const List<String> comps = [
-  'Listening',
-  'Reading Writing',
-  //'Math',
-  // Reading and Writing , Math
-  // 'Writing',
-  // 'Speaking',
-];
-const int _timeLimit = 100 * 100;
-const int _timeAlert = 5;
+final examConfig = {
+  'Ielts': {
+    'title': 'IELTS Academy',
+    'components': [
+      Component('listen', 'Listening', 0),
+      Component('read', 'Reading', 3600),
+      Component('write', 'Writing', 3600),
+      Component('speak', 'Speaking', 0),
+    ],
+  },
+  'TOEFL': {
+    'title': 'TOEFL',
+    'components': [
+      Component('listen', 'Listening', 0),
+    ],
+  },
+  'SAT': {
+    'title': 'SAT Practice Test',
+    'components': [
+      Component('read1', 'Read & Write 1', 3600),
+      Component('read2', 'Read & Write 2', 3600),
+      Component('math1', 'Math 1', 3600),
+      Component('math2', 'Math 2', 3600),
+    ],
+  },
+};
 
-const onCountdownEvent = 'SAT_Countdown';
+const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
+const int _timeAlert = 5 * 60;
 
-abstract class _Sat with Store {
+const onCountdownEvent = 'Exam_Countdown';
+
+abstract class _Exam with Store {
   final Player _player = Player();
   final VideoPlayer _videoPlayer = VideoPlayer();
   // final Recorder _recorder = Recorder();
   final Recognizer _stt = Recognizer();
-  int currentIndex = 0;
   int _tid = 0;
 
   get videoControllers => _videoPlayer.controllers;
+
+  @observable
+  String name = '';
 
   @observable
   var allTests = ObservableList<Test>();
@@ -47,19 +65,13 @@ abstract class _Sat with Store {
   Test? test;
 
   @observable
-  String? component;
+  Component? component;
 
   @observable
-  Part? part;
-
-  @observable
-  Paragraph? currentParagraph;
+  int partIndex = 0;
 
   @observable
   List<Part> parts = [];
-
-  @observable
-  List<Paragraph> paragraphs = [];
 
   @observable
   Group? group;
@@ -83,40 +95,53 @@ abstract class _Sat with Store {
   int countDown = 0;
 
   @observable
+  bool timeIsUp = false;
+
+  @observable
+  List<Result> results = [];
+
+  @observable
+  Result? result;
+
+  @observable
   int rc = 0;
 
   @computed
-  List<MapEntry<int, List<Test>>> get tests =>
-      groupBy(allTests, (x) => int.parse(x.id.split('-').first))
-          .entries
-          .toList();
+  List<Component> get comps => test == null ? [] : test!.components;
+
+  @computed
+  List<String> get compNames => comps.map((c) => c.name).toList();
+
+  // @computed
+  // List<MapEntry<int, List<Test>>> get tests =>
+  //     groupBy(allTests, (x) => int.parse(x.id.split('-').first))
+  //         .entries
+  //         .toList();
 
   @computed
   bool get isCompSelected =>
       test != null && component != null && parts.isNotEmpty;
 
   @computed
-  bool get isPartSelected => isCompSelected && part != null;
+  Part? get part => parts.isNotEmpty ? parts[partIndex] : null;
 
   @computed
-  int get partIndex =>
-      isPartSelected ? parts.indexWhere((p) => p.name == part!.name) : -1;
+  bool get isPartSelected => isCompSelected && part != null;
 
   @computed
   bool get isFirstPart => partIndex == 0;
 
   @computed
-  bool get isLastPart =>
-      (isPartSelected && partIndex == parts.length - 1) || parts.isEmpty;
+  bool get isLastPart => isPartSelected && partIndex == parts.length - 1;
 
   @computed
   int get compIndex => isCompSelected ? comps.indexOf(component!) : -1;
 
   @computed
-  String get nextComponent => comps[nextCompIndex(1)];
+  Component get nextComponent => comps[nextCompIndex(1)];
 
   @computed
-  String get prevComponent => comps[nextCompIndex(-1)];
+  Component get prevComponent => comps[nextCompIndex(-1)];
 
   @computed
   bool get isFirstComp => compIndex == 0;
@@ -126,10 +151,13 @@ abstract class _Sat with Store {
 
   @computed
   List<List<Part>> get allComps =>
-      test == null ? [] : [test!.listen, test!.read, test!.write, test!.speak];
+      test == null ? [] : test!.components.map((c) => c.parts).toList();
 
   @computed
   List<Part> get allParts => allComps.expand((c) => c).toList();
+
+  @computed
+  List<Question> get allQuestions => comps.expand(getCompQuestions).toList();
 
   @computed
   List<Question> get partQuestions => getPartQuestions(part);
@@ -138,96 +166,75 @@ abstract class _Sat with Store {
   Question get writeQuestion => getQuestion(partIndex + 1)!;
 
   @computed
+  Component? get writeComponent =>
+      test?.components.firstWhereOrNull((c) => c.name == 'write');
+
+  @computed
   List<Question> get writeQuestions =>
-      test!.write.expand(getPartQuestions).toList();
+      writeComponent?.parts.expand(getPartQuestions).toList() ?? [];
+
+  @computed
+  Component? get speakComponent =>
+      test?.components.firstWhereOrNull((c) => c.name == 'speak');
 
   @computed
   List<Question> get speakQuestions =>
-      test!.speak.expand(getPartQuestions).toList();
+      speakComponent?.parts.expand(getPartQuestions).toList() ?? [];
 
   @computed
   bool get isLastQuestion => questionIndex == partQuestions.length - 1;
 
   @computed
-  bool get hasTimer => !isChecking && compIndex > 0 && compIndex < 3;
+  int get timeLimit =>
+      isChecking || component == null ? 0 : component!.timeLimit;
 
   @computed
-  String get timeLeftSat => hasTimer
+  String get timeLeft => timeLimit > 0
       ? RegExp('^\\d{1,2}:(\\d+):(\\d+)\\.')
           .firstMatch(Duration(seconds: countDown).toString())!
           .groups([1, 2]).join(':')
       : '';
 
   @computed
-  bool get isTimeLeftAlertSat => countDown < _timeAlert;
+  bool get isTimeLeftAlert => countDown < _timeAlert;
 
   @action
-  Future<void> loadTests() async {
+  Future<void> loadTests(String exam) async {
+    name = exam;
     allTests.clear();
-    var ts = await fetchsat();
+    var ts = await fetchExam(name);
     allTests.addAll(ts);
-    //part = allTests[0].write.first;
   }
 
   @action
   void selectTest(Test t) {
     test = t;
     _resetTest();
-    setComp(0);
+    setComp(test!.components[0]);
     isChecking = false;
   }
 
   @action
-  void nextTest() {
-    print("""'Next Test' ${allTests.length}""");
-    test = allTests[(currentIndex + 1) % allTests.length];
-
-    int index = 0;
-    test!.write.forEach((p) {
-      p.groups.forEach((g) {
-        g.paragraphs.forEach((p1) {
-          Group group1 = Group();
-          group1.paragraphs = [p1];
-          Part part1 = Part();
-          part1.name = '${p.name}-$index';
-          part1.groups = [group1];
-          test!.read.add(part1);
-          index++;
-        });
-      });
-    });
-    test!.write.clear();
-
-    //currentParagraph = part!.groups.write.paragraphs.first;
-    part = test!.read.first;
-    _resetTest();
-    setComp(1);
-    isChecking = false;
-  }
-
-  @action
-  void setComp(int idx) {
+  void setComp(Component comp) {
     if (test == null) {
       component = null;
     } else {
-      component = comps[idx];
-      parts = allComps[idx];
+      component = comp;
+      parts = comp.parts;
       startTimer();
       firstPart();
     }
   }
 
   @action
-  void nextComp(int step) => setComp(nextCompIndex(step));
+  void nextComp(int step) => setComp(comps[nextCompIndex(step)]);
 
   @action
   void nextPart(int step) {
     if (test == null || parts.isEmpty) {
-      part = null;
-    } else if (part == null) {
-      part = parts.first;
+      partIndex = 0;
     } else {
-      part = parts[(partIndex + step).clamp(0, parts.length - 1)];
+      partIndex = (partIndex + step).clamp(0, parts.length - 1);
       partSelected();
     }
     rc++;
@@ -236,7 +243,7 @@ abstract class _Sat with Store {
   @action
   void firstPart() {
     if (parts.isNotEmpty) {
-      part = parts.first;
+      partIndex = 0;
       partSelected();
     }
   }
@@ -246,46 +253,7 @@ abstract class _Sat with Store {
     group = part!.groups.first;
     // isChecking = false;
     isPlaying = false;
-    if (compIndex == 3) {
-      questionIndex = 0;
-      if (partIndex != 1) {
-        // await _videoPlayer.setUrls(
-        //   partQuestions
-        //       .map((q) => cdMp4('${test!.id}-${partIndex + 1}-${q.number}'))
-        //       .toList(),
-        // );
-      }
-    }
-  }
-
-  @action
-  void nextParagraph(int step) {
-    if (test == null || paragraphs.isEmpty) {
-      currentParagraph = null;
-    } else if (currentParagraph == null) {
-      currentParagraph = paragraphs.first;
-    } else {
-      currentParagraph =
-          paragraphs[(partIndex + step).clamp(0, paragraphs.length - 1)];
-      partSelected();
-    }
-    rc++;
-  }
-
-  @action
-  void firstParagraph() {
-    if (paragraphs.isNotEmpty) {
-      currentParagraph = paragraphs.first;
-      paragraphSelected();
-    }
-  }
-
-  @action
-  Future<void> paragraphSelected() async {
-    group = part!.groups.first;
-    // isChecking = false;
-    isPlaying = false;
-    if (compIndex == 3) {
+    if (component!.isSpeak) {
       questionIndex = 0;
       if (partIndex != 1) {
         await _videoPlayer.setUrls(
@@ -341,8 +309,8 @@ abstract class _Sat with Store {
   }
 
   @action
-  void checkAnswers(int idx) {
-    setComp(idx);
+  void checkAnswers(Component comp) {
+    setComp(comp);
     isChecking = true;
   }
 
@@ -406,12 +374,59 @@ abstract class _Sat with Store {
   }
 
   @action
+  Future loadResults() async {
+    results = await fetchResults(auth.user!.id);
+  }
+
+  @action
+  void loadResult(Result result) {
+    final t = allTests.firstWhere((x) => x.id == result.testId);
+    selectTest(t);
+    result.questions.forEach((q) {
+      final q1 = getCompQuestions(comps[q.comp!])
+          .firstWhere((x) => x.number == q.number);
+      q1.userAnswer = q.userAnswer;
+      q1.score = q.score;
+    });
+  }
+
+  @action
+  Future saveTestResult() async {
+    final qs = allQuestions
+        .where(
+          (q) =>
+              q.userAnswer != null &&
+              q.answer != null &&
+              q.userAnswer != q.answer,
+        )
+        .map(
+          (q) => Question()
+            ..number = q.number
+            ..score = q.score
+            ..answer = q.answer
+            ..userAnswer = q.userAnswer,
+        )
+        .toList();
+    final result = Result()
+      ..userId = auth.user!.id
+      ..type = name
+      ..testId = test!.id
+      ..questions = qs;
+    await saveResult(result);
+  }
+
+  @action
   void startTimer() {
-    if (_tid > 0) stopTimer(_tid);
-    if (hasTimer) {
-      countDown = _timeLimit;
+    cancelTimer();
+    if (timeLimit > 0) {
+      countDown = timeLimit;
       _tid = timer(1, updateTimer);
     }
+  }
+
+  @action
+  void cancelTimer() {
+    if (_tid > 0) stopTimer(_tid);
   }
 
   @action
@@ -422,8 +437,8 @@ abstract class _Sat with Store {
     }
     if (countDown == 0) {
       _tid = 0;
-      raiseEvent(onCountdownEvent, true);
-      nextComp(1);
+      timeIsUp = true;
+      //nextComp(1);
       return true;
     }
     return false;
@@ -450,13 +465,13 @@ abstract class _Sat with Store {
 
   int nextCompIndex(int step) => (compIndex + step).clamp(0, comps.length - 1);
 
-  List<Question> allQuestions(int comp) =>
-      allComps[comp].expand(getPartQuestions).toList();
+  List<Question> getCompQuestions(Component comp) =>
+      comp.parts.expand(getPartQuestions).toList();
 
-  int numOfCorrect(int comp) =>
-      allQuestions(comp).where((q) => q.answer == q.userAnswer).length;
+  int numOfCorrect(Component comp) =>
+      getCompQuestions(comp).where((q) => q.answer == q.userAnswer).length;
 
-  List<int> incorrectQuestions(int comp) => allQuestions(comp)
+  List<int> incorrectQuestions(Component comp) => getCompQuestions(comp)
       .where((q) => q.answer != q.userAnswer)
       .map((q) => q.number)
       .toList();
@@ -473,10 +488,10 @@ abstract class _Sat with Store {
 
   bool boldChoice(Choice c) => isChecking && c.isActual || c.isSelected;
 
-  // (String, String?) contentTag(String s) {
-  //   final tag = tags.firstWhereOrNull((t) => s.startsWith('<$t>'));
-  //   return (tag != null ? s.replaceFirst('<$tag>', '') : s, tag);
-  // }
+  (String, String?) contentTag(String s) {
+    final tag = tags.firstWhereOrNull((t) => s.startsWith('<$t>'));
+    return (tag != null ? s.replaceFirst('<$tag>', '') : s, tag);
+  }
 
   (int, String?, String?) parseFill(String s) {
     RegExp re = RegExp(r'(\d{1,2}).*?([\._…]{6,})');
@@ -489,19 +504,21 @@ abstract class _Sat with Store {
   }
 
   void _createQuestions() {
-    lidx(test!.write).forEach((i) {
-      final g = test!.write[i].groups[0];
-      if (g.paragraphs.last.type != 'write') {
-        g.paragraphs.add(
-          Paragraph()
-            ..type = 'write'
-            ..content = []
-            ..questions = [
-              Question()..number = i + 1,
-            ],
-        );
-      }
-    });
+    if (writeComponent != null) {
+      lidx(writeComponent!.parts).forEach((i) {
+        final g = writeComponent!.parts[i].groups[0];
+        if (g.paragraphs.last.type != 'write') {
+          g.paragraphs.add(
+            Paragraph()
+              ..type = 'write'
+              ..content = []
+              ..questions = [
+                Question()..number = i + 1,
+              ],
+          );
+        }
+      });
+    }
   }
 
   void _resetTest() {
@@ -509,13 +526,9 @@ abstract class _Sat with Store {
     allParts.forEach(
       (p) => getPartQuestions(p).forEach((q) => q.userAnswer = null),
     );
-    // writeQuestions[0].userAnswer = 'How is you doing';
-    // writeQuestions[1].userAnswer = 'you do good';
   }
 
-  _Sat() {
-    loadTests();
-  }
+  _Exam();
 
   void dispose() {
     _player.dispose();
