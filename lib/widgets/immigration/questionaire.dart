@@ -61,84 +61,92 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   ];
 
   void _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();
+  if (_formKey.currentState?.validate() ?? false) {
+    _formKey.currentState?.save();
 
-      // Show a loading dialog while processing the GPT request
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
+    // Show a loading dialog while processing the GPT request
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    try {
+      // Prepare the prompt for GPT
+      final prompt =
+          'With this information: ${_responses.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ')}, recommend all US government benefit programs the user is eligible to apply for with links to them.';
+
+      // Make the API call to OpenAI
+      final response = await http.post(
+        Uri.parse('$base/chat/completions'),
+        headers: headers,
+        body: jsonEncode({
+          'model': model,
+          'messages': [
+            {'role': 'user', 'content': prompt},
+          ],
         ),
       );
 
-      try {
-        // Prepare the prompt for GPT
-        final prompt =
-            'With this information: ${_responses.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ')}, recommend all US government benefit programs the user is eligible to apply for with links to them.';
+      // Check the response status and process the response
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final recommendations =
+            responseData['choices'][0]['message']['content'];
 
-        // Make the API call to OpenAI
-        final response = await http.post(
-          Uri.parse('$base/chat/completions'),
-          headers: headers,
-          body: jsonEncode({
-            'model': model,
-            'messages': [
-              {'role': 'user', 'content': prompt},
-            ],
-          }),
-        );
-
-        // Check the response status and process the response
-        if (response.statusCode == 200) {
-          final responseData = jsonDecode(response.body);
-          final recommendations =
-              responseData['choices'][0]['message']['content'];
-
-          // Close the loading dialog
-          Navigator.of(context).pop();
-
-          // Show the recommendations in a dialog
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Recommendations'),
-              content: Text(recommendations),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        } else {
-          throw Exception(
-            'Failed to fetch recommendations: ${response.statusCode}',
-          );
-        }
-      } catch (error) {
         // Close the loading dialog
         Navigator.of(context).pop();
 
-        // Show an error dialog
+        // Show the recommendations in a dialog
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text('Failed to fetch recommendations: $error'),
+            title: const Text('Recommendations'),
+            content: Text(recommendations),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  // Close the dialog
+                  Navigator.of(context).pop();
+                  // Reset the form and page state
+                  setState(() {
+                    _responses.clear();
+                    _formKey.currentState?.reset();
+                  });
+                },
                 child: const Text('OK'),
               ),
             ],
           ),
         );
+      } else {
+        throw Exception(
+            'Failed to fetch recommendations: ${response.statusCode}',);
       }
+    } catch (error) {
+      // Close the loading dialog
+      Navigator.of(context).pop();
+
+      // Show an error dialog
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Failed to fetch recommendations: $error'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
