@@ -24,11 +24,19 @@ final examConfig = {
       Component('speak', 'Speaking', 0),
     ],
   },
+  'TOEFL': {
+    'title': 'TOEFL',
+    'components': [
+      Component('listen', 'Listening', 0),
+    ],
+  },
   'SAT': {
     'title': 'SAT Practice Test',
     'components': [
-      Component('read', 'Read & Write', 3600),
-      Component('math', 'Math', 3600),
+      Component('read1', 'Read & Write 1', 3600),
+      Component('read2', 'Read & Write 2', 3600),
+      Component('math1', 'Math 1', 3600),
+      Component('math2', 'Math 2', 3600),
     ],
   },
 };
@@ -409,11 +417,16 @@ abstract class _Exam with Store {
 
   @action
   void startTimer() {
-    if (_tid > 0) stopTimer(_tid);
+    cancelTimer();
     if (timeLimit > 0) {
       countDown = timeLimit;
       _tid = timer(1, updateTimer);
     }
+  }
+
+  @action
+  void cancelTimer() {
+    if (_tid > 0) stopTimer(_tid);
   }
 
   @action

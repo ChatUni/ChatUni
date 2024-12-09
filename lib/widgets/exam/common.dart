@@ -260,7 +260,7 @@ Widget analysis(String? t, bool isChecking) => isChecking && t != null
     : vSpacer(1);
 
 Widget writeBoxAndAnswer() => obs<Exam>(
-      (exam) => exam.compIndex == 2
+      (exam) => exam.component!.isWrite
           ? ssCol([
               writeBox(
                 exam.write,
@@ -274,7 +274,7 @@ Widget writeBoxAndAnswer() => obs<Exam>(
     );
 
 Widget speak() => obs<Exam>((exam) {
-      if (exam.compIndex != 3) return vSpacer(1);
+      if (!exam.component!.isSpeak) return vSpacer(1);
       final c = exam.videoControllers[exam.questionIndex];
       final q = exam.partQuestions[exam.questionIndex];
       return ssCol(

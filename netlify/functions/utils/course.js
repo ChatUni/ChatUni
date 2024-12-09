@@ -2,6 +2,7 @@ import { sortBy, orderBy } from 'lodash'
 import { get, maxId, replace } from './db'
 
 export const getIelts = () => get('ielts').then(r => orderBy(r, [x => x.id.split('-')[0], x => x.id.split('-')[1]], ['desc', 'asc']))
+export const getTOEFL = () => get('toefl').then(r => orderBy(r, 'id', 'desc'))
 export const getSAT = () => get('sat').then(r => orderBy(r, 'id', 'desc'))
 export const getResults = id => get('result').then(r => orderBy(r.filter(x => x.userId == id), 'id', 'desc'))
 
