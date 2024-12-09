@@ -400,7 +400,7 @@ Widget immigration() => DefaultTabController(
           [
             vSpacer(10),
             const TabBar(
-              labelColor: Colors.yellow,
+              labelColor: Colors.blue,
               unselectedLabelColor: Colors.white,
               indicatorColor: Colors.blue,
               tabs: [
@@ -441,7 +441,7 @@ Widget immigration() => DefaultTabController(
                     child: Column(
                       children: [
                         const TabBar(
-                          labelColor: Colors.yellow,
+                          labelColor: Colors.blue,
                           unselectedLabelColor: Colors.white,
                           indicatorColor: Colors.blue,
                           tabs: [
