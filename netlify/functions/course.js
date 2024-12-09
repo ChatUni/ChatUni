@@ -1,11 +1,12 @@
 import { makeApi } from './utils/http'
-import { getIelts, getSAT, getResults, saveResult } from './utils/course'
+import { getIelts, getTOEFL, getSAT, getResults, saveResult } from './utils/course'
 import { score } from './utils/gemini'
 
 export const handler = makeApi({
   db_handlers: {
     get: {
       ielts: q => getIelts(),
+      toefl: q => getTOEFL(),
       sat: q => getSAT(),
       results: q => getResults(q.userId),
     },

@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/router.dart';
 import 'package:flutter/material.dart';
 
@@ -53,26 +54,26 @@ List<InkWell> buildIcons(App app) {
   InkWell tutorIcon = menuIcon(
     Icons.school,
     'Tutor',
-    () => router.go('/tutors'),
+    () => goto('tutors'),
     isSelected: app.routeGroup == RouteGroup.tutor,
   );
   InkWell courseIcon = menuIcon(
     Icons.edit_note_rounded,
     'Exam',
-    () => router.go('/exams'),
+    () => goto('exams'),
     // () => launch('https://en.chatuni.com.cn/#/level', isNewTab: true),
     isSelected: app.routeGroup == RouteGroup.exam,
   );
   InkWell metaIcon = menuIcon(
     Icons.menu_book_rounded,
     'Course', // '元宇宙',
-    () => router.go('/course'),
+    () => goto('course'),
     isSelected: app.routeGroup == RouteGroup.course,
   );
   InkWell accountIcon = menuIcon(
     Icons.book_online_outlined,
-    'immigration',
-    () => router.go('/immigration'),
+    'Immigration',
+    () => goto('resource'),
     // Icons.person,
     // 'My',
     // () => router.go('/profile'),
@@ -87,4 +88,9 @@ List<InkWell> buildIcons(App app) {
   menuIcons.add(accountIcon);
 
   return menuIcons;
+}
+
+void goto(String route) {
+  exam.cancelTimer();
+  router.go('/$route');
 }

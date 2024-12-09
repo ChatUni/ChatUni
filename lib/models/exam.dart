@@ -124,9 +124,12 @@ class TestJ {
   String id = '';
   List<Part>? listen = [];
   List<Part>? read = [];
+  List<Part>? read1 = [];
+  List<Part>? read2 = [];
   List<Part>? write = [];
   List<Part>? speak = [];
-  List<Part>? math = [];
+  List<Part>? math1 = [];
+  List<Part>? math2 = [];
 
   TestJ();
 
@@ -134,9 +137,12 @@ class TestJ {
       {
         'listen': listen,
         'read': read,
+        'read1': read1,
+        'read2': read2,
         'write': write,
         'speak': speak,
-        'math': math,
+        'math1': math1,
+        'math2': math2,
       }[comp] ??
       [];
 

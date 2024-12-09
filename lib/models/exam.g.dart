@@ -81,13 +81,22 @@ TestJ _$TestJFromJson(Map<String, dynamic> json) => TestJ()
   ..read = (json['read'] as List<dynamic>?)
       ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
+  ..read1 = (json['read1'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..read2 = (json['read2'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
   ..write = (json['write'] as List<dynamic>?)
       ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
   ..speak = (json['speak'] as List<dynamic>?)
       ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
-  ..math = (json['math'] as List<dynamic>?)
+  ..math1 = (json['math1'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..math2 = (json['math2'] as List<dynamic>?)
       ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList();
 
@@ -95,9 +104,12 @@ Map<String, dynamic> _$TestJToJson(TestJ instance) => <String, dynamic>{
       'id': instance.id,
       'listen': instance.listen,
       'read': instance.read,
+      'read1': instance.read1,
+      'read2': instance.read2,
       'write': instance.write,
       'speak': instance.speak,
-      'math': instance.math,
+      'math1': instance.math1,
+      'math2': instance.math2,
     };
 
 Result _$ResultFromJson(Map<String, dynamic> json) => Result()

@@ -30,6 +30,7 @@ export const cdUploadFolder = async (local, remote) => {
   try {
     const fns = fs.readdirSync(local)
     for (let f of fns) {
+      console.log(`${local}/${f}`)
       await cdupload(`${local}/${f}`, remote)
       console.log(f)
     }

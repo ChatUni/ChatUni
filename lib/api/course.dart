@@ -11,7 +11,7 @@ enum CourseType { ielts, middle, high }
 
 Future<List<Test>> fetchExam(String exam) async {
   final r = await get('course', params: {'type': exam.toLowerCase()});
-  final tests = (r as List).take(2).map((t) => TestJ.fromJson(t)).toList();
+  final tests = (r as List).map((t) => TestJ.fromJson(t)).toList();
   final comps = examConfig[exam]!['components'] as List<Component>;
   return tests
       .map(
