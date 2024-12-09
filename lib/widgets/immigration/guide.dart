@@ -1,6 +1,7 @@
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/immigration/questionaire.dart';
 import 'package:chatuni/widgets/scaffold/scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -394,7 +395,7 @@ class CardListWidget extends StatelessWidget {
 }
 
 Widget immigration() => DefaultTabController(
-      length: 2, // Number of top-level tabs
+      length: 3, // Number of top-level tabs
       child: scaffold(
         vContainer(
           [
@@ -414,6 +415,13 @@ Widget immigration() => DefaultTabController(
                 Tab(
                   child: Text(
                     'Services',
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Questionaire',
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
@@ -501,8 +509,7 @@ Widget immigration() => DefaultTabController(
                       ],
                     ),
                   ),
-                  // // Tab 3: Food
-                  // CardListWidget(data: cardDataFood),
+                  const QuestionnaireApp(),
                 ],
               ),
             ),
