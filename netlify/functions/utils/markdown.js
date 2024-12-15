@@ -18,7 +18,7 @@ export const parseMD = async (file, returnType, save) => {
   tests = splitOnEvery(p2, 'TEST ', { start: true })
   const a = range(0, testCount - 1).map(n => parseTestAnswer(tests[n * 2], tests[n * 2 + 1])).filter(x => tap(x).listen.length > 0 && x.read.length > 0)
   attachTestAnswer(q, a)
-  if (save) await post(DB('save', 'ielts'), q)
+  if (save === '1') await post(DB('save', 'ielts'), q)
   return returnType == 'html' ? visual(q) : q
 }
 

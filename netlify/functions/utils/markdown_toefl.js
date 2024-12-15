@@ -1,12 +1,22 @@
 import { DB, get, post } from './http'
 import { remark } from 'remark'
-import { range, tap } from './util'
+import { range, splitWhen, tap } from './util'
 
-const categories = {'听力文本': 'listen'}
-const parts = ['C1', 'L1', 'L2', 'C2', 'L3']
+const categories = {
+  '听力文本': {
+    title: 'listen',
+    parts: ['C1', 'L1', 'L2', 'C2', 'L3'],
+   },
+  '阅读': {
+    title: 'read',
+    parts: ['R1', 'R2', 'R3'],
+  }
+}
 const fillPattern = /(\d{1,2}).*?[\._…]{6,}/g
 
+let cat
 let prevParagraph
+let prevQuestions = []
 let isScript = false
 
 export const parseTOEFL = async (file, returnType, save) => {
@@ -14,14 +24,17 @@ export const parseTOEFL = async (file, returnType, save) => {
   if (returnType == 'ast') return ast
   const ids = findId(ast.children)
   const j = parseTest(ast.children, ids)
-  if (save) await post(DB('save', 'toefl'), j)
+  if (save === '1') await post(DB('update', 'toefl'), j)
   return j;
 }
 
 const findId = ns => {
   for (let n of ns) {
     const m = paragraph(n).join('').match(/TPO(\d{1,2}) (.*)$/)
-    if (m) return { id: m[1], cat: categories[m[2]] }
+    if (m) {
+      cat = categories[m[2]]
+      return { id: m[1], cat: cat.title }
+    }
   }
 }
 
@@ -77,10 +90,10 @@ const splitAt = (a, ids, keepFirst) => ids
   .map(x => a.slice(x[0], x[1]))
 
 const parseTest = (a, ids) => {
-  const ps = splitBy(a, parts, { exact: true, keepFirst: false })
+  const ps = splitBy(a, cat.parts, { exact: true, keepFirst: false })
   return {
     id: ids.id,
-    [ids.cat]: ps.map((x, i) => parsePart(x, parts[i])),
+    [ids.cat]: ps.map((x, i) => parsePart(x, cat.parts[i])),
   }
 }
 
@@ -153,14 +166,33 @@ const questionRange = t => {
   return r ? [+r[1], +r[2]] : [0, 0]
 }
 
+const isChoiceText = x => x.match(/^[A-J]\. /)
+
 const parseParagraph = (n, partName) => {
   const target = { type: isScript ? 'script' : 'instruction', content: paragraph(n) }
-  if (target.content.every(c => c.match(/^[A-J]\. /)) && prevParagraph) {
+  if (target.content.every(isChoiceText) && prevParagraph) {
     prevParagraph.questions[0].choices.push(...target.content)
     return null
   }
-  if (target.content[0]?.startsWith('答案:')) {
+  if (target.content[0]?.startsWith('答案')) {
+    prevQuestions.push(prevParagraph.questions[0])
+    const s = target.content[0].slice(3).replace(/ /g, '')
+    const ans = []
+    let n = 0
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] == '(') {
+        n = i + 1
+      } else if (s[i] == ')') {
+        ans.push(s.slice(n, i))
+        n = 0
+      } else if (n == 0) {
+        ans.push(s[i])
+      }
+    }
+    prevQuestions.forEach((q, i) => (q.answer = ans[i]))
     prevParagraph = null
+    prevQuestions = []
+    return null
   }
   if (target.content[0] == partName) {
     isScript = true
@@ -169,10 +201,16 @@ const parseParagraph = (n, partName) => {
   if (n.type == 'list') {
     isScript = false
     if (n.ordered) {
+      if (target.content.length == 1) {
+        if (prevParagraph) prevQuestions.push(prevParagraph.questions[0])
+        target.questions = [{ number: n.start, subject: target.content.join(' '), choices: [] }]
+        prevParagraph = target
+      } else {
+        const qs = splitWhen(target.content, x => !isChoiceText(x))
+        target.questions = tap(qs).map((q, i) => ({ number: n.start + i, subject: q[0], choices: q.slice(1) }))
+      }
       target.type = 'choice'
-      target.questions = [{ number: n.start, subject: target.content.join(' '), choices: [] }]
       target.content = []
-      prevParagraph = target
     }
   }
 
