@@ -1,25 +1,40 @@
 import { DB, get, post } from './http'
 import { remark } from 'remark'
-import { range, tap } from './util'
+import { range, splitWhen, tap } from './util'
 
-const categories = {'听力文本': 'listen'}
+const categories = {
+  '听力文本': {
+    title: 'listen',
+    parts: ['C1', 'L1', 'L2', 'C2', 'L3'],
+   },
+  '阅读': {
+    title: 'read',
+    parts: ['R1', 'R2', 'R3'],
+  }
+}
 const fillPattern = /(\d{1,2}).*?[\._…]{6,}/g
 
+let cat
 let prevParagraph
+let prevQuestions = []
+let isScript = false
 
 export const parseTOEFL = async (file, returnType, save) => {
   const ast = remark.parse(file.content)
   if (returnType == 'ast') return ast
   const ids = findId(ast.children)
   const j = parseTest(ast.children, ids)
-  if (save) await post(DB('save', 'toefl'), j)
+  if (save === '1') await post(DB('update', 'toefl'), j)
   return j;
 }
 
 const findId = ns => {
   for (let n of ns) {
     const m = paragraph(n).join('').match(/TPO(\d{1,2}) (.*)$/)
-    if (m) return { id: m[1], cat: categories[m[2]] }
+    if (m) {
+      cat = categories[m[2]]
+      return { id: m[1], cat: cat.title }
+    }
   }
 }
 
@@ -37,7 +52,8 @@ const paragraph = (n, opt = {}) => {
   } else if (n.type == 'emphasis') {
     return `${opt.noStyle ? '' : `<i>`}${n.children[0].value}`
   } else if (n.type == 'list') {
-    return n.children.map((x, i) => paragraph(x, { ...opt, ul: !n.ordered, idx: n.start ? n.start + i : 0 })).flat(Infinity).filter(x => x)
+    //return n.children.map((x, i) => paragraph(x, { ...opt, ul: !n.ordered, idx: n.start ? n.start + i : 0 })).flat(Infinity).filter(x => x)
+    return n.children.map((x, i) => paragraph(x, { ...opt, ul: !n.ordered })).flat(Infinity).filter(x => x)
   } else if (n.type == 'listItem') {
     return n.children.map(x => paragraph(x, opt)).flat(Infinity).map(x => opt.ul ? `<ul>${x}` : opt.idx ? `${opt.idx}. ${x}` : x)
   } else if (n.type == 'image') {
@@ -73,18 +89,21 @@ const splitAt = (a, ids, keepFirst) => ids
   .slice(keepFirst ? 1 : 2)
   .map(x => a.slice(x[0], x[1]))
 
-const parseTest = (a, ids) => ({
-  id: ids.id,
-  [ids.cat]: [parsePart(a)],
+const parseTest = (a, ids) => {
+  const ps = splitBy(a, cat.parts, { exact: true, keepFirst: false })
+  return {
+    id: ids.id,
+    [ids.cat]: ps.map((x, i) => parsePart(x, cat.parts[i])),
+  }
+}
+
+const parsePart = (a, name) => ({
+  name, from: 0, to: 0,
+  groups: [parseGroup(a, name)]
 })
 
-const parsePart = a => ({
-  name: '', from: 0, to: 0,
-  groups: [parseGroup(a)]
-})
-
-const parseGroup = a => {
-  let paragraphs = a.map(parseParagraph).filter(x => x)
+const parseGroup = (a, partName) => {
+  let paragraphs = a.map(x => parseParagraph(x, partName)).filter(x => x)
   return { name: '', from: 1, to: 1, paragraphs }
 }
 
@@ -147,21 +166,51 @@ const questionRange = t => {
   return r ? [+r[1], +r[2]] : [0, 0]
 }
 
-const parseParagraph = n => {
-  const target = { content: paragraph(n) }
-  if (target.content.every(c => c.match(/^[A-J]\. /)) && prevParagraph) {
+const isChoiceText = x => x.match(/^[A-J]\. /)
+
+const parseParagraph = (n, partName) => {
+  const target = { type: isScript ? 'script' : 'instruction', content: paragraph(n) }
+  if (target.content.every(isChoiceText) && prevParagraph) {
     prevParagraph.questions[0].choices.push(...target.content)
     return null
   }
-  if (target.content[0]?.startsWith('答案:')) {
+  if (target.content[0]?.startsWith('答案')) {
+    prevQuestions.push(prevParagraph.questions[0])
+    const s = target.content[0].slice(3).replace(/ /g, '')
+    const ans = []
+    let n = 0
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] == '(') {
+        n = i + 1
+      } else if (s[i] == ')') {
+        ans.push(s.slice(n, i))
+        n = 0
+      } else if (n == 0) {
+        ans.push(s[i])
+      }
+    }
+    prevQuestions.forEach((q, i) => (q.answer = ans[i]))
     prevParagraph = null
+    prevQuestions = []
+    return null
+  }
+  if (target.content[0] == partName) {
+    isScript = true
+    return null
   }
   if (n.type == 'list') {
+    isScript = false
     if (n.ordered) {
+      if (target.content.length == 1) {
+        if (prevParagraph) prevQuestions.push(prevParagraph.questions[0])
+        target.questions = [{ number: n.start, subject: target.content.join(' '), choices: [] }]
+        prevParagraph = target
+      } else {
+        const qs = splitWhen(target.content, x => !isChoiceText(x))
+        target.questions = tap(qs).map((q, i) => ({ number: n.start + i, subject: q[0], choices: q.slice(1) }))
+      }
       target.type = 'choice'
-      target.questions = [{ number: n.start, subject: target.content.join(' '), choices: [] }]
       target.content = []
-      prevParagraph = target
     }
   }
 

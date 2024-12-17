@@ -65,7 +65,7 @@ final router = GoRouter(
       builder: go(result),
     ),
     GoRoute(
-      path: '/immigration',
+      path: '/resource',
       builder: go(immigration),
     ),
     GoRoute(

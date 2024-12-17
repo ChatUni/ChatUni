@@ -28,6 +28,7 @@ final examConfig = {
     'title': 'TOEFL',
     'components': [
       Component('listen', 'Listening', 0),
+      Component('read', 'Reading', 0),
     ],
   },
   'SAT': {
