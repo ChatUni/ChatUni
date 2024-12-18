@@ -91,8 +91,8 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   ];
 
   void _submitForm() async {
-  if (_formKey.currentState?.validate() ?? false) {
-    _formKey.currentState?.save();
+    if (_formKey.currentState?.validate() ?? false) {
+      _formKey.currentState?.save();
 
       setState(() {
         _recommendations = 'Loading...'; // Show loading state
@@ -116,23 +116,23 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       Do not recommend any programs if the user's income is too high or if they already have government assistance from the programs.
       ''';
 
-      // Make the API call to OpenAI
-      final response = await http.post(
-        Uri.parse('$base/chat/completions'),
-        headers: headers,
-        body: jsonEncode({
-          'model': model,
-          'messages': [
-            {'role': 'user', 'content': prompt},
-          ],
-        ),
-      );
+        // Make the API call to OpenAI
+        final response = await http.post(
+          Uri.parse('$base/chat/completions'),
+          headers: headers,
+          body: jsonEncode({
+            'model': model,
+            'messages': [
+              {'role': 'user', 'content': prompt},
+            ],
+          }),
+        );
 
-      // Check the response status and process the response
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        final recommendations =
-            responseData['choices'][0]['message']['content'];
+        // Check the response status and process the response
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+          final recommendations =
+              responseData['choices'][0]['message']['content'];
 
           // Update the UI with the recommendations
           setState(() {
