@@ -1,10 +1,20 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:chatuni/env.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class CivicsQuestionsScreen extends StatelessWidget {
-  CivicsQuestionsScreen({super.key});
+class CivicsQuestionsScreen extends StatefulWidget {
+  const CivicsQuestionsScreen({super.key});
 
-  // JSON Data: Parsed into a List of Maps
+  @override
+  State<CivicsQuestionsScreen> createState() => _CivicsQuestionsScreenState();
+}
+
+class _CivicsQuestionsScreenState extends State<CivicsQuestionsScreen> {
   final List<Map<String, dynamic>> questions = [
+    // Full list of 100 questions as provided.
     {
       'Section': 'A: Principles of American Democracy',
       'Number': 1,
@@ -934,11 +944,217 @@ class CivicsQuestionsScreen extends StatelessWidget {
           title: const Text('Civics Questions and Answers'),
           backgroundColor: Colors.blue,
         ),
+        body: Column(
+          children: [
+            Expanded(
+              child: DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    const TabBar(
+                      labelColor: Colors.blue,
+                      tabs: [
+                        Tab(text: 'All Questions'),
+                        Tab(text: 'Mock Exam'),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          AllQuestionsSection(questions: questions),
+                          MockExamScreen(questions: questions),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class AllQuestionsSection extends StatelessWidget {
+  final List<Map<String, dynamic>> questions;
+
+  const AllQuestionsSection({required this.questions, super.key});
+
+  @override
+  Widget build(BuildContext context) => ListView.builder(
+        itemCount: questions.length,
+        itemBuilder: (context, index) {
+          final question = questions[index]['Question'];
+          final answers = questions[index]['Answer'];
+
+          return Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Q${index + 1}: $question',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'A: ${answers.join(", ")}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+}
+
+class MockExamScreen extends StatefulWidget {
+  final List<Map<String, dynamic>> questions;
+
+  const MockExamScreen({required this.questions, super.key});
+
+  @override
+  State<MockExamScreen> createState() => _MockExamScreenState();
+}
+
+class _MockExamScreenState extends State<MockExamScreen> {
+  late List<Map<String, dynamic>> selectedQuestions;
+  final Map<int, String> userAnswers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    selectedQuestions = getRandomQuestions(widget.questions, 10);
+  }
+
+  List<Map<String, dynamic>> getRandomQuestions(
+    List<Map<String, dynamic>> allQuestions,
+    int count,
+  ) {
+    final random = Random();
+    final shuffled = allQuestions.toList()..shuffle(random);
+    return shuffled.take(count).toList();
+  }
+
+  Future<void> submitExam() async {
+    final List<Map<String, dynamic>> results = [];
+    for (var i = 0; i < selectedQuestions.length; i++) {
+      results.add({
+        'Question': selectedQuestions[i]['Question'],
+        'UserAnswer': userAnswers[i] ?? '',
+        'Correct': false,
+      });
+    }
+
+    final prompt = {'questions': results};
+
+    print('Prompt being sent to GPT: ${jsonEncode(prompt)}');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${Env.openaiApiKey}',
+    };
+
+    List<Map<String, dynamic>> evaluatedResults = [];
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: headers,
+        body: jsonEncode({
+          'model': 'gpt-3.5-turbo',
+          'messages': [
+            {
+              'role': 'system',
+              'content':
+                  'Check each question to user answer and determine if it is correct or incorrect. Ignore spelling mistakes and case sensitivity. The answer is correct if it is close to the correct answer. Change the status to correct if the answer is correct. Do not edit any other fields',
+            },
+            {
+              'role': 'user',
+              'content': jsonEncode(prompt),
+            },
+          ],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final content = data['choices'][0]['message']['content'];
+        print('Prompt being sent to GPT: ${jsonEncode(data)}');
+        try {
+          final parsedContent = jsonDecode(content);
+          if (parsedContent['questions'] is List) {
+            for (var question in parsedContent['questions']) {
+              evaluatedResults.add({
+                'Question': question['Question'],
+                'UserAnswer': question['UserAnswer'],
+                'Correct': question['Correct'],
+              });
+            }
+          } else {
+            print(
+              'Invalid JSON structure: "questions" key missing or not a list',
+            );
+          }
+        } catch (jsonError) {
+          print('JSON Parsing Error: $jsonError');
+          print('Content received: $content');
+        }
+      } else {
+        print('Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultsScreen(results: evaluatedResults),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
         body: ListView.builder(
-          itemCount: questions.length,
+          itemCount: selectedQuestions.length + 1,
           itemBuilder: (context, index) {
-            final question = questions[index]['Question'];
-            final answers = questions[index]['Answer'];
+            if (index == selectedQuestions.length) {
+              return Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Card(
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: submitExam,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        'Submit Exam',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            final question = selectedQuestions[index]['Question'];
 
             return Card(
               margin: const EdgeInsets.all(8.0),
@@ -955,12 +1171,14 @@ class CivicsQuestionsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'A: ${answers.join(", ")}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
+                    TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Your Answer',
                       ),
+                      onChanged: (value) {
+                        userAnswers[index] = value;
+                      },
                     ),
                   ],
                 ),
@@ -969,4 +1187,46 @@ class CivicsQuestionsScreen extends StatelessWidget {
           },
         ),
       );
+}
+
+class ResultsScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> results;
+
+  const ResultsScreen({required this.results, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Calculate score
+    final int score =
+        results.where((result) => result['Correct'] == true).length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Exam Results (Score: $score/10)'),
+        backgroundColor: Colors.green,
+      ),
+      body: ListView.builder(
+        itemCount: results.length,
+        itemBuilder: (context, index) {
+          final result = results[index];
+          final isCorrect = result['Correct'] == true;
+
+          return Card(
+            margin: const EdgeInsets.all(8.0),
+            color: isCorrect ? Colors.green[50] : Colors.red[50],
+            child: ListTile(
+              title: Text('Q${index + 1}: ${result['Question']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Your Answer: ${result['UserAnswer']}'),
+                  Text('Result: ${isCorrect ? "Correct" : "Incorrect"}'),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
