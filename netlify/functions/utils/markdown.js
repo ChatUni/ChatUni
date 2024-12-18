@@ -13,12 +13,12 @@ export const parseMD = async (file, returnType, save) => {
   const id = findId(ast.children)
   const [p1, p2] = splitBy(ast.children, ['answer key'], { level: 1, keepFirst: true, ci: true })
   let tests = splitOnEvery(p1, 'Test ', { level: 1, start: true })
-  const testCount = tests.length
   const q = tests.map(parseTest).filter(t => t.listen.length > 0).map((t, i) => ({id: `${id}-${i+1}`, ...t}))
+  const testCount = q.length
   tests = splitOnEvery(p2, 'TEST ', { start: true })
-  const a = range(0, testCount - 1).map(n => parseTestAnswer(tests[n * 2], tests[n * 2 + 1])).filter(x => x.listen.length > 0 && x.read.length > 0)
+  const a = range(0, testCount - 1).map(n => parseTestAnswer(tests[n * 2], tests[n * 2 + 1])).filter(x => tap(x).listen.length > 0 && x.read.length > 0)
   attachTestAnswer(q, a)
-  if (save) await post(DB('save', 'ielts'), q)
+  if (save === '1') await post(DB('save', 'ielts'), q)
   return returnType == 'html' ? visual(q) : q
 }
 
@@ -313,9 +313,9 @@ const parseAnswer = comp => {
     .flat()
   const a2 = comp.filter(x => x.type == 'paragraph')
     .map(x => {
-      const ms = paragraph(x, { noStyle: true }).map(y => y.match(/^(\d+) (.+)$/))
+      const ms = paragraph(x, { noStyle: true }).filter(y => !y.startsWith('Reading Passage ')).map(y => y.match(/^(\\n)?(\d+)\.? (.+)$/))
       return ms.every(y => y)
-        ? ms.map(y => ({ number: y[1], answer: y[2] }))
+        ? ms.map(y => ({ number: +y[2], answer: y[3] }))
         : null
     })
     .filter(x => x)

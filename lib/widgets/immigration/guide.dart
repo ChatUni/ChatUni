@@ -1,6 +1,7 @@
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/immigration/civics.dart';
 import 'package:chatuni/widgets/immigration/questionaire.dart';
 import 'package:chatuni/widgets/scaffold/scaffold.dart';
 import 'package:flutter/material.dart';
@@ -395,7 +396,7 @@ class CardListWidget extends StatelessWidget {
 }
 
 Widget immigration() => DefaultTabController(
-      length: 3, // Number of top-level tabs
+      length: 4, // Number of top-level tabs
       child: scaffold(
         vContainer(
           [
@@ -421,7 +422,14 @@ Widget immigration() => DefaultTabController(
                 ),
                 Tab(
                   child: Text(
-                    'Questionaire',
+                    'Questionnaire',
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Civics Exam',
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
@@ -442,7 +450,6 @@ Widget immigration() => DefaultTabController(
                 children: [
                   // Tab 1: News
                   CardListWidget(data: cardDataNews),
-
                   // Tab 2: Medical (nested TabBar)
                   DefaultTabController(
                     length: 4, // Number of nested tabs
@@ -510,6 +517,7 @@ Widget immigration() => DefaultTabController(
                     ),
                   ),
                   const QuestionnaireApp(),
+                  CivicsQuestionsScreen(),
                 ],
               ),
             ),

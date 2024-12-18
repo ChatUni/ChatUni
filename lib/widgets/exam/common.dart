@@ -122,10 +122,10 @@ List<Widget> paragraph(Paragraph p) {
   } else if (p.isTrueFalse) {
     ps = lidx(p.questions!)
         .expand((i) => trueFalse(p.questions![i], p.content[i]));
-  } else {
+  } else if (!p.isScript) {
     ps = p.content.map(content);
   }
-  return [...ps, vSpacer(12)];
+  return ps.isEmpty ? [] : [...ps, vSpacer(12)];
 }
 
 List<Widget> trueFalse(Question q, String c) => [

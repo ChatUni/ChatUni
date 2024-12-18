@@ -2,10 +2,39 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import '/env.dart';
 
 const base = 'https://api.openai.com/v1';
+
+class RecommendedData {
+  final String title;
+  final String subtitle;
+  final String link;
+
+  RecommendedData({
+    required this.title,
+    required this.subtitle,
+    required this.link,
+  });
+
+  /// Factory constructor to create a `RecommendedData` object from JSON
+  factory RecommendedData.fromJson(Map<String, dynamic> json) =>
+      RecommendedData(
+        title: json['title'] ?? 'No Title',
+        subtitle: json['subtitle'] ?? 'No Details',
+        link: json['link'] ?? '',
+      );
+
+  /// Method to convert a `RecommendedData` object back to JSON
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'subtitle': subtitle,
+        'link': link,
+      };
+}
+
 final headers = {
   'Content-Type': 'application/json',
   'Authorization': 'Bearer ${Env.openaiApiKey}',
@@ -32,6 +61,7 @@ class QuestionnaireScreen extends StatefulWidget {
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, String> _responses = {};
+  String _recommendations = ''; // Holds GPT recommendations
 
   final List<String> employmentStatusOptions = [
     'Employed',
@@ -64,19 +94,27 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   if (_formKey.currentState?.validate() ?? false) {
     _formKey.currentState?.save();
 
-    // Show a loading dialog while processing the GPT request
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+      setState(() {
+        _recommendations = 'Loading...'; // Show loading state
+      });
 
-    try {
-      // Prepare the prompt for GPT
-      final prompt =
-          'With this information: ${_responses.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ')}, recommend all US government benefit programs the user is eligible to apply for with links to them.';
+      try {
+        // Prepare the prompt for GPT
+        final prompt = '''
+        Based on the following user data: 
+        ${_responses.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ')}. 
+
+        Provide the recommendations for US government benefit programs the user is eligible for in the following JSON format:
+        [
+          {
+            "title": "Program Title",
+            "subtitle": "Eligibility details",
+            "link": "Program link"
+          },
+          ...
+        ]
+      Do not recommend any programs if the user's income is too high or if they already have government assistance from the programs.
+      ''';
 
       // Make the API call to OpenAI
       final response = await http.post(
@@ -96,57 +134,83 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         final recommendations =
             responseData['choices'][0]['message']['content'];
 
-        // Close the loading dialog
-        Navigator.of(context).pop();
-
-        // Show the recommendations in a dialog
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Recommendations'),
-            content: Text(recommendations),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // Close the dialog
-                  Navigator.of(context).pop();
-                  // Reset the form and page state
-                  setState(() {
-                    _responses.clear();
-                    _formKey.currentState?.reset();
-                  });
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else {
-        throw Exception(
-            'Failed to fetch recommendations: ${response.statusCode}',);
+          // Update the UI with the recommendations
+          setState(() {
+            _recommendations = recommendations;
+          });
+        } else {
+          throw Exception(
+            'Failed to fetch recommendations: ${response.statusCode}',
+          );
+        }
+      } catch (error) {
+        // Show an error message in the UI
+        setState(() {
+          _recommendations = 'Failed to fetch recommendations: $error';
+        });
       }
-    } catch (error) {
-      // Close the loading dialog
-      Navigator.of(context).pop();
-
-      // Show an error dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: Text('Failed to fetch recommendations: $error'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
     }
   }
-}
 
+  Widget _buildRecommendationsContent(String recommendations) {
+    try {
+      // Check if the recommendations string is valid JSON
+      if (recommendations == 'Loading...' || recommendations.isEmpty) {
+        return const Text('Fetching recommendations...');
+      }
+
+      // Parse the JSON response
+      final List<dynamic> jsonResponse = jsonDecode(recommendations);
+      final List<RecommendedData> recommendedDataList =
+          jsonResponse.map((item) => RecommendedData.fromJson(item)).toList();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: recommendedDataList
+            .map<Widget>(
+              (program) => Card(
+                margin: const EdgeInsets.only(bottom: 16.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        program.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(program.subtitle),
+                      if (program.link.isNotEmpty)
+                        TextButton(
+                          onPressed: () async {
+                            final uri = Uri.parse(program.link);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          },
+                          child: Text(
+                            program.link,
+                            style: const TextStyle(color: Colors.blue),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      );
+    } catch (e) {
+      return Text('Error parsing recommendations: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -331,6 +395,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   onPressed: _submitForm,
                   child: const Text('Submit'),
                 ),
+                const SizedBox(height: 20),
+                // Display recommendations below the submit button
+                if (_recommendations.isNotEmpty)
+                  _buildRecommendationsContent(_recommendations),
               ],
             ),
           ),

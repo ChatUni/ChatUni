@@ -60,6 +60,8 @@ class Paragraph {
   List<String> content = [];
   List<Question>? questions = [];
 
+  bool get isScript => type == 'script';
+
   bool get isTrueFalse => type == 'bool';
 
   bool get isMultiChoice =>
