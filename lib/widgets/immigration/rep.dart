@@ -94,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('ChatGPT Chat UI'),
+          title: const Text('211 Call Center Representative'),
         ),
         body: Column(
           children: [
