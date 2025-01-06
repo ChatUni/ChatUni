@@ -30,4 +30,6 @@ abstract class Env {
 
   @EnviedField(varName: 'USER_JWT_SECRET')
   static final String userJwtSecret = _Env.userJwtSecret;
+
+  static var azureTtsEndpoint;
 }
