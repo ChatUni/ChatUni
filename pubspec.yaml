@@ -70,6 +70,7 @@ dependencies:
   uuid: 3.0.7
   video_player: ^2.9.2
   audioplayers: ^6.1.0
+  flutter_translate: ^4.1.0
 
 dependency_overrides:
   web: ^1.0.0

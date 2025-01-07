@@ -34,7 +34,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
-  final List<Map<String, String>> _messages = [];
+  final List<Map<String, dynamic>> _messages = [];
   final AudioPlayer _audioPlayer = AudioPlayer();
   late stt.SpeechToText _speech;
   bool _isListening = false;
@@ -50,7 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.trim().isEmpty) return;
 
     setState(() {
-      _messages.add({'sender': 'user', 'message': text});
+      _messages.add({'sender': 'user', 'message': text, 'translated': null});
     });
 
     _textController.clear();
@@ -87,7 +87,11 @@ class _ChatScreenState extends State<ChatScreen> {
         final chatGPTMessage = data['choices'][0]['message']['content'];
 
         setState(() {
-          _messages.add({'sender': 'chatgpt', 'message': chatGPTMessage});
+          _messages.add({
+            'sender': 'chatgpt',
+            'message': chatGPTMessage,
+            'translated': null,
+          });
         });
 
         // Use ElevenLabs TTS API to synthesize the response
@@ -97,12 +101,15 @@ class _ChatScreenState extends State<ChatScreen> {
           _messages.add({
             'sender': 'chatgpt',
             'message': 'Error: Unable to fetch response.',
+            'translated': null,
           });
         });
       }
     } catch (e) {
       setState(() {
-        _messages.add({'sender': 'chatgpt', 'message': 'Error: $e'});
+        _messages.add(
+          {'sender': 'chatgpt', 'message': 'Error: $e', 'translated': null},
+        );
       });
     }
   }
@@ -114,6 +121,53 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       print('Error synthesizing speech: $e');
     }
+  }
+
+  Future<String> _translateToSpanish(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${Env.openaiApiKey}',
+        },
+        body: jsonEncode({
+          'model': 'gpt-4',
+          'messages': [
+            {
+              'role': 'system',
+              'content':
+                  'You are a helpful assistant that translates text from English to Spanish.',
+            },
+            {
+              'role': 'user',
+              'content': 'Translate this text to Spanish: "$text"',
+            }
+          ],
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(
+            utf8.decode(response.bodyBytes)); // Decode response body as UTF-8
+        return data['choices'][0]['message']['content'].trim();
+      } else {
+        throw Exception('Failed to translate text');
+      }
+    } catch (e) {
+      print('Error translating text: $e');
+      return 'Translation error';
+    }
+  }
+
+  void _handleTranslate(int index) async {
+    final message = _messages[index];
+    if (message['translated'] != null) return; // Avoid re-translating
+
+    final translatedMessage = await _translateToSpanish(message['message']!);
+    setState(() {
+      _messages[index]['translated'] = translatedMessage;
+    });
   }
 
   void _startListening() async {
@@ -168,40 +222,76 @@ class _ChatScreenState extends State<ChatScreen> {
                             final message =
                                 _messages[_messages.length - 1 - index];
                             final isUser = message['sender'] == 'user';
+                            final translated = message['translated'];
 
-                            return Align(
-                              alignment: isUser
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  vertical: 5,
-                                  horizontal: 10,
-                                ),
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                  color: isUser
-                                      ? Colors.blue[200]
-                                      : Colors.grey[300],
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: const Radius.circular(12),
-                                    topRight: const Radius.circular(12),
-                                    bottomLeft: isUser
-                                        ? const Radius.circular(12)
-                                        : Radius.zero,
-                                    bottomRight: isUser
-                                        ? Radius.zero
-                                        : const Radius.circular(12),
+                            return Column(
+                              crossAxisAlignment: isUser
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 5,
+                                    horizontal: 10,
+                                  ),
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                    color: isUser
+                                        ? Colors.blue[200]
+                                        : Colors.grey[300],
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: const Radius.circular(12),
+                                      topRight: const Radius.circular(12),
+                                      bottomLeft: isUser
+                                          ? const Radius.circular(12)
+                                          : Radius.zero,
+                                      bottomRight: isUser
+                                          ? Radius.zero
+                                          : const Radius.circular(12),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        message['message']!,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      if (translated != null)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                            translated,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontStyle: FontStyle.italic,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                child: Text(
-                                  message['message']!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black87,
+                                Align(
+                                  alignment: isUser
+                                      ? Alignment.centerRight
+                                      : Alignment.centerLeft,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.translate,
+                                      color: Colors.indigo,
+                                    ),
+                                    onPressed: () => _handleTranslate(
+                                      _messages.length - 1 - index,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             );
                           },
                         ),
