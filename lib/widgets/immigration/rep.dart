@@ -60,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
         {
           'role': 'system',
           'content':
-              'You work as a customer service representative for the Santa Clara County 211 call center. Your job is to provide accurate information about the services Santa Clara County can offer. Always speak in sentences and lists. Ask the user questions about their current situation to get a better understanding of all the services Santa Clara county can offer them. Start the conversation by asking the user how you can help them today.',
+              'Limit responses to three sentences. You work as a customer service representative for the Santa Clara County 211 call center. Your job is to provide accurate information about the services Santa Clara County can offer. Always speak in sentences and lists. Ask the user questions about their current situation to get a better understanding of all the services Santa Clara county can offer them. Start the conversation by asking the user how you can help them today.',
         },
         ..._messages.map(
           (msg) => {
@@ -116,7 +116,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _synthesizeSpeech(String text) async {
     try {
-      final audioBytes = await tts11(text, 'Xb7hH8MSUJpSbSDYk0k2');
+      final audioBytes = await tts11(text, 'pFZP5JQG7iQjIQuC4Bku');
+      print('Audio data: ${audioBytes.sublist(0, 10)}'); // Print first 10 bytes
       await _audioPlayer.play(BytesSource(audioBytes));
     } catch (e) {
       print('Error synthesizing speech: $e');
@@ -149,7 +150,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(
-            utf8.decode(response.bodyBytes)); // Decode response body as UTF-8
+          utf8.decode(response.bodyBytes),
+        ); // Decode response body as UTF-8
         return data['choices'][0]['message']['content'].trim();
       } else {
         throw Exception('Failed to translate text');
@@ -168,6 +170,13 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages[index]['translated'] = translatedMessage;
     });
+
+    // Send the translated message to TTS
+    await _synthesizeSpeech(translatedMessage);
+  }
+
+  void _speakTranslatedText(String text) async {
+    await _synthesizeSpeech(text);
   }
 
   void _startListening() async {
@@ -265,13 +274,29 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(top: 8.0),
-                                          child: Text(
-                                            translated,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontStyle: FontStyle.italic,
-                                              color: Colors.black54,
-                                            ),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  translated,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontStyle: FontStyle.italic,
+                                                    color: Colors.black54,
+                                                  ),
+                                                ),
+                                              ),
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.volume_up,
+                                                  color: Colors.indigo,
+                                                ),
+                                                onPressed: () =>
+                                                    _speakTranslatedText(
+                                                  translated,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                     ],
