@@ -39,6 +39,21 @@ class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   String _spokenText = '';
+  String _selectedLanguage = 'Spanish';
+  final Map<String, String> _languageCodes = {
+    'Spanish': 'es',
+    'Chinese': 'zh',
+    'French': 'fr',
+    'German': 'de',
+    'Italian': 'it',
+    'Japanese': 'ja',
+    'Korean': 'ko',
+    'Portuguese': 'pt',
+    'Russian': 'ru',
+    'Hindi': 'hi',
+    'Arabic': 'ar',
+    'Turkish': 'tr',
+  };
 
   @override
   void initState() {
@@ -94,7 +109,6 @@ class _ChatScreenState extends State<ChatScreen> {
           });
         });
 
-        // Use ElevenLabs TTS API to synthesize the response
         await _synthesizeSpeech(chatGPTMessage);
       } else {
         setState(() {
@@ -114,17 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _synthesizeSpeech(String text) async {
-    try {
-      final audioBytes = await tts11(text, 'pFZP5JQG7iQjIQuC4Bku');
-      print('Audio data: ${audioBytes.sublist(0, 10)}'); // Print first 10 bytes
-      await _audioPlayer.play(BytesSource(audioBytes));
-    } catch (e) {
-      print('Error synthesizing speech: $e');
-    }
-  }
-
-  Future<String> _translateToSpanish(String text) async {
+  Future<String> _translateToLanguage(String text, String languageCode) async {
     try {
       final response = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
@@ -138,11 +142,11 @@ class _ChatScreenState extends State<ChatScreen> {
             {
               'role': 'system',
               'content':
-                  'You are a helpful assistant that translates text from English to Spanish.',
+                  'You are a helpful assistant that translates text to $languageCode.',
             },
             {
               'role': 'user',
-              'content': 'Translate this text to Spanish: "$text"',
+              'content': 'Translate this text to $languageCode: "$text"',
             }
           ],
         }),
@@ -151,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(
           utf8.decode(response.bodyBytes),
-        ); // Decode response body as UTF-8
+        );
         return data['choices'][0]['message']['content'].trim();
       } else {
         throw Exception('Failed to translate text');
@@ -162,21 +166,32 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _speakTranslatedText(String text) async {
+    await _synthesizeSpeech(text);
+  }
+
   void _handleTranslate(int index) async {
     final message = _messages[index];
     if (message['translated'] != null) return; // Avoid re-translating
 
-    final translatedMessage = await _translateToSpanish(message['message']!);
+    final languageCode = _languageCodes[_selectedLanguage]!;
+    final translatedMessage =
+        await _translateToLanguage(message['message']!, languageCode);
     setState(() {
       _messages[index]['translated'] = translatedMessage;
     });
 
-    // Send the translated message to TTS
     await _synthesizeSpeech(translatedMessage);
   }
 
-  void _speakTranslatedText(String text) async {
-    await _synthesizeSpeech(text);
+  Future<void> _synthesizeSpeech(String text) async {
+    try {
+      // Your implementation for ElevenLabs TTS API
+      final audioBytes = await tts11(text, 'pFZP5JQG7iQjIQuC4Bku');
+      await _audioPlayer.play(BytesSource(audioBytes));
+    } catch (e) {
+      print('Error synthesizing speech: $e');
+    }
   }
 
   void _startListening() async {
@@ -209,170 +224,188 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('ChatGPT Chat UI'),
-          backgroundColor: Colors.indigo,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(bottom: 150),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                        ),
-                        child: ListView.builder(
-                          reverse: true,
-                          itemCount: _messages.length,
-                          itemBuilder: (context, index) {
-                            final message =
-                                _messages[_messages.length - 1 - index];
-                            final isUser = message['sender'] == 'user';
-                            final translated = message['translated'];
-
-                            return Column(
-                              crossAxisAlignment: isUser
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 5,
-                                    horizontal: 10,
-                                  ),
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                    color: isUser
-                                        ? Colors.blue[200]
-                                        : Colors.grey[300],
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: const Radius.circular(12),
-                                      topRight: const Radius.circular(12),
-                                      bottomLeft: isUser
-                                          ? const Radius.circular(12)
-                                          : Radius.zero,
-                                      bottomRight: isUser
-                                          ? Radius.zero
-                                          : const Radius.circular(12),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        message['message']!,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      if (translated != null)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 8.0),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  translated,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Colors.black54,
-                                                  ),
-                                                ),
-                                              ),
-                                              IconButton(
-                                                icon: const Icon(
-                                                  Icons.volume_up,
-                                                  color: Colors.indigo,
-                                                ),
-                                                onPressed: () =>
-                                                    _speakTranslatedText(
-                                                  translated,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                Align(
-                                  alignment: isUser
-                                      ? Alignment.centerRight
-                                      : Alignment.centerLeft,
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.translate,
-                                      color: Colors.indigo,
-                                    ),
-                                    onPressed: () => _handleTranslate(
-                                      _messages.length - 1 - index,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
+          title: const Text('211 Chat REP'),
+          backgroundColor: const Color.fromARGB(255, 20, 171, 218),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 58.0),
+              child: DropdownButton<String>(
+                value: _selectedLanguage,
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedLanguage = newValue!;
+                  });
+                },
+                items: _languageCodes.keys
+                    .map(
+                      (language) => DropdownMenuItem(
+                        value: language,
+                        child: Text(language),
                       ),
-                    ),
-                  ],
+                    )
+                    .toList(),
+                dropdownColor: Colors.white,
+                underline: const SizedBox(),
+                icon: const Icon(
+                  Icons.language,
+                  color: Colors.white,
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: true,
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[_messages.length - 1 - index];
+                  final isUser = message['sender'] == 'user';
+                  final translated = message['translated'];
+
+                  return Column(
+                    crossAxisAlignment: isUser
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _textController,
-                          decoration: InputDecoration(
-                            hintText: 'Type your message...',
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 10,
-                            ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: isUser ? Colors.blue[200] : Colors.grey[300],
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(12),
+                            topRight: const Radius.circular(12),
+                            bottomLeft: isUser
+                                ? const Radius.circular(12)
+                                : Radius.zero,
+                            bottomRight: isUser
+                                ? Radius.zero
+                                : const Radius.circular(12),
                           ),
-                          onSubmitted: _sendMessage,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message['message']!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            if (translated != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        translated,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontStyle: FontStyle.italic,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.volume_up,
+                                        color: Colors.indigo,
+                                      ),
+                                      onPressed: () => _speakTranslatedText(
+                                        translated,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.indigo,
-                        ),
+                      Align(
+                        alignment: isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: IconButton(
-                          icon: const Icon(Icons.send, color: Colors.white),
-                          onPressed: () => _sendMessage(_textController.text),
+                          icon: const Icon(
+                            Icons.translate,
+                            color: Colors.indigo,
+                          ),
+                          onPressed: () => _handleTranslate(
+                            _messages.length - 1 - index,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
+                  );
+                },
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _isListening ? _stopListening : _startListening,
-          child: Icon(_isListening ? Icons.mic_off : Icons.mic),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: 100.0,
+                left: 10.0,
+                right: 10.0,
+                top: 10.0,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textController,
+                      decoration: InputDecoration(
+                        hintText: 'Type your message...',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                      ),
+                      onSubmitted: _sendMessage,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.indigo,
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        _isListening ? Icons.mic_off : Icons.mic,
+                        color: Colors.white,
+                      ),
+                      onPressed:
+                          _isListening ? _stopListening : _startListening,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.indigo,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      onPressed: () => _sendMessage(_textController.text),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
 }

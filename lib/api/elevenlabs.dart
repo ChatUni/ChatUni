@@ -11,7 +11,7 @@ final headers = {
   'Content-Type': 'application/json',
   'xi-api-key': 'sk_a36cf48b18267cb52d1a861bda592227e582eec79e608500',
 };
-const model = 'eleven_monolingual_v1';
+const model = 'eleven_turbo_v2_5';
 
 Future tts11(String text, String voice) async {
   final r = await http.post(
