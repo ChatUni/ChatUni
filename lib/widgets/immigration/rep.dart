@@ -76,7 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
         {
           'role': 'system',
           'content':
-              'Limit responses to three sentences and assume the user can read english so send all responses in english. You work as a customer service representative for the Santa Clara County 211 call center. Your job is to provide accurate information about the services Santa Clara County can offer. Always speak in sentences and lists. Ask the user questions about their current situation to get a better understanding of all the services Santa Clara county can offer them. Start the conversation by asking the user how you can help them today.',
+              'Limit responses to three sentences and assume the user can read English so send all responses in English. You work as a customer service representative for the Santa Clara County 211 call center. Your job is to provide accurate information about the services Santa Clara County can offer. Always speak in sentences and lists. Ask the user questions about their current situation to get a better understanding of all the services Santa Clara County can offer them. Start the conversation by asking the user how you can help them today.',
         },
         ..._messages.map(
           (msg) => {
@@ -100,12 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
-
-        // Decode and process the message
         String chatGPTMessage = data['choices'][0]['message']['content'].trim();
-
-        // Example decoding process (customize as needed)
-        chatGPTMessage = chatGPTMessage.replaceAll('\\n', '\n').trim();
 
         setState(() {
           _messages.add({
@@ -115,7 +110,16 @@ class _ChatScreenState extends State<ChatScreen> {
           });
         });
 
-        await _synthesizeSpeech(chatGPTMessage);
+        // If selected language is not English, translate the response automatically
+        if (_selectedLanguage != 'English') {
+          await _handleAutomaticTranslation(
+            _messages.length - 1,
+            chatGPTMessage,
+          );
+        } else {
+          // Synthesize the original English speech
+          await _synthesizeSpeech(chatGPTMessage);
+        }
       } else {
         setState(() {
           _messages.add({
@@ -131,6 +135,26 @@ class _ChatScreenState extends State<ChatScreen> {
           {'sender': 'chatgpt', 'message': 'Error: $e', 'translated': null},
         );
       });
+    }
+  }
+
+  Future<void> _handleAutomaticTranslation(
+      int messageIndex, String originalMessage) async {
+    try {
+      final languageCode = _languageCodes[_selectedLanguage]!;
+
+      // Translate the message
+      final translatedMessage =
+          await _translateToLanguage(originalMessage, languageCode);
+
+      setState(() {
+        _messages[messageIndex]['translated'] = translatedMessage;
+      });
+
+      // Synthesize the translated speech
+      await _synthesizeSpeech(translatedMessage);
+    } catch (e) {
+      print('Error translating or synthesizing speech: $e');
     }
   }
 
@@ -411,6 +435,18 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  // Send button
+                  Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.indigo,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      onPressed: () => _sendMessage(_textController.text),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
                   // Selected language display (as a button)
                   GestureDetector(
                     onTap: () {
@@ -443,18 +479,6 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  // Send button
-                  Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.indigo,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send, color: Colors.white),
-                      onPressed: () => _sendMessage(_textController.text),
                     ),
                   ),
                 ],
