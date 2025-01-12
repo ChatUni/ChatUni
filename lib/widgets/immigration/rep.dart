@@ -39,21 +39,21 @@ class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   String _spokenText = '';
-  String _selectedLanguage = 'Spanish';
+  String _selectedLanguage = 'English';
   final Map<String, String> _languageCodes = {
     'English': 'en-US',
-    'Spanish': 'es-ES',
-    'Chinese': 'zh-CN',
-    'French': 'fr-FR',
-    'German': 'de-DE',
-    'Italian': 'it-IT',
-    'Japanese': 'ja-JP',
-    'Korean': 'ko-KR',
-    'Portuguese': 'pt-PT',
-    'Russian': 'ru-RU',
-    'Hindi': 'hi-IN',
-    'Arabic': 'ar-SA',
-    'Turkish': 'tr-TR',
+    'Español': 'es-ES', // Spanish
+    '中文': 'zh-CN', // Chinese
+    'Français': 'fr-FR', // French
+    'Deutsch': 'de-DE', // German
+    'Italiano': 'it-IT', // Italian
+    '日本語': 'ja-JP', // Japanese
+    '한국어': 'ko-KR', // Korean
+    'Português': 'pt-PT', // Portuguese
+    'Русский': 'ru-RU', // Russian
+    'हिन्दी': 'hi-IN', // Hindi
+    'العربية': 'ar-SA', // Arabic
+    'Türkçe': 'tr-TR', // Turkish
   };
 
   @override
@@ -232,6 +232,31 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _showLanguageSelector(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Select Input Language'),
+        children: _languageCodes.keys
+            .map(
+              (language) => SimpleDialogOption(
+                onPressed: () {
+                  setState(() {
+                    _selectedLanguage = language;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  language,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
   void _stopListening() async {
     if (_isListening) {
       await _speech.stop();
@@ -244,33 +269,6 @@ class _ChatScreenState extends State<ChatScreen> {
         appBar: AppBar(
           title: const Text('211 Chat REP'),
           backgroundColor: const Color.fromARGB(255, 20, 171, 218),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: DropdownButton<String>(
-                value: _selectedLanguage,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedLanguage = newValue!;
-                  });
-                },
-                items: _languageCodes.keys
-                    .map(
-                      (language) => DropdownMenuItem(
-                        value: language,
-                        child: Text(language),
-                      ),
-                    )
-                    .toList(),
-                dropdownColor: Colors.white,
-                underline: const SizedBox(),
-                icon: const Icon(
-                  Icons.language,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
         ),
         body: Column(
           children: [
@@ -375,6 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               child: Row(
                 children: [
+                  // Expanded Text Field
                   Expanded(
                     child: TextField(
                       controller: _textController,
@@ -395,6 +394,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  // Microphone button
                   Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
@@ -407,10 +407,46 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       onPressed:
                           _isListening ? _stopListening : _startListening,
-                      tooltip: 'Input Language: $_selectedLanguage',
+                      tooltip: 'Start voice input',
                     ),
                   ),
                   const SizedBox(width: 10),
+                  // Selected language display (as a button)
+                  GestureDetector(
+                    onTap: () {
+                      _showLanguageSelector(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade100,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.language,
+                            size: 16,
+                            color: Colors.indigo,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            _selectedLanguage,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.indigo,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Send button
                   Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
