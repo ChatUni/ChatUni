@@ -41,18 +41,19 @@ class _ChatScreenState extends State<ChatScreen> {
   String _spokenText = '';
   String _selectedLanguage = 'Spanish';
   final Map<String, String> _languageCodes = {
-    'Spanish': 'es',
-    'Chinese': 'zh',
-    'French': 'fr',
-    'German': 'de',
-    'Italian': 'it',
-    'Japanese': 'ja',
-    'Korean': 'ko',
-    'Portuguese': 'pt',
-    'Russian': 'ru',
-    'Hindi': 'hi',
-    'Arabic': 'ar',
-    'Turkish': 'tr',
+    'English': 'en-US',
+    'Spanish': 'es-ES',
+    'Chinese': 'zh-CN',
+    'French': 'fr-FR',
+    'German': 'de-DE',
+    'Italian': 'it-IT',
+    'Japanese': 'ja-JP',
+    'Korean': 'ko-KR',
+    'Portuguese': 'pt-PT',
+    'Russian': 'ru-RU',
+    'Hindi': 'hi-IN',
+    'Arabic': 'ar-SA',
+    'Turkish': 'tr-TR',
   };
 
   @override
@@ -75,7 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
         {
           'role': 'system',
           'content':
-              'Limit responses to three sentences. You work as a customer service representative for the Santa Clara County 211 call center. Your job is to provide accurate information about the services Santa Clara County can offer. Always speak in sentences and lists. Ask the user questions about their current situation to get a better understanding of all the services Santa Clara county can offer them. Start the conversation by asking the user how you can help them today.',
+              'Limit responses to three sentences and assume the user can read english so send all responses in english. You work as a customer service representative for the Santa Clara County 211 call center. Your job is to provide accurate information about the services Santa Clara County can offer. Always speak in sentences and lists. Ask the user questions about their current situation to get a better understanding of all the services Santa Clara county can offer them. Start the conversation by asking the user how you can help them today.',
         },
         ..._messages.map(
           (msg) => {
@@ -98,8 +99,13 @@ class _ChatScreenState extends State<ChatScreen> {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final chatGPTMessage = data['choices'][0]['message']['content'];
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Decode and process the message
+        String chatGPTMessage = data['choices'][0]['message']['content'].trim();
+
+        // Example decoding process (customize as needed)
+        chatGPTMessage = chatGPTMessage.replaceAll('\\n', '\n').trim();
 
         setState(() {
           _messages.add({
@@ -125,6 +131,13 @@ class _ChatScreenState extends State<ChatScreen> {
           {'sender': 'chatgpt', 'message': 'Error: $e', 'translated': null},
         );
       });
+    }
+  }
+
+  void _checkSupportedLocales() async {
+    final locales = await _speech.locales();
+    for (var locale in locales) {
+      print('Locale: ${locale.localeId} - ${locale.name}');
     }
   }
 
@@ -200,8 +213,12 @@ class _ChatScreenState extends State<ChatScreen> {
         onStatus: (val) => print('onStatus: $val'),
         onError: (val) => print('onError: $val'),
       );
+
       if (available) {
         setState(() => _isListening = true);
+
+        final selectedLocale = _languageCodes[_selectedLanguage]!;
+
         _speech.listen(
           onResult: (val) => setState(() {
             _spokenText = val.recognizedWords;
@@ -209,6 +226,7 @@ class _ChatScreenState extends State<ChatScreen> {
               _sendMessage(_spokenText);
             }
           }),
+          localeId: selectedLocale, // Dynamically set the language locale
         );
       }
     }
@@ -228,7 +246,7 @@ class _ChatScreenState extends State<ChatScreen> {
           backgroundColor: const Color.fromARGB(255, 20, 171, 218),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 58.0),
+              padding: const EdgeInsets.only(right: 10.0),
               child: DropdownButton<String>(
                 value: _selectedLanguage,
                 onChanged: (newValue) {
@@ -389,6 +407,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                       onPressed:
                           _isListening ? _stopListening : _startListening,
+                      tooltip: 'Input Language: $_selectedLanguage',
                     ),
                   ),
                   const SizedBox(width: 10),
