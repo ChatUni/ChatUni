@@ -5,12 +5,26 @@ import { range, splitWhen, tap } from './util'
 const categories = {
   '听力文本': {
     title: 'listen',
+    scripts: ['Listen to'],
     parts: ['C1', 'L1', 'L2', 'C2', 'L3'],
+    keepScriptTitle: true,
    },
   '阅读': {
     title: 'read',
     parts: ['R1', 'R2', 'R3'],
-  }
+  },
+  '综合写作': {
+    title: 'write',
+    parts: ['Reading Passage:'],
+    scripts: ['听力文本:'],
+    questions: ['题目：', '独立写作：'],
+  },
+  '口语': {
+    title: 'speak',
+    parts: ['Task1', 'Task2', 'Task3', 'Task4'],
+    scripts: ['听力文本：'],
+    questions: ['题目：'],
+  },
 }
 const fillPattern = /(\d{1,2}).*?[\._…]{6,}/g
 
@@ -29,10 +43,10 @@ export const parseTOEFL = async (file, returnType, save) => {
 }
 
 const findId = ns => {
-  for (let n of ns) {
-    const m = paragraph(n).join('').match(/TPO(\d{1,2}) (.*)$/)
+  for (let i = 0; i < ns.length; i++) {
+    const m = paragraph(ns[i]).join('').match(/TPO(\d{1,2})( .*)?$/)
     if (m) {
-      cat = categories[m[2]]
+      cat = categories[m[2] ? m[2].trim() : paragraph(ns[i + 1]).join('')]
       return { id: m[1], cat: cat.title }
     }
   }
@@ -65,15 +79,15 @@ const paragraph = (n, opt = {}) => {
 
 const matchHeading = (node, level) => (level ? [] : ['paragraph']).concat('heading').includes(node.type) && (!level || node.depth == level)
 
-const matchText = (text, match, ci, exact, start) => {
-  if (Array.isArray(text)) text = text.join('\n')
+const matchText = (text, match, ci, exact, start, firstLine) => {
+  if (Array.isArray(text)) text = firstLine ? text[0] : text.join('\n')
   const t = ci ? text.toLowerCase() : text
   const m = ci ? match.toLowerCase() : match
   return exact ? t == m : start ? t.startsWith(m) : t.includes(m)
 }
 
-const splitBy = (a, keys, { level, keepFirst, ci, exact, start } = {}) => {
-  const ids = keys.map(k => a.findIndex(x => matchHeading(x, level) && matchText(paragraph(x, { noStyle: true }), k, ci, exact, start)))
+const splitBy = (a, keys, { level, keepFirst, ci, exact, start, firstLine } = {}) => {
+  const ids = keys.map(k => a.findIndex(x => matchHeading(x, level) && matchText(paragraph(x, { noStyle: true }), k, ci, exact, start, firstLine)))
   return splitAt(a, ids, keepFirst)
 }
 
@@ -90,7 +104,7 @@ const splitAt = (a, ids, keepFirst) => ids
   .map(x => a.slice(x[0], x[1]))
 
 const parseTest = (a, ids) => {
-  const ps = splitBy(a, cat.parts, { exact: true, keepFirst: false })
+  const ps = splitBy(a, cat.parts, { exact: true, keepFirst: false, firstLine: true })
   return {
     id: ids.id,
     [ids.cat]: ps.map((x, i) => parsePart(x, cat.parts[i])),
@@ -104,6 +118,9 @@ const parsePart = (a, name) => ({
 
 const parseGroup = (a, partName) => {
   let paragraphs = a.map(x => parseParagraph(x, partName)).filter(x => x)
+  paragraphs = fixSquareQuestion(paragraphs)
+  fixSpeakQuestion(paragraphs)
+  paragraphs = fixDuplicateTitle(paragraphs, partName)
   return { name: '', from: 1, to: 1, paragraphs }
 }
 
@@ -170,13 +187,15 @@ const isChoiceText = x => x.match(/^[A-J]\. /)
 
 const parseParagraph = (n, partName) => {
   const target = { type: isScript ? 'script' : 'instruction', content: paragraph(n) }
+  const c0 = removeStyle(target.content?.[0] || '')
+
   if (target.content.every(isChoiceText) && prevParagraph) {
     prevParagraph.questions[0].choices.push(...target.content)
     return null
   }
-  if (target.content[0]?.startsWith('答案')) {
+  if (c0.startsWith('答案')) {
     prevQuestions.push(prevParagraph.questions[0])
-    const s = target.content[0].slice(3).replace(/ /g, '')
+    const s = c0.slice(3).replace(/ /g, '')
     const ans = []
     let n = 0
     for (let i = 0; i < s.length; i++) {
@@ -194,9 +213,19 @@ const parseParagraph = (n, partName) => {
     prevQuestions = []
     return null
   }
-  if (target.content[0] == partName) {
+  if (cat.scripts?.some(x => c0.startsWith(x))) {
     isScript = true
-    return null
+    target.type = 'script'
+    return cat.keepScriptTitle ? target : null
+  }
+  if (cat.questions) {
+    const i = cat.questions.findIndex(q => c0.startsWith(q))
+    if (i > -1) {
+      isScript = false
+      target.type = cat.title
+      target.questions = [{ number: i + 1, subject: target.content.join(' ').slice(cat.questions[i].length) }]
+      target.content = []
+    }
   }
   if (n.type == 'list') {
     isScript = false
@@ -311,6 +340,37 @@ const isTrueFalse = p => {
   const r = t.map(x => removeStyle(x).split(' ')[0]).join()
   return r === 'TRUE,FALSE,NOT' || r === 'YES,NO,NOT'
 }
+
+const CNT = ['1st', '2nd', '3rd', '4th']
+const fixSquareQuestion = paragraphs => {
+  const idx = paragraphs.findIndex(x => (x.questions || []).some(q => q.subject.includes('[■]')))
+  if (idx > -1) {
+    const ps = paragraphs.slice(idx + 1)
+    let idx2 = ps.findIndex(x => x.type == 'choice')
+    if (idx2 == -1) idx2 = ps.length
+    const q = {
+      number: paragraphs[idx].questions[0].number,
+      subject: '',
+      choices: [...Array(4).keys()].map(i => `${String.fromCharCode(65 + i)}. Insert before the ${CNT[i]} ■.`)
+    }
+    paragraphs = [
+      ...paragraphs.slice(0, idx + idx2 + 1),
+      { type: 'choice', content: [], questions: [q] },
+      ...paragraphs.slice(idx + idx2 + 1)
+    ]
+  }
+  return paragraphs
+}
+
+const fixSpeakQuestion = paragraphs => {
+  if (paragraphs.length == 2 && removeStyle(paragraphs[0].content[0]) == 'Task1') {
+    paragraphs[1].type = 'speak'
+    paragraphs[1].questions = [{ number: 1 }]
+  }
+}
+
+const fixDuplicateTitle = (paragraphs, partName) => 
+  removeStyle(paragraphs[0].content[0]) == partName ? paragraphs.slice(1) : paragraphs
 
 const parseTestAnswer = (listen, read) => ({
   listen: parseAnswer(listen),

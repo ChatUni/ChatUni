@@ -59,3 +59,11 @@ String dateString(String utc) {
   final d = DateTime.parse(utc).toLocal().toString();
   return d.substring(0, d.length - 4);
 }
+
+(int, String) numAndTitle(String s) {
+  final re = RegExp(r'^(\d{1,2})\.? (.*)$');
+  final match = re.firstMatch(s);
+  return match == null
+      ? (-1, s)
+      : (int.parse(match.group(1)!), match.group(2)!);
+}

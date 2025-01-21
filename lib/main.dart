@@ -23,6 +23,7 @@ void main() {
       child: MaterialApp.router(
         title: 'ChatUni',
         theme: ThemeData(
+          fontFamily: 'Gotham',
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),

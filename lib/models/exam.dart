@@ -1,3 +1,4 @@
+import 'package:chatuni/store/exam.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'exam.g.dart';
@@ -17,9 +18,13 @@ class Choice {
   Question q1;
   Question q2;
 
-  bool get isSelected => q1.userAnswer == key || q2.userAnswer == key;
+  bool get isSelected =>
+      (q1.userAnswer != null && q1.userAnswer!.contains(key)) ||
+      (q2.userAnswer != null && q2.userAnswer!.contains(key));
 
-  bool get isActual => q1.answer == key || q2.answer == key;
+  bool get isActual =>
+      (q1.answer != null && q1.answer!.contains(key)) ||
+      (q2.answer != null && q2.answer!.contains(key));
 
   bool get isCorrect => isSelected && isActual;
 
@@ -54,28 +59,69 @@ class Question {
   Map<String, dynamic> toJson() => _$QuestionToJson(this);
 }
 
+const audioPrefixes = ['Listen to ', 'Now, listen to ', 'Now listen to '];
+
 @JsonSerializable()
 class Paragraph {
   String type = '';
   List<String> content = [];
   List<Question>? questions = [];
+  String? maxChoice;
 
   bool get isScript => type == 'script';
 
   bool get isTrueFalse => type == 'bool';
 
-  bool get isMultiChoice =>
-      type == 'choice' &&
-      (questions ?? []).every((q) => q.subject == null && q.choices == null);
+  bool get isWriteQuestion => type == 'write';
+
+  bool get isSpeakQuestion => type == 'speak';
+
+  bool get hasAudio =>
+      isScript &&
+      content.isNotEmpty &&
+      audioPrefixes.any(content[0].startsWith);
+
+  bool get hasQuestions => questions != null && questions!.isNotEmpty;
+
+  bool get isChoiceQuestion => type == 'choice' && hasQuestions;
+
+  bool get isSharedChoice =>
+      isChoiceQuestion &&
+      questions!.every((q) => q.subject == null && q.choices == null);
 
   bool get isSingleChoice =>
-      type == 'choice' &&
-      (questions ?? []).every((q) => q.subject != null && q.choices != null);
+      isChoiceQuestion &&
+      questions!.every(
+        (q) =>
+            q.subject != null &&
+            q.choices != null &&
+            q.answer != null &&
+            q.answer!.length == 1,
+      );
+
+  bool get isMultiChoice =>
+      isChoiceQuestion &&
+      questions!.every(
+        (q) =>
+            q.subject != null &&
+            q.choices != null &&
+            q.answer != null &&
+            q.answer!.length > 1,
+      );
+
+  bool get isChoiceOnly =>
+      isChoiceQuestion &&
+      questions!.every(
+        (q) =>
+            (q.subject == null || q.subject!.isEmpty) &&
+            q.choices != null &&
+            q.choices!.isNotEmpty,
+      );
 
   List<String> get nonChoiceContent =>
       content.where((x) => !isChoice(x)).toList();
 
-  List<Choice> get choiceList => !isMultiChoice
+  List<Choice> get choiceList => !isSharedChoice
       ? []
       : content
           .where(isChoice)
@@ -83,7 +129,7 @@ class Paragraph {
           .toList();
 
   String get questionNumbers =>
-      '${questions![0].number} and ${questions![1].number}.';
+      'Q${questions![0].number}) Q${questions![1].number})';
 
   Paragraph();
 
@@ -99,6 +145,9 @@ class Group {
   int from = 0;
   int to = 0;
   List<Paragraph> paragraphs = [];
+
+  String get groupName =>
+      name.startsWith('PART ') ? name.substring(6).trim() : name;
 
   Group();
 
@@ -170,6 +219,7 @@ class Component {
 class Test {
   String id = '';
   List<Component> components = [];
+  String Function(Exam)? mp3Url;
 
   Test(this.id);
 }

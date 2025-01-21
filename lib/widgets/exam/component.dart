@@ -1,4 +1,3 @@
-import 'package:chatuni/models/exam.dart';
 import 'package:chatuni/store/exam.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/dialog.dart';
@@ -38,12 +37,10 @@ Widget component() => obsc<Exam>((exam, context) {
               exam.name,
               [
                 ...header(exam.component!.title, exam.part!.name),
-                playButton(),
-                vSpacer(12),
                 ...exam.isScoring
                     ? [spinner]
                     : [
-                        ...body(exam.part!.groups),
+                        ...body(exam),
                         ...nav(exam.isChecking),
                       ],
               ],
@@ -63,10 +60,12 @@ List<Widget> header(String comp, String part) => [
             ]),
     ];
 
-List<Widget> body(List<Group> groups) => [
-      ...groups.map(group),
-      writeBoxAndAnswer(),
-      speak(),
+List<Widget> body(Exam exam) => [
+      ...exam.hasFixedAudio ? [playButton(), vSpacer(12)] : [vSpacer(1)],
+      ...exam.part!.groups.map(group),
+      //writeBoxAndAnswer(),
+      speakVideo(),
+      speakAudio(),
     ];
 
 List<Widget> nav(bool isChecking) => [
