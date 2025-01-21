@@ -11,17 +11,22 @@ ButtonStyleButton button(
   Color color = Colors.white,
   bool outline = false,
   double size = 16,
+  bool isCircle = false,
+  double padding = 0,
+  double iconTextSpaing = 10,
 }) {
-  final radius = RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
-  );
+  final shape = isCircle
+      ? const CircleBorder()
+      : RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        );
 
   final List<Widget> children = [];
 
   if (icon != null) {
     children.addAll([
       Icon(icon, color: Colors.white),
-      hSpacer(10),
+      hSpacer(iconTextSpaing),
     ]);
   }
 
@@ -33,7 +38,8 @@ ButtonStyleButton button(
       ? OutlinedButton(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
-            shape: radius,
+            shape: shape,
+            padding: aEdge(padding),
           ),
           child: ccRow(children),
         )
@@ -41,7 +47,8 @@ ButtonStyleButton button(
           onPressed: onPressed,
           style: FilledButton.styleFrom(
             backgroundColor: bgColor,
-            shape: radius,
+            shape: shape,
+            padding: aEdge(padding),
           ),
           child: ccRow(children),
         );

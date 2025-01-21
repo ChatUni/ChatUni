@@ -1,4 +1,6 @@
+import 'package:chatuni/utils/const.dart' as consts;
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/common/text.dart';
 import 'package:flutter/material.dart';
 
 DropdownButton<String> dropdownButton(
@@ -21,9 +23,30 @@ DropdownMenu<String> dropdown(
     DropdownMenu<String>(
       onSelected: (v) => onSelected(v ?? ''),
       initialSelection: values.first,
-      dropdownMenuEntries:
-          values.map((v) => DropdownMenuEntry(value: v, label: v)).toList(),
+      dropdownMenuEntries: values
+          .map(
+            (v) => DropdownMenuEntry(value: v, label: v),
+          )
+          .toList(),
       expandedInsets: hEdge(15),
+      //inputDecorationTheme: const InputDecorationTheme(isCollapsed: true),
+    );
+
+DropdownButton<String> dropdownbtn(
+  List<String> values,
+  String? value,
+  void Function(String) onSelected,
+) =>
+    DropdownButton<String>(
+      onChanged: (v) => onSelected(v ?? ''),
+      value: value,
+      items: values
+          .map(
+            (v) => DropdownMenuItem<String>(value: v, child: txt(v)),
+          )
+          .toList(),
+      isExpanded: true,
+      style: const TextStyle(color: Color(consts.Colors.darkBlue)),
     );
 
 PopupMenuButton<String> popupMenu(

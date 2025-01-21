@@ -113,6 +113,19 @@ flutter:
     - assets/images/gif/
     - assets/images/tutoricons/
 
+  fonts:
+    - family: Gotham
+      fonts:
+        - asset: fonts/GothamBold.ttf
+          weight: 800
+        - asset: fonts/GothamBook.ttf
+          weight: 400
+        - asset: fonts/GothamLight.ttf
+          weight: 300
+          style: italic
+        - asset: fonts/GothamMedium.ttf
+          weight: 500
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

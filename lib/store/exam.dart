@@ -23,13 +23,18 @@ final examConfig = {
       Component('write', 'Writing', 3600),
       Component('speak', 'Speaking', 0),
     ],
+    'mp3Url': (Exam exam) => '${exam.test!.id}-${exam.partIndex + 1}',
   },
   'TOEFL': {
     'title': 'TOEFL',
     'components': [
       Component('listen', 'Listening', 0),
       Component('read', 'Reading', 0),
+      Component('write', 'Writing', 0),
+      Component('speak', 'Speaking', 0),
     ],
+    'mp3Url': (Exam exam) =>
+        '${exam.test!.id}-${exam.compIndex + 1}-${exam.partIndex + 1}',
   },
   'SAT': {
     'title': 'SAT Practice Test',
@@ -106,6 +111,17 @@ abstract class _Exam with Store {
 
   @observable
   int rc = 0;
+
+  @computed
+  bool get isIelts => name == 'Ielts';
+
+  @computed
+  bool get isToefl => name == 'TOEFL';
+
+  @computed
+  bool get hasFixedAudio =>
+      (isIelts && component != null && component!.isListen) ||
+      (isToefl && component != null && component!.isSpeak && partIndex == 0);
 
   @computed
   List<Component> get comps => test == null ? [] : test!.components;
@@ -254,7 +270,7 @@ abstract class _Exam with Store {
     group = part!.groups.first;
     // isChecking = false;
     isPlaying = false;
-    if (component!.isSpeak) {
+    if (isIelts && component!.isSpeak) {
       questionIndex = 0;
       if (partIndex != 1) {
         await _videoPlayer.setUrls(
@@ -270,6 +286,7 @@ abstract class _Exam with Store {
   void fill(int num, String answer) {
     final q = getQuestion(num);
     if (q != null) q.userAnswer = answer;
+    rc++;
   }
 
   @action
@@ -289,7 +306,21 @@ abstract class _Exam with Store {
   }
 
   @action
-  void multiSelect(Question q1, Question q2, String answer) {
+  void multiSelect(Question q, String answer) {
+    final l = q.answer!.length;
+    if (q.userAnswer == null) {
+      q.userAnswer = answer;
+    } else if (q.userAnswer!.contains(answer)) {
+      q.userAnswer = q.userAnswer!.replaceFirst(answer, '');
+    } else if (q.userAnswer!.length < l) {
+      q.userAnswer = '${q.userAnswer}$answer'.split('').sorted().join('');
+    }
+    print(q.userAnswer);
+    rc++;
+  }
+
+  @action
+  void shareSelect(Question q1, Question q2, String answer) {
     if (q1.userAnswer == null) {
       q1.userAnswer = answer;
     } else if (q2.userAnswer == null) {
@@ -317,8 +348,10 @@ abstract class _Exam with Store {
 
   @action
   void play() {
-    _player.play(cdMp3('${test!.id}-${partIndex + 1}'));
-    isPlaying = true;
+    if (test!.mp3Url != null) {
+      _player.play(cdMp3(test!.mp3Url!(this as Exam)));
+      isPlaying = true;
+    }
   }
 
   @action
@@ -347,8 +380,8 @@ abstract class _Exam with Store {
   }
 
   @action
-  void write(String t) {
-    writeQuestion.userAnswer = t;
+  void write(Question q, String t) {
+    q.userAnswer = t;
   }
 
   @action
@@ -367,7 +400,7 @@ abstract class _Exam with Store {
     for (var q in [...writeQuestions, ...speakQuestions]) {
       if (q.userAnswer != null && q.userAnswer != '') {
         q.answer = await writeScore(q.userAnswer!);
-        final m = RegExp('Score: (\\d+)').firstMatch(q.answer!);
+        final m = RegExp('Score:\\*\\* (\\d+)').firstMatch(q.answer!);
         if (m != null) q.score = m.group(1);
       }
     }
@@ -445,15 +478,18 @@ abstract class _Exam with Store {
     return false;
   }
 
-  List<Question> getPartQuestions(Part? part) => part == null
-      ? []
-      : part.groups
-          .expand((g) => g.paragraphs)
-          .expand<Question>((p) => p.questions ?? [])
-          .toList();
+  List<Paragraph> getPartParagraphs(Part? part) =>
+      part == null ? [] : part.groups.expand((g) => g.paragraphs).toList();
+
+  List<Question> getPartQuestions(Part? part) => getPartParagraphs(part)
+      .expand<Question>((p) => p.questions ?? [])
+      .toList();
 
   Question? getQuestion(int num) =>
       getPartQuestions(part).firstWhereOrNull((q) => q.number == num);
+
+  Paragraph? getParagraphForQuestion(int num) => getPartParagraphs(part)
+      .firstWhereOrNull((p) => (p.questions ?? []).any((q) => q.number == num));
 
   String? checkAnswer(int num) {
     final q = getQuestion(num);
@@ -472,10 +508,13 @@ abstract class _Exam with Store {
   int numOfCorrect(Component comp) =>
       getCompQuestions(comp).where((q) => q.answer == q.userAnswer).length;
 
-  List<int> incorrectQuestions(Component comp) => getCompQuestions(comp)
-      .where((q) => q.answer != q.userAnswer)
-      .map((q) => q.number)
-      .toList();
+  Map<String, List<int>> incorrectQuestions(Component comp) => {
+        for (var p in comp.parts)
+          p.name: getPartQuestions(p)
+              .where((q) => q.answer != q.userAnswer)
+              .map((q) => q.number)
+              .toList(),
+      };
 
   int choiceColor(Choice c) => isChecking
       ? c.isWrong
@@ -484,7 +523,7 @@ abstract class _Exam with Store {
               ? Colors.green
               : Colors.black
       : c.isSelected
-          ? Colors.blue
+          ? Colors.darkBlue
           : Colors.black;
 
   bool boldChoice(Choice c) => isChecking && c.isActual || c.isSelected;
@@ -495,17 +534,24 @@ abstract class _Exam with Store {
   }
 
   (int, String?, String?) parseFill(String s) {
-    RegExp re = RegExp(r'(\d{1,2}).*?([\._…]{6,})');
+    final startsWithNumber = s.isNotEmpty && int.tryParse(s[0]) != null;
+    RegExp re = RegExp(
+      startsWithNumber
+          ? r'^(\d{1,2})(.*?)[\._…]{6,}(.*)$'
+          : r'^(.*)(\d{1,2})[\._…]{6,}(.*)$',
+    );
     final match = re.firstMatch(s);
     if (match == null) return (-1, null, null);
-    final num = int.parse(match.group(1)!);
-    final blank = match.group(2)!;
-    final ss = s.split(blank);
-    return (num, ss[0], ss[1]);
+    final num = int.parse(match.group(startsWithNumber ? 1 : 2)!);
+    return (
+      num,
+      match.group(startsWithNumber ? 2 : 1)!.trim(),
+      match.group(3)!.trim()
+    );
   }
 
   void _createQuestions() {
-    if (writeComponent != null) {
+    if (isIelts && writeComponent != null) {
       lidx(writeComponent!.parts).forEach((i) {
         final g = writeComponent!.parts[i].groups[0];
         if (g.paragraphs.last.type != 'write') {

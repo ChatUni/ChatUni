@@ -9,6 +9,25 @@ part of 'exam.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$Exam on _Exam, Store {
+  Computed<bool>? _$isIeltsComputed;
+
+  @override
+  bool get isIelts => (_$isIeltsComputed ??=
+          Computed<bool>(() => super.isIelts, name: '_Exam.isIelts'))
+      .value;
+  Computed<bool>? _$isToeflComputed;
+
+  @override
+  bool get isToefl => (_$isToeflComputed ??=
+          Computed<bool>(() => super.isToefl, name: '_Exam.isToefl'))
+      .value;
+  Computed<bool>? _$hasFixedAudioComputed;
+
+  @override
+  bool get hasFixedAudio =>
+      (_$hasFixedAudioComputed ??= Computed<bool>(() => super.hasFixedAudio,
+              name: '_Exam.hasFixedAudio'))
+          .value;
   Computed<List<Component>>? _$compsComputed;
 
   @override
@@ -580,11 +599,22 @@ mixin _$Exam on _Exam, Store {
   }
 
   @override
-  void multiSelect(Question q1, Question q2, String answer) {
+  void multiSelect(Question q, String answer) {
     final _$actionInfo =
         _$_ExamActionController.startAction(name: '_Exam.multiSelect');
     try {
-      return super.multiSelect(q1, q2, answer);
+      return super.multiSelect(q, answer);
+    } finally {
+      _$_ExamActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void shareSelect(Question q1, Question q2, String answer) {
+    final _$actionInfo =
+        _$_ExamActionController.startAction(name: '_Exam.shareSelect');
+    try {
+      return super.shareSelect(q1, q2, answer);
     } finally {
       _$_ExamActionController.endAction(_$actionInfo);
     }
@@ -624,11 +654,11 @@ mixin _$Exam on _Exam, Store {
   }
 
   @override
-  void write(String t) {
+  void write(Question q, String t) {
     final _$actionInfo =
         _$_ExamActionController.startAction(name: '_Exam.write');
     try {
-      return super.write(t);
+      return super.write(q, t);
     } finally {
       _$_ExamActionController.endAction(_$actionInfo);
     }
@@ -679,6 +709,17 @@ mixin _$Exam on _Exam, Store {
   }
 
   @override
+  void cancelTimer() {
+    final _$actionInfo =
+        _$_ExamActionController.startAction(name: '_Exam.cancelTimer');
+    try {
+      return super.cancelTimer();
+    } finally {
+      _$_ExamActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   bool updateTimer() {
     final _$actionInfo =
         _$_ExamActionController.startAction(name: '_Exam.updateTimer');
@@ -709,6 +750,9 @@ timeIsUp: ${timeIsUp},
 results: ${results},
 result: ${result},
 rc: ${rc},
+isIelts: ${isIelts},
+isToefl: ${isToefl},
+hasFixedAudio: ${hasFixedAudio},
 comps: ${comps},
 compNames: ${compNames},
 isCompSelected: ${isCompSelected},

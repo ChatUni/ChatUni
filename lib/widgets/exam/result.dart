@@ -56,22 +56,12 @@ Widget _score(Component comp) => obs<Exam>(
           : comp.isSpeak
               ? ssCol(
                   lidx(comp.parts)
-                      .expand(
-                        (i) => [
-                          h4('Part ${i + 1}'),
-                          ...exam
-                              .getPartQuestions(comp.parts[i])
-                              .where(
-                                (q) =>
-                                    exam.partIndex == 1 ? q.number == 0 : true,
-                              )
-                              .map(
-                                (q) => _row(
-                                  'Question ${q.number} Score',
-                                  q.score ?? '',
-                                ),
-                              ),
-                        ],
+                      .expand<Widget>(
+                        (i) => exam.isIelts
+                            ? _ieltsSpeakScore(exam, comp, i)
+                            : exam.isToefl
+                                ? _toeflSpeakScore(exam, comp, i)
+                                : [],
                       )
                       .toList(),
                 )
@@ -81,12 +71,36 @@ Widget _score(Component comp) => obs<Exam>(
                 ),
     );
 
+List<Widget> _ieltsSpeakScore(Exam exam, Component comp, int i) => [
+      h4('Part ${i + 1}'),
+      ...exam
+          .getPartQuestions(comp.parts[i])
+          .where(
+            (q) => exam.partIndex == 1 ? q.number == 0 : true,
+          )
+          .map(
+            (q) => _row(
+              'Question ${q.number} Score',
+              q.score ?? '',
+            ),
+          ),
+    ];
+
+List<Widget> _toeflSpeakScore(Exam exam, Component comp, int i) => [
+      _row(
+        'Part ${i + 1} Score',
+        exam.getPartQuestions(comp.parts[i])[0].score ?? '',
+      ),
+    ];
+
 Widget _incorrect(Component comp) => obs<Exam>(
       (exam) => comp.isQA
-          ? _row(
-              'Incorrect Questions',
-              exam.incorrectQuestions(comp).map((x) => 'Q$x').join(', '),
-            )
+          ? ssCol([
+              bold('Incorrect Questions:'),
+              ...exam.incorrectQuestions(comp).entries.map(
+                    (x) => _row(x.key, x.value.map((i) => 'Q$i').join(', ')),
+                  ),
+            ])
           : vSpacer(1),
     );
 

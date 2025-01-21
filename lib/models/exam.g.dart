@@ -35,12 +35,14 @@ Paragraph _$ParagraphFromJson(Map<String, dynamic> json) => Paragraph()
       (json['content'] as List<dynamic>).map((e) => e as String).toList()
   ..questions = (json['questions'] as List<dynamic>?)
       ?.map((e) => Question.fromJson(e as Map<String, dynamic>))
-      .toList();
+      .toList()
+  ..maxChoice = json['maxChoice'] as String?;
 
 Map<String, dynamic> _$ParagraphToJson(Paragraph instance) => <String, dynamic>{
       'type': instance.type,
       'content': instance.content,
       'questions': instance.questions,
+      'maxChoice': instance.maxChoice,
     };
 
 Group _$GroupFromJson(Map<String, dynamic> json) => Group()
