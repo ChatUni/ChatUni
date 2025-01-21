@@ -1,7 +1,9 @@
 import 'package:chatuni/store/app.dart';
 import 'package:chatuni/utils/utils.dart';
 import 'package:chatuni/widgets/common/container.dart';
+import 'package:chatuni/widgets/immigration/civics.dart';
 import 'package:chatuni/widgets/immigration/questionaire.dart';
+import 'package:chatuni/widgets/immigration/rep.dart';
 import 'package:chatuni/widgets/scaffold/scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -395,7 +397,7 @@ class CardListWidget extends StatelessWidget {
 }
 
 Widget immigration() => DefaultTabController(
-      length: 3, // Number of top-level tabs
+      length: 5, // Updated number of tabs
       child: scaffold(
         vContainer(
           [
@@ -421,31 +423,33 @@ Widget immigration() => DefaultTabController(
                 ),
                 Tab(
                   child: Text(
-                    'Questionaire',
+                    'Questionnaire',
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                 ),
-                // Tab(
-                //   child: Text(
-                //     'Food',
-                //     style:
-                //         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                //   ),
-                // ),
+                Tab(
+                  child: Text(
+                    'Civics Exam',
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Chat',
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
-
-            // TabBarView for top-level tabs
             Expanded(
               child: TabBarView(
                 children: [
-                  // Tab 1: News
                   CardListWidget(data: cardDataNews),
-
-                  // Tab 2: Medical (nested TabBar)
                   DefaultTabController(
-                    length: 4, // Number of nested tabs
+                    length: 4,
                     child: Column(
                       children: [
                         const TabBar(
@@ -496,13 +500,8 @@ Widget immigration() => DefaultTabController(
                             children: [
                               CardListWidget(data: cardDataMed),
                               CardListWidget(data: cardDataFood),
-                              CardListWidget(
-                                data: cardDataHouse,
-                              ), // Nested Tab 1
-                              CardListWidget(
-                                data: cardDataEdu,
-                              ),
-                              // Nested Tab 2
+                              CardListWidget(data: cardDataHouse),
+                              CardListWidget(data: cardDataEdu),
                             ],
                           ),
                         ),
@@ -510,6 +509,8 @@ Widget immigration() => DefaultTabController(
                     ),
                   ),
                   const QuestionnaireApp(),
+                  const CivicsQuestionsScreen(),
+                  const ChatApp(), // New Chat Window tab
                 ],
               ),
             ),
