@@ -45,9 +45,25 @@ final examConfig = {
       Component('math2', 'Math 2', 3600),
     ],
   },
+  'JLPT': {
+    'title': 'Japanese Language Proficiency Test',
+    'components': [
+      Component('test', '', 3600),
+    ],
+  },
 };
 
-const List<String> tags = ['h1', 'h2', 'h3', 'h4', 'b', 'i', 'ul', 'img'];
+const List<String> tags = [
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'b',
+  'i',
+  'ul',
+  'img',
+  'mp3',
+];
 const int _timeAlert = 5 * 60;
 
 const onCountdownEvent = 'Exam_Countdown';
@@ -108,6 +124,12 @@ abstract class _Exam with Store {
 
   @observable
   Result? result;
+
+  @observable
+  Map<int, Map<String, List<ExQuestion>>> explains = {};
+
+  @observable
+  bool isExplain = false;
 
   @observable
   int rc = 0;
@@ -214,6 +236,16 @@ abstract class _Exam with Store {
 
   @computed
   bool get isTimeLeftAlert => countDown < _timeAlert;
+
+  @computed
+  Map<String, List<ExQuestion>>? get explain => explains[partIndex];
+
+  @computed
+  String get part2text => part == null
+      ? ''
+      : part!.groups
+          .expand((g) => g.paragraphs.expand(paragraph2text))
+          .join('\n');
 
   @action
   Future<void> loadTests(String exam) async {
@@ -478,6 +510,25 @@ abstract class _Exam with Store {
     return false;
   }
 
+  @action
+  Future<void> getExplain() async {
+    isExplain = true;
+    if (explains[partIndex] == null) {
+      isScoring = true;
+      explains[partIndex] = await fetchExplain(part2text);
+      //final r = await chatComplete([Msg()..text = part2text]);
+      //print(r);
+      isScoring = false;
+    }
+    rc++;
+  }
+
+  @action
+  void exitExplain() {
+    isExplain = false;
+    rc++;
+  }
+
   List<Paragraph> getPartParagraphs(Part? part) =>
       part == null ? [] : part.groups.expand((g) => g.paragraphs).toList();
 
@@ -520,7 +571,7 @@ abstract class _Exam with Store {
       ? c.isWrong
           ? Colors.red
           : c.isActual
-              ? Colors.green
+              ? Colors.darkGreen
               : Colors.black
       : c.isSelected
           ? Colors.darkBlue
@@ -550,6 +601,16 @@ abstract class _Exam with Store {
     );
   }
 
+  List<String> paragraph2text(Paragraph p) => [
+        ...p.content,
+        ...(p.questions ?? []).expand(question2text),
+      ];
+
+  List<String> question2text(Question q) => [
+        'Q${q.number}) ${q.subject ?? ''}',
+        ...(q.choices ?? []),
+      ];
+
   void _createQuestions() {
     if (isIelts && writeComponent != null) {
       lidx(writeComponent!.parts).forEach((i) {
@@ -575,7 +636,11 @@ abstract class _Exam with Store {
     );
   }
 
-  _Exam();
+  _Exam() {
+    if (app.singleApp.isNotEmpty) {
+      loadTests(app.singleApp);
+    }
+  }
 
   void dispose() {
     _player.dispose();

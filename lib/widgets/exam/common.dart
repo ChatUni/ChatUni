@@ -24,7 +24,8 @@ var tagHandlers = Map.fromIterables(
     bold,
     italic,
     txt,
-    (String x) => Image.network(cdImg(x)),
+    (String x) => Image.network(x.startsWith('http') ? x : cdImg(x)),
+    (String x) => playButton(),
   ],
 );
 
@@ -48,8 +49,6 @@ Image spinner = Image.asset(
   width: 200,
   height: 100,
 );
-
-Widget title() => obs<Exam>((exam) => center(h1('Test ${exam.test!.id}')));
 
 Widget playButton() => obs<Exam>(
       (exam) => button(
@@ -137,9 +136,9 @@ List<Widget> paragraph(Paragraph p, Exam exam) {
       vSpacer(16),
     ];
   } else if (p.isSingleChoice || p.isChoiceOnly) {
-    ps = p.questions!.map((q) => choice(q, false));
+    ps = p.questions!.map((q) => choice(q, false, exam.isChecking));
   } else if (p.isMultiChoice) {
-    ps = p.questions!.map((q) => choice(q, true));
+    ps = p.questions!.map((q) => choice(q, true, exam.isChecking));
   } else if (p.isTrueFalse) {
     ps = lidx(p.questions!).expand(
       (i) => trueFalse(p.questions![i], numAndTitle(p.content[i]).$2),
@@ -203,9 +202,12 @@ Widget trueFalseButton(String text, Question q) => obs<Exam>(
       ),
     );
 
-Widget choice(Question q, bool isMulti) => ssRow([
+Widget choice(Question q, bool isMulti, bool isChecking) => ssRow([
       //q.subject != null && q.subject!.isNotEmpty
-      q.number > 0 ? bold('Q${q.number})') : hSpacer(1),
+      ssCol([
+        q.number > 0 ? bold('Q${q.number})') : hSpacer(1),
+        isChecking ? explainButton() : hSpacer(1),
+      ]),
       hSpacer(4),
       grow(
         ssCol([
@@ -405,4 +407,66 @@ Widget nextQuestionButton(Question q) => obs<Exam>(
         text: 'Next Question',
         bgColor: Colors.blue,
       ),
+    );
+
+Widget explainButton() => obs<Exam>(
+      (exam) => IconButton(
+        onPressed: () => exam.getExplain(),
+        icon: const Icon(Icons.live_help, color: Colors.orange),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.all(0),
+      ),
+    );
+
+Widget exQuestion(ExQuestion q) => ssRow([
+      bold('Q${q.num})'),
+      hSpacer(4),
+      grow(
+        ssCol(
+          [
+            q.question != null
+                ? bold(q.question!)
+                : bold('Answer: ${q.answer}'),
+            ...q.options == null
+                ? []
+                : lidx(q.options!).map(
+                    (i) => txt(
+                      '${q.hasOptionKey ? '' : '${String.fromCharCode(65 + i)}. '}${q.options![i]}',
+                      color: q.isCorrect(i)
+                          ? const Color(consts.Colors.darkGreen)
+                          : Colors.black,
+                      bold: q.isCorrect(i),
+                    ),
+                  ),
+            vSpacer(8),
+            ...q.explanation == null
+                ? []
+                : [
+                    bold('Explanation:'),
+                    txt(q.explanation!),
+                  ],
+            vSpacer(8),
+          ],
+        ),
+      ),
+    ]);
+
+Widget explanation() => obs<Exam>(
+      (exam) => exam.explain == null
+          ? vSpacer(1)
+          : ssCol([
+              left(h2('AI Explanation')),
+              ...lidx(exam.explain!['questions'] ?? []).map(
+                (i) => exQuestion(exam.explain!['questions']![i]),
+              ),
+              vSpacer(16),
+              ...exam.explain!['similar'] == null
+                  ? []
+                  : [
+                      left(h2('Similar Questions')),
+                      ...lidx(exam.explain!['similar'] ?? []).map(
+                        (i) => exQuestion(exam.explain!['similar']![i]),
+                      ),
+                    ],
+            ]),
     );

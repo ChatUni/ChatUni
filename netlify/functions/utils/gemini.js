@@ -30,6 +30,12 @@ const speakScoreModel = genAI.getGenerativeModel({
   systemInstruction: "Listen to the audio input and give feed back based on pronunciation. The words the user will speak are  in order Rural, Mischievous, Colonel, Epitome, Hyperbole, Worcestershire sauce. If there are mis pronounced words, give them the phonic way of speaking. Calculate the speaking speed in words per minute and the number of unique words. Also if there are challenging words, give suggestions on how to pronounce them properly. Give a score from 1 to 5 with 1 being bad pronunciations and 5 being fluent perfect speaker. Output the result in a chart in json. ",
 });
 
+const explainModel = genAI.getGenerativeModel({
+  model: 'gemini-1.5-flash',
+  systemInstruction:
+    'You are an English Test examiner. Based on the text and the questions the user sends to you, you provide the answers and the explanation to those questions in the following json format - { "questions": [{ "num": 1, "question": "...", "optoins": [...], "answer": "...", "explanation": "..." }, ...] }. You will also provide some similar questions for the user to practice in the same json format.',
+})
+
 const generationConfig = isText => ({
   temperature: 1,
   topP: 0.95,
@@ -101,4 +107,16 @@ export const speakscore = async () => {
 
   const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
   console.log(result.response.text());
+}
+
+export const explain = async msg => {
+  const chatSession = explainModel.startChat({
+    generationConfig: { responseMimeType: 'application/json' },
+    safetySettings,
+    history: [],
+  })
+
+  const result = await chatSession.sendMessage(msg)
+
+  return result.response.text()
 }

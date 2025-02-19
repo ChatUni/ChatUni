@@ -21,7 +21,7 @@ Widget tests() => obs<Exam>(
                           exam.selectTest(t);
                           router.go('/exam_component');
                         },
-                        text: 'Test ${t.id}',
+                        text: t.idTitle,
                         bgColor: Colors.white,
                         color: Colors.black,
                       ),

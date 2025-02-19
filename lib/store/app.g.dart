@@ -24,6 +24,21 @@ mixin _$App on _App, Store {
     });
   }
 
+  late final _$singleAppAtom = Atom(name: '_App.singleApp', context: context);
+
+  @override
+  String get singleApp {
+    _$singleAppAtom.reportRead();
+    return super.singleApp;
+  }
+
+  @override
+  set singleApp(String value) {
+    _$singleAppAtom.reportWrite(value, super.singleApp, () {
+      super.singleApp = value;
+    });
+  }
+
   late final _$showMicAtom = Atom(name: '_App.showMic', context: context);
 
   @override
@@ -94,6 +109,7 @@ mixin _$App on _App, Store {
   String toString() {
     return '''
 title: ${title},
+singleApp: ${singleApp},
 showMic: ${showMic},
 routeGroup: ${routeGroup}
     ''';

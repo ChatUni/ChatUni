@@ -32,7 +32,7 @@ Observer scaffold(
         ),
         floatingActionButton: fabMic(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: navBar(),
+        bottomNavigationBar: app.singleApp.isEmpty ? navBar() : null,
       );
     });
 

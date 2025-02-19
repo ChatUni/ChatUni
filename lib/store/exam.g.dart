@@ -193,6 +193,19 @@ mixin _$Exam on _Exam, Store {
       (_$isTimeLeftAlertComputed ??= Computed<bool>(() => super.isTimeLeftAlert,
               name: '_Exam.isTimeLeftAlert'))
           .value;
+  Computed<Map<String, List<ExQuestion>>?>? _$explainComputed;
+
+  @override
+  Map<String, List<ExQuestion>>? get explain => (_$explainComputed ??=
+          Computed<Map<String, List<ExQuestion>>?>(() => super.explain,
+              name: '_Exam.explain'))
+      .value;
+  Computed<String>? _$part2textComputed;
+
+  @override
+  String get part2text => (_$part2textComputed ??=
+          Computed<String>(() => super.part2text, name: '_Exam.part2text'))
+      .value;
 
   late final _$nameAtom = Atom(name: '_Exam.name', context: context);
 
@@ -437,6 +450,36 @@ mixin _$Exam on _Exam, Store {
     });
   }
 
+  late final _$explainsAtom = Atom(name: '_Exam.explains', context: context);
+
+  @override
+  Map<int, Map<String, List<ExQuestion>>> get explains {
+    _$explainsAtom.reportRead();
+    return super.explains;
+  }
+
+  @override
+  set explains(Map<int, Map<String, List<ExQuestion>>> value) {
+    _$explainsAtom.reportWrite(value, super.explains, () {
+      super.explains = value;
+    });
+  }
+
+  late final _$isExplainAtom = Atom(name: '_Exam.isExplain', context: context);
+
+  @override
+  bool get isExplain {
+    _$isExplainAtom.reportRead();
+    return super.isExplain;
+  }
+
+  @override
+  set isExplain(bool value) {
+    _$isExplainAtom.reportWrite(value, super.isExplain, () {
+      super.isExplain = value;
+    });
+  }
+
   late final _$rcAtom = Atom(name: '_Exam.rc', context: context);
 
   @override
@@ -505,6 +548,14 @@ mixin _$Exam on _Exam, Store {
   @override
   Future<dynamic> saveTestResult() {
     return _$saveTestResultAsyncAction.run(() => super.saveTestResult());
+  }
+
+  late final _$getExplainAsyncAction =
+      AsyncAction('_Exam.getExplain', context: context);
+
+  @override
+  Future<void> getExplain() {
+    return _$getExplainAsyncAction.run(() => super.getExplain());
   }
 
   late final _$_ExamActionController =
@@ -731,6 +782,17 @@ mixin _$Exam on _Exam, Store {
   }
 
   @override
+  void exitExplain() {
+    final _$actionInfo =
+        _$_ExamActionController.startAction(name: '_Exam.exitExplain');
+    try {
+      return super.exitExplain();
+    } finally {
+      _$_ExamActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 name: ${name},
@@ -749,6 +811,8 @@ countDown: ${countDown},
 timeIsUp: ${timeIsUp},
 results: ${results},
 result: ${result},
+explains: ${explains},
+isExplain: ${isExplain},
 rc: ${rc},
 isIelts: ${isIelts},
 isToefl: ${isToefl},
@@ -777,7 +841,9 @@ speakQuestions: ${speakQuestions},
 isLastQuestion: ${isLastQuestion},
 timeLimit: ${timeLimit},
 timeLeft: ${timeLeft},
-isTimeLeftAlert: ${isTimeLeftAlert}
+isTimeLeftAlert: ${isTimeLeftAlert},
+explain: ${explain},
+part2text: ${part2text}
     ''';
   }
 }

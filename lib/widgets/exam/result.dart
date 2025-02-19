@@ -116,6 +116,6 @@ Widget _checkAnswerButton(Component comp) => obs<Exam>(
     );
 
 Widget _row(String title, String content) => ssRow([
-      txt('$title: '),
+      txt(title.isEmpty ? '' : '$title: '),
       grow(txt(content, color: Colors.red, bold: true)),
     ]);

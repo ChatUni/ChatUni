@@ -1,4 +1,5 @@
-import '/env.dart';
+import 'package:chatuni/env.dart';
+
 import '/models/msg.dart';
 import 'api.dart';
 

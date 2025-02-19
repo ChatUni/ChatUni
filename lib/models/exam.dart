@@ -173,6 +173,7 @@ class Part {
 @JsonSerializable()
 class TestJ {
   String id = '';
+  String? title = '';
   List<Part>? listen = [];
   List<Part>? read = [];
   List<Part>? read1 = [];
@@ -181,6 +182,7 @@ class TestJ {
   List<Part>? speak = [];
   List<Part>? math1 = [];
   List<Part>? math2 = [];
+  List<Part>? test = [];
 
   TestJ();
 
@@ -194,6 +196,7 @@ class TestJ {
         'speak': speak,
         'math1': math1,
         'math2': math2,
+        'test': test,
       }[comp] ??
       [];
 
@@ -218,10 +221,14 @@ class Component {
 
 class Test {
   String id = '';
+  String? title = '';
   List<Component> components = [];
   String Function(Exam)? mp3Url;
 
-  Test(this.id);
+  String get idTitle =>
+      title != null && title!.isNotEmpty ? title! : 'Test $id';
+
+  Test(this.id, this.title);
 }
 
 @JsonSerializable()
@@ -237,4 +244,45 @@ class Result {
   factory Result.fromJson(Map<String, dynamic> json) => _$ResultFromJson(json);
 
   Map<String, dynamic> toJson() => _$ResultToJson(this);
+}
+
+@JsonSerializable()
+class Explanation {
+  List<ExQuestion> questions = [];
+  List<ExQuestion>? similar_questions = [];
+
+  Explanation();
+
+  factory Explanation.fromJson(Map<String, dynamic> json) =>
+      _$ExplanationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExplanationToJson(this);
+}
+
+@JsonSerializable()
+class ExQuestion {
+  int? num = 0;
+  String? question = '';
+  List<String>? options = [];
+  String? answer = '';
+  String? explanation = '';
+
+  bool get hasOptionKey =>
+      options != null && options!.every((o) => o[1] == '.');
+
+  bool isCorrect(int idx) {
+    if (options == null ||
+        options!.isEmpty ||
+        options!.length <= idx ||
+        answer == null) return false;
+    final ans = answer!.split('');
+    return ans.any((a) => a.runes.first == idx + 65);
+  }
+
+  ExQuestion();
+
+  factory ExQuestion.fromJson(Map<String, dynamic> json) =>
+      _$ExQuestionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExQuestionToJson(this);
 }

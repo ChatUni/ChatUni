@@ -77,6 +77,7 @@ Map<String, dynamic> _$PartToJson(Part instance) => <String, dynamic>{
 
 TestJ _$TestJFromJson(Map<String, dynamic> json) => TestJ()
   ..id = json['id'] as String
+  ..title = json['title'] as String?
   ..listen = (json['listen'] as List<dynamic>?)
       ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList()
@@ -100,10 +101,14 @@ TestJ _$TestJFromJson(Map<String, dynamic> json) => TestJ()
       .toList()
   ..math2 = (json['math2'] as List<dynamic>?)
       ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..test = (json['test'] as List<dynamic>?)
+      ?.map((e) => Part.fromJson(e as Map<String, dynamic>))
       .toList();
 
 Map<String, dynamic> _$TestJToJson(TestJ instance) => <String, dynamic>{
       'id': instance.id,
+      'title': instance.title,
       'listen': instance.listen,
       'read': instance.read,
       'read1': instance.read1,
@@ -112,6 +117,7 @@ Map<String, dynamic> _$TestJToJson(TestJ instance) => <String, dynamic>{
       'speak': instance.speak,
       'math1': instance.math1,
       'math2': instance.math2,
+      'test': instance.test,
     };
 
 Result _$ResultFromJson(Map<String, dynamic> json) => Result()
@@ -129,4 +135,35 @@ Map<String, dynamic> _$ResultToJson(Result instance) => <String, dynamic>{
       'type': instance.type,
       'date': instance.date,
       'questions': instance.questions,
+    };
+
+Explanation _$ExplanationFromJson(Map<String, dynamic> json) => Explanation()
+  ..questions = (json['questions'] as List<dynamic>)
+      .map((e) => ExQuestion.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..similar_questions = (json['similar_questions'] as List<dynamic>?)
+      ?.map((e) => ExQuestion.fromJson(e as Map<String, dynamic>))
+      .toList();
+
+Map<String, dynamic> _$ExplanationToJson(Explanation instance) =>
+    <String, dynamic>{
+      'questions': instance.questions,
+      'similar_questions': instance.similar_questions,
+    };
+
+ExQuestion _$ExQuestionFromJson(Map<String, dynamic> json) => ExQuestion()
+  ..num = (json['num'] as num?)?.toInt()
+  ..question = json['question'] as String?
+  ..options =
+      (json['options'] as List<dynamic>?)?.map((e) => e as String).toList()
+  ..answer = json['answer'] as String?
+  ..explanation = json['explanation'] as String?;
+
+Map<String, dynamic> _$ExQuestionToJson(ExQuestion instance) =>
+    <String, dynamic>{
+      'num': instance.num,
+      'question': instance.question,
+      'options': instance.options,
+      'answer': instance.answer,
+      'explanation': instance.explanation,
     };

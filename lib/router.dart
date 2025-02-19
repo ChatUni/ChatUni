@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/store/auth.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
 import 'package:chatuni/widgets/course/course.dart';
@@ -15,8 +16,17 @@ import 'package:go_router/go_router.dart';
 import 'widgets/my/membership.dart';
 import 'widgets/tutor/tutor.dart';
 
-Widget Function(BuildContext, GoRouterState) go(Widget Function() builder) =>
-    (c, s) => obs<Auth>((auth) => auth.isLoggedIn ? builder() : login());
+Widget Function(BuildContext, GoRouterState) go(
+  Widget Function() builder, {
+  String? singleApp,
+}) =>
+    (c, s) => obs<Auth>((auth) {
+          if (singleApp != null && singleApp.startsWith('Exam.')) {
+            app.singleApp = singleApp;
+            exam.loadTests(singleApp.substring(5));
+          }
+          return auth.isLoggedIn ? builder() : login();
+        });
 
 final router = GoRouter(
   routes: [
@@ -71,6 +81,18 @@ final router = GoRouter(
     GoRoute(
       path: '/course',
       builder: go(course),
+    ),
+    GoRoute(
+      path: '/ielts',
+      builder: go(tests, singleApp: 'Exam.Ielts'),
+    ),
+    GoRoute(
+      path: '/toefl',
+      builder: go(tests, singleApp: 'Exam.TOEFL'),
+    ),
+    GoRoute(
+      path: '/sat',
+      builder: go(tests, singleApp: 'Exam.SAT'),
     ),
   ],
 );

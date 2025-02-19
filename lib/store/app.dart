@@ -22,6 +22,9 @@ abstract class _App with Store {
   String title = '';
 
   @observable
+  String singleApp = '';
+
+  @observable
   bool showMic = false;
 
   @observable

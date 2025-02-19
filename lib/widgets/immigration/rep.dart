@@ -139,7 +139,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _handleAutomaticTranslation(
-      int messageIndex, String originalMessage) async {
+    int messageIndex,
+    String originalMessage,
+  ) async {
     try {
       final languageCode = _languageCodes[_selectedLanguage]!;
 

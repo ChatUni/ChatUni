@@ -1,4 +1,5 @@
 import 'package:chatuni/store/exam.dart';
+import 'package:chatuni/widgets/common/button.dart';
 import 'package:chatuni/widgets/common/container.dart';
 import 'package:chatuni/widgets/common/dialog.dart';
 import 'package:chatuni/widgets/common/hoc.dart';
@@ -36,19 +37,22 @@ Widget component() => obsc<Exam>((exam, context) {
           : examScaffold(
               exam.name,
               [
-                ...header(exam.component!.title, exam.part!.name),
+                ...header(
+                  exam.test!.idTitle,
+                  exam.component!.title,
+                  '${exam.part!.name}${exam.rc < 0 ? '' : ''}',
+                ),
                 ...exam.isScoring
                     ? [spinner]
-                    : [
-                        ...body(exam),
-                        ...nav(exam.isChecking),
-                      ],
+                    : exam.isExplain
+                        ? explain(exam)
+                        : [...body(exam), ...nav(exam.isChecking)],
               ],
             );
     });
 
-List<Widget> header(String comp, String part) => [
-      title(),
+List<Widget> header(String title, String comp, String part) => [
+      center(h1(title)),
       vSpacer(8),
       left(h3(comp)),
       vSpacer(6),
@@ -66,6 +70,16 @@ List<Widget> body(Exam exam) => [
       //writeBoxAndAnswer(),
       speakVideo(),
       speakAudio(),
+    ];
+
+List<Widget> explain(Exam exam) => [
+      explanation(),
+      button(
+        exam.exitExplain,
+        icon: Icons.arrow_back,
+        text: 'Back to result',
+        bgColor: Colors.blue,
+      ),
     ];
 
 List<Widget> nav(bool isChecking) => [

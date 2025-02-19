@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chatuni/models/exam.dart';
 import 'package:chatuni/store/exam.dart';
 
@@ -17,7 +19,7 @@ Future<List<Test>> fetchExam(String exam) async {
   final mp3Url = cfg['mp3Url'];
   return tests
       .map(
-        (t) => Test(t.id)
+        (t) => Test(t.id, t.title)
           ..mp3Url = mp3Url == null ? null : mp3Url as String Function(Exam)
           ..components = comps
               .map(
@@ -63,3 +65,26 @@ Future<Result> saveResult(Result result) async {
   );
   return result;
 }
+
+Future<Map<String, List<ExQuestion>>> fetchExplain(String txt) async {
+  final r =
+      await post('course', params: {'type': 'explain'}, data: {'msg': txt});
+  final json = jsonDecode(r);
+  final qs = (json['questions'] ?? []).map(toExQuestion).toList();
+  final similar = (json['similar_questions'] ?? []).map(toExQuestion).toList();
+
+  return {
+    'questions': qs.cast<ExQuestion>(),
+    'similar': similar.cast<ExQuestion>(),
+  };
+  // return Explanation()
+  //   ..questions = qs
+  //   ..similar_questions = similar;
+}
+
+ExQuestion toExQuestion(dynamic q) => ExQuestion()
+  ..num = q['num']
+  ..question = q['question']
+  ..options = q['options'].cast<String>()
+  ..answer = q['answer'] is List ? (q['answer'] as List).join() : q['answer']
+  ..explanation = q['explanation'];

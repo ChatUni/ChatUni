@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
-const HOST = 'https://chatuni.netlify.app';
-//const HOST = 'http://localhost:701';
+//const HOST = 'https://chatuni.netlify.app';
+const HOST = 'http://localhost:701';
 const cuBase = '$HOST/.netlify/functions';
 // const cuBase = 'http://10.0.0.72:701/.netlify/functions';
 const vipBase = 'https://en1.chatuni.com.cn'; // 'https://chat.smartkit.vip';

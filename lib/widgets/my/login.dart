@@ -1,3 +1,4 @@
+import 'package:chatuni/globals.dart';
 import 'package:chatuni/router.dart';
 import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
@@ -75,10 +76,15 @@ Observer _loginButton = obs<Auth>(
         ? () async {
             await auth.login();
             snack('Login successful!');
-            router.go('/tutors');
+            router.go(
+              '/${app.singleApp.isEmpty ? 'tutors' : getRoute(app.singleApp)}',
+            );
           }
         : null,
     text: auth.isLoggingIn ? '' : 'Login',
     icon: auth.isLoggedIn ? Icons.alarm : null,
   ),
 );
+
+String getRoute(String singleApp) =>
+    app.singleApp.startsWith('Exam.') ? 'exam_tests' : app.singleApp;

@@ -8,7 +8,7 @@ export const connectDB = async conn =>
   (db = await MongoClient.connect(conn).then(x => x.db()))
 
 export const connect = async () => {
-  console.log(`Connect MongoDB`)
+  console.log(`Connect MongoDB ${process.env.DBCS}`)
   await connectDB(process.env.DBCS)
 }
 
@@ -113,7 +113,7 @@ export const replaceList = (doc, id, list, obj) =>
     )
 
 export const update = (doc, obj) =>
-  db.collection(doc).updateOne({ id: obj.id }, { $set: obj })
+  db.collection(tap(doc)).updateOne({ id: tap(obj.id) }, { $set: obj })
 
 export const remove = (doc, obj) => db.collection(doc).remove({ id: obj.id })
 
