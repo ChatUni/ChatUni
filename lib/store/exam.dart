@@ -318,7 +318,7 @@ abstract class _Exam with Store {
   void fill(int num, String answer) {
     final q = getQuestion(num);
     if (q != null) q.userAnswer = answer;
-    rc++;
+    //rc++;
   }
 
   @action

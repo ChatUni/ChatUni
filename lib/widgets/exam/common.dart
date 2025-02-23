@@ -76,7 +76,7 @@ Widget fillQuestion(
 ) =>
     obs<Exam>(
       (exam) => scRow([
-        bold('Q$num)${exam.rc < 0 ? '' : ''}'),
+        bold('Q$num)'), //${exam.rc < 0 ? '' : ''}'),
         hSpacer(8),
         ...s1.isNotEmpty ? [txt(s1), hSpacer(8)] : [hSpacer(0)],
         grow(
