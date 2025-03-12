@@ -1,7 +1,8 @@
 import { makeApi } from './utils/http'
 import { getIelts, getTOEFL, getSAT, getJLPT, getResults, saveResult } from './utils/course'
 import { parseJLPT } from './utils/jlpt'
-import { score, explain } from './utils/gemini'
+import { score } from './utils/gemini'
+import { explain } from './utils/openai'
 
 export const handler = makeApi({
   db_handlers: {

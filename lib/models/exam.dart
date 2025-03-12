@@ -265,18 +265,27 @@ class ExQuestion {
   String? question = '';
   List<String>? options = [];
   String? answer = '';
+  List<String>? answers = [];
   String? explanation = '';
 
+  bool get hasOption => options != null && options!.isNotEmpty;
+
+  bool get hasAnswer => answer != null && answer!.isNotEmpty;
+
+  bool get hasAnswers => answers != null && answers!.isNotEmpty;
+
   bool get hasOptionKey =>
-      options != null && options!.every((o) => o[1] == '.');
+      options != null && options!.every((o) => o.length == 1 || o[1] == '.');
+
+  bool isSame(int idx, String ans) =>
+      options![idx] == ans || (ans.length == 1 && ans.runes.first == idx + 65);
 
   bool isCorrect(int idx) {
-    if (options == null ||
-        options!.isEmpty ||
-        options!.length <= idx ||
-        answer == null) return false;
-    final ans = answer!.split('');
-    return ans.any((a) => a.runes.first == idx + 65);
+    if (hasOption && options!.length > idx) {
+      if (hasAnswer && isSame(idx, answer!)) return true;
+      if (hasAnswers && answers!.any((a) => isSame(idx, a))) return true;
+    }
+    return false;
   }
 
   ExQuestion();

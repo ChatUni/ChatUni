@@ -4,7 +4,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import '/store/app.dart';
 import '/widgets/common/hoc.dart';
 import 'fab.dart';
-import 'navbar.dart';
 import 'topbar.dart';
 
 Observer scaffold(
@@ -32,7 +31,7 @@ Observer scaffold(
         ),
         floatingActionButton: fabMic(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: app.singleApp.isEmpty ? navBar() : null,
+        bottomNavigationBar: null, // app.singleApp.isEmpty ? navBar() : null,
       );
     });
 

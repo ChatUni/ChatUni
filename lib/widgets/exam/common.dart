@@ -141,7 +141,11 @@ List<Widget> paragraph(Paragraph p, Exam exam) {
     ps = p.questions!.map((q) => choice(q, true, exam.isChecking));
   } else if (p.isTrueFalse) {
     ps = lidx(p.questions!).expand(
-      (i) => trueFalse(p.questions![i], numAndTitle(p.content[i]).$2),
+      (i) => trueFalse(
+        p.questions![i],
+        numAndTitle(p.content[i]).$2,
+        exam.isChecking,
+      ),
     );
   } else if (p.hasAudio) {
     ps = [content(p.content[0]), vSpacer(12), playButton()];
@@ -168,8 +172,12 @@ List<Widget> paragraph(Paragraph p, Exam exam) {
   return ps.isEmpty ? [] : [...ps, vSpacer(12)];
 }
 
-List<Widget> trueFalse(Question q, String c) => [
-      ssRow([bold('Q${q.number})'), hSpacer(8), grow(content(c))]),
+List<Widget> trueFalse(Question q, String c, bool isChecking) => [
+      ssRow([
+        explainCol(q.number, isChecking),
+        hSpacer(8),
+        grow(content(c)),
+      ]),
       vSpacer(4),
       box(
         null,
@@ -204,10 +212,7 @@ Widget trueFalseButton(String text, Question q) => obs<Exam>(
 
 Widget choice(Question q, bool isMulti, bool isChecking) => ssRow([
       //q.subject != null && q.subject!.isNotEmpty
-      ssCol([
-        q.number > 0 ? bold('Q${q.number})') : hSpacer(1),
-        isChecking ? explainButton() : hSpacer(1),
-      ]),
+      explainCol(q.number, isChecking),
       hSpacer(4),
       grow(
         ssCol([
@@ -418,17 +423,30 @@ Widget explainButton() => obs<Exam>(
       ),
     );
 
+Widget explainCol(int number, bool isChecking, {bool hideNumber = false}) =>
+    ssCol([
+      number > 0
+          ? hideNumber
+              ? txt('Q$number)', bold: true, color: Colors.white)
+              : bold('Q$number)')
+          : hSpacer(1),
+      !isChecking ? explainButton() : hSpacer(1),
+    ]);
+
 Widget exQuestion(ExQuestion q) => ssRow([
       bold('Q${q.num})'),
       hSpacer(4),
       grow(
         ssCol(
           [
-            q.question != null
-                ? bold(q.question!)
-                : bold('Answer: ${q.answer}'),
-            ...q.options == null
-                ? []
+            q.question != null ? txt(q.question!) : bold('Answer: ${q.answer}'),
+            ...q.options == null || q.options!.isEmpty
+                ? q.answer != null
+                    ? [
+                        bold('Answer:'),
+                        txt(q.answer!),
+                      ]
+                    : []
                 : lidx(q.options!).map(
                     (i) => txt(
                       '${q.hasOptionKey ? '' : '${String.fromCharCode(65 + i)}. '}${q.options![i]}',
