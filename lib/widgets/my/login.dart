@@ -4,6 +4,7 @@ import 'package:chatuni/widgets/common/dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
+import '/api/auth.dart';
 import '/store/app.dart';
 import '/store/auth.dart';
 import '/widgets/common/button.dart';
@@ -19,6 +20,8 @@ Widget login() => scaffold(
           vSpacer(40),
           _logo,
           vSpacer(40),
+          // _googleSignInButton,
+          // vSpacer(20),
           _phoneInput,
           vSpacer(10),
           _codeInput,
@@ -31,6 +34,23 @@ Widget login() => scaffold(
       title: 'Login',
       routeGroup: RouteGroup.my,
     );
+
+Widget _googleSignInButton = obs<Auth>(
+  (auth) => button(
+    () async {
+      final user = await loginWithGoogle();
+      if (user != null) {
+        auth.setUser(user);
+        snack('Login successful!');
+        router.go(
+          '/${app.singleApp.isEmpty ? 'tutors' : getRoute(app.singleApp)}',
+        );
+      }
+    },
+    text: 'Sign in with Google',
+    icon: Icons.account_circle,
+  ),
+);
 
 Image _logo = Image.asset(
   'assets/images/chatuni.png',
@@ -77,7 +97,7 @@ Observer _loginButton = obs<Auth>(
             await auth.login();
             snack('Login successful!');
             router.go(
-              '/${app.singleApp.isEmpty ? 'tutors' : getRoute(app.singleApp)}',
+              '/${app.singleApp.isEmpty ? 'exams' : getRoute(app.singleApp)}',
             );
           }
         : null,
