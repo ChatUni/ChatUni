@@ -430,7 +430,7 @@ Widget explainCol(int number, bool isChecking, {bool hideNumber = false}) =>
               ? txt('Q$number)', bold: true, color: Colors.white)
               : bold('Q$number)')
           : hSpacer(1),
-      !isChecking ? explainButton() : hSpacer(1),
+      isChecking ? explainButton() : hSpacer(1),
     ]);
 
 Widget exQuestion(ExQuestion q) => ssRow([
