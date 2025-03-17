@@ -25,14 +25,17 @@ Widget Function(BuildContext, GoRouterState) go(
             app.singleApp = singleApp;
             exam.loadTests(singleApp.substring(5));
           }
-          return auth.isLoggedIn ? builder() : login();
+          // Check for auto login feature flag or normal login state
+          return (auth.isLoggedIn || auth.autoLoginEnabled)
+              ? builder()
+              : login();
         });
 
 final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: go(tutors),
+      builder: go(exams),
     ),
     GoRoute(
       path: '/tutors',

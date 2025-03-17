@@ -14,6 +14,10 @@ final paymentMethods = ['Wechat', 'Alipay'];
 class Auth = _Auth with _$Auth;
 
 abstract class _Auth with Store {
+  // Feature flag to bypass login screen
+  @observable
+  bool autoLoginEnabled = false;
+
   @observable
   bool isLoggedIn = false;
 
@@ -96,5 +100,19 @@ abstract class _Auth with Store {
   Future<void> createPayment(int id) async {
     final r = await createPayorder(id, paymentMethod);
     await launchUrl(Uri.parse(r['payurl']));
+  }
+
+  @action
+  void setUser(User newUser) {
+    user = newUser;
+  }
+
+  @action
+  void setAutoLoginEnabled(bool value) {
+    autoLoginEnabled = value;
+    // If auto login is enabled, automatically set logged in state to true
+    if (value) {
+      isLoggedIn = true;
+    }
   }
 }

@@ -9,6 +9,7 @@ String cdVer = '';
 
 App app = App();
 
-Auth auth = Auth();
+// Initialize Auth with auto login enabled
+Auth auth = Auth()..setAutoLoginEnabled(true);
 
 Exam exam = Exam();
