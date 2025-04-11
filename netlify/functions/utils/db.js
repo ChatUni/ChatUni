@@ -30,6 +30,12 @@ export const maxId = doc =>
     .toArray()
     .then(r => (r.length > 0 ? r[0].id : 0))
 
+// 0: prop ('$videos')
+// 1: number
+// 2: map ({ name: 'Fiona' })
+// 3: projectMap ({ id: 1, name: 0, title: '$videos.title' })
+// 4: compareMap ({ rank: -1 })
+// 5: name (default to Stage name)
 const Stages = {
   u: ['unwind', 0],
   l: ['limit', 1],
@@ -42,19 +48,30 @@ const Stages = {
 }
 
 const Ops = {
-  in: x => x.split(';'),
-  first: x => '$' + x,
+  in: v => v.split(';'),
+  first: v => '$' + v,
+  //gt: (v, k) => ['$' + k, +v],
+  //lt: (v, k) => ['$' + k, +v],
+}
+
+const strNum = v => {
+  if (!v) return ''
+  if (v.length > 2 && v[0] === "'" && v[v.length - 1] === "'") return v.slice(1, -1)
+  return isNaN(+v) ? v : +v
 }
 
 export const flat = async (doc, agg) => {
-  // agg = 'm_id=1&u_songs&p_id,name&s_date'
+  // agg = 'm_id=1,code='123',firstName=in$Nan;Fiona,name=regex$fan&u_songs&p_id,name=0,img=movies.img&s_type,date=-1'
   console.log(agg)
   const stages = !agg
     ? [{ $match: {} }]
     : agg.split('&').map(s => {
-        const [stage, props] = s.split('_')
+        const ss = s.split('_')
+        const stage = ss[0]
+        const props = ss.slice(1).join('_')
         const $stage = `$${Stages[stage][0]}`
         const type = Stages[stage][1]
+        const liftUp = []
         let value = null
         if (type === 0) value = `$${props}`
         else if (type === 1) value = +props
@@ -65,15 +82,23 @@ export const flat = async (doc, agg) => {
             if (v.includes('$')) {
               // prop value contains operator
               const [op, opv] = v.split('$')
-              return [k, { [`$${op}`]: Ops[op] ? Ops[op](opv) : opv }]
+              return [k, { [`$${op}`]: strNum(Ops[op] ? Ops[op](opv, k) : opv) }]
             }
-            if (v.includes('.')) v = '$' + v
-            return [k, isNaN(+v) ? v : +v]
-          })
-          value = Object.fromEntries(ps)
+            if (v.includes('.')) {
+              v = '$' + v
+              if (type === 3 && v != '-1') {
+                liftUp.push([k, v])
+                return [k, 1]
+              }
+            }
+            return [k, strNum(v)]
+          }).filter(x => x)
+          if (type === 3) ps.push(['_id', 0])
+          value = ps.length > 0 ? Object.fromEntries(ps) : null
         }
-        return { [$stage]: value }
-      })
+        const stageObj = value && { [$stage]: value }
+        return liftUp.length > 0 ? [{ '$addFields': Object.fromEntries(liftUp) }, stageObj] : stageObj
+      }).flat().filter(x => x)
   console.log(doc, stages)
   const r = await db.collection(doc).aggregate(stages).toArray()
   console.log(r.length)
