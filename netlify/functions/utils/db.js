@@ -79,8 +79,9 @@ export const flat = async (doc, agg) => {
         else if (type === 1) value = +props
         else if (type === 5) value = props || stage
         else if (type === 6) {
-          value = { from: props, localField: `${props}_id`, foreignField: 'id', as: props }
-          foreignKeys.push(props)
+          const ps = props.split(',')
+          value = { from: ps.length > 1 ? ps[1] : `${ps[0]}s`, localField: `${ps[0]}_id`, foreignField: 'id', as: ps[0] }
+          foreignKeys.push(ps[0])
         } else {
           const ps = props.split(',').map(p => {
             let [k, v = '1'] = p.split('=')
