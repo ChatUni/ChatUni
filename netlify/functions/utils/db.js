@@ -45,6 +45,7 @@ const Stages = {
   s: ['sort', 4],
   k: ['skip', 1],
   c: ['count', 5],
+  f: ['lookup', 6],
 }
 
 const Ops = {
@@ -72,11 +73,15 @@ export const flat = async (doc, agg) => {
         const $stage = `$${Stages[stage][0]}`
         const type = Stages[stage][1]
         const liftUp = []
+        const foreignKeys = []
         let value = null
         if (type === 0) value = `$${props}`
         else if (type === 1) value = +props
         else if (type === 5) value = props || stage
-        else {
+        else if (type === 6) {
+          value = { from: props, localField: `${props}_id`, foreignField: 'id', as: props }
+          foreignKeys.push[props]
+        } else {
           const ps = props.split(',').map(p => {
             let [k, v = '1'] = p.split('=')
             if (v.includes('$')) {
@@ -97,7 +102,11 @@ export const flat = async (doc, agg) => {
           value = ps.length > 0 ? Object.fromEntries(ps) : null
         }
         const stageObj = value && { [$stage]: value }
-        return liftUp.length > 0 ? [{ '$addFields': Object.fromEntries(liftUp) }, stageObj] : stageObj
+        return liftUp.length > 0
+          ? [{ '$addFields': Object.fromEntries(liftUp) }, stageObj]
+          : foreignKeys.length > 0
+            ? [stageObj, ...foreignKeys.map(x => ({ '$unwind': `$${x}` }))]
+            : stageObj
       }).flat().filter(x => x)
   console.log(doc, stages)
   const r = await db.collection(doc).aggregate(stages).toArray()
