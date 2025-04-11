@@ -54,7 +54,7 @@ export const makeApi =
     return tryc(
       async () => {
         let t = db_handlers[method]?.[q.type]
-        if (t) await connect()
+        if (t) await connect(q.db || 'ChatUni')
         else t = handlers[method]?.[q.type]
         if (!t) return res('', 404)        
 

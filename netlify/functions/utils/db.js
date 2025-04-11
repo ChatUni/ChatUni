@@ -7,9 +7,9 @@ export const connectDB = async conn =>
   (!conn && db) ||
   (db = await MongoClient.connect(conn).then(x => x.db()))
 
-export const connect = async () => {
+export const connect = async dbName => {
   console.log(`Connect MongoDB ${process.env.DBCS}`)
-  await connectDB(process.env.DBCS)
+  await connectDB(process.env.DBCS.replace('{db}', dbName))
 }
 
 export const count = doc => db.collection(doc).count()
