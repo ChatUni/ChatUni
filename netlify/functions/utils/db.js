@@ -159,7 +159,7 @@ export const replaceList = (doc, id, list, obj) =>
 export const update = (doc, obj) =>
   db.collection(tap(doc)).updateOne({ id: tap(obj.id) }, { $set: obj })
 
-export const remove = (doc, obj) => db.collection(doc).remove({ id: obj.id })
+export const remove = (doc, id) => db.collection(doc).remove({ id })
 
 export const removeAll = doc => db.collection(doc).deleteMany({})
 
