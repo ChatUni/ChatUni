@@ -3,7 +3,7 @@ import { makeApi } from './utils/http'
 import { parseMD } from './utils/markdown'
 import { parseTOEFL } from './utils/markdown_toefl'
 import pusher from './utils/pusher'
-import { get, count, flat, replace, update, getById, maxId } from './utils/db'
+import { get, count, flat, replace, update, getById, maxId, remove } from './utils/db'
 
 export const handler = makeApi({
   db_handlers: {
@@ -19,6 +19,9 @@ export const handler = makeApi({
       update: (q, b) => update(q.doc, b),
       parseMD: (q, b) => parseMD(b.file, q.returnType, q.save),
       parseTOEFL: (q, b) => parseTOEFL(b.file, q.returnType, q.save),
+    },
+    delete: {
+      remove: (q, b) => remove(q.doc, q.id),
     },
   },
   handlers: {
