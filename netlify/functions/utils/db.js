@@ -39,11 +39,12 @@ export const maxId = doc =>
 const Stages = {
   u: ['unwind', 0],
   l: ['limit', 1],
+  k: ['skip', 1],
   m: ['match', 2],
+  a: ['addFields', 2],
   r: ['sample', 2],
   p: ['project', 3],
   s: ['sort', 4],
-  k: ['skip', 1],
   c: ['count', 5],
   f: ['lookup', 6],
 }
@@ -99,13 +100,13 @@ export const flat = async (doc, agg) => {
             const v = isMinus ? (type === 3 ? 0 : -1) : 1
             return [k, v]
           })
-          if (type === 3 && tap(liftUps).length > 0) liftUps.forEach(x => ps.push([x, 1]))
+          if (type === 3 && liftUps.length > 0) liftUps.forEach(x => ps.push([x, 1]))
           return [{ [$stage]: Object.fromEntries(ps) }]
         }
         if (type === 5) return [{ [$stage]: props || stage }]
         if (type === 6) return props.split(',').reduce((p, c) => {
           const ps = c.split('|')
-          const prefix = p.length > 0 ? `${p[p.length - 2]['$lookup'].as}.` : ''
+          const prefix = p.length > 0 ? `${p[p.length - 3]['$lookup'].as}.` : ''
           return [
             ...p,
             { '$lookup': {
@@ -114,10 +115,12 @@ export const flat = async (doc, agg) => {
               foreignField: 'id',
               as: ps[0]
             }},
-            { '$unwind': `$${ps[0]}` }
+            { '$unwind': `$${ps[0]}` },
+            { '$project': { [`${ps[0]}._id`]: 0 } }
           ]
         }, [])
       }).flat().filter(x => x)
+  stages.push({ '$project': { _id: 0 } })
   console.log(doc, stages)
   const r = await db.collection(doc).aggregate(stages).toArray()
   console.log(r.length)
