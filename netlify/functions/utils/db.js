@@ -28,7 +28,7 @@ export const maxId = doc =>
     .sort({ id: -1 })
     .limit(1)
     .toArray()
-    .then(r => (r.length > 0 ? r[0].id : 0))
+    .then(r => (r.length > 0 ? r[0].id + 1 : 0))
 
 // 0: prop ('$videos')
 // 1: number
@@ -159,7 +159,7 @@ export const replaceList = (doc, id, list, obj) =>
 export const update = (doc, obj) =>
   db.collection(tap(doc)).updateOne({ id: tap(obj.id) }, { $set: obj })
 
-export const remove = (doc, id) => db.collection(doc).remove({ id })
+export const remove = (doc, id) => db.collection(doc).deleteOne({ id: +id })
 
 export const removeAll = doc => db.collection(doc).deleteMany({})
 
