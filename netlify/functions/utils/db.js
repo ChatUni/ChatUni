@@ -106,18 +106,21 @@ export const flat = async (doc, agg) => {
         if (type === 5) return [{ [$stage]: props || stage }]
         if (type === 6) return props.split(',').reduce((p, c) => {
           const ps = c.split('|')
+          const isCollection = ps[0].startsWith('+')
+          const single = isCollection ? ps[0].slice(1) : ps[0]
+          const plural = ps.length > 1 ? ps[1] : `${single}s`
           const prefix = p.length > 0 ? `${p[p.length - 3]['$lookup'].as}.` : ''
           return [
             ...p,
             { '$lookup': {
-              from: ps.length > 1 ? ps[1] : `${ps[0]}s`,
-              localField: `${prefix}${ps[0]}_id`,
-              foreignField: 'id',
-              as: ps[0]
+              from: plural,
+              localField: isCollection ? 'id' : `${prefix}${single}_id`,
+              foreignField: isCollection ? `${doc}_id` : 'id',
+              as: isCollection ? plural : single
             }},
-            { '$unwind': `$${ps[0]}` },
-            { '$project': { [`${ps[0]}._id`]: 0 } }
-          ]
+            isCollection ? null : { '$unwind': `$${single}` },
+            { '$project': { [`${single}._id`]: 0 } }
+          ].filter(x => x)
         }, [])
       }).flat().filter(x => x)
   stages.push({ '$project': { _id: 0 } })
