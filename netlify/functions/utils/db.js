@@ -151,6 +151,8 @@ export const replace = async (doc, obj, id = 'id') => {
   return list
 }
 
+export const save = replace
+
 export const addToList = (doc, id, list, obj) =>
   db.collection(doc).updateOne({ id: +id }, { $addToSet: { [list]: obj } })
 
