@@ -617,11 +617,11 @@ mixin _$Exam on _Exam, Store {
   }
 
   @override
-  void fill(int num, String answer) {
+  void fill(int num, String answer, {dynamic refresh = false}) {
     final _$actionInfo =
         _$_ExamActionController.startAction(name: '_Exam.fill');
     try {
-      return super.fill(num, answer);
+      return super.fill(num, answer, refresh: refresh);
     } finally {
       _$_ExamActionController.endAction(_$actionInfo);
     }

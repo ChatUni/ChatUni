@@ -157,6 +157,8 @@ ExQuestion _$ExQuestionFromJson(Map<String, dynamic> json) => ExQuestion()
   ..options =
       (json['options'] as List<dynamic>?)?.map((e) => e as String).toList()
   ..answer = json['answer'] as String?
+  ..answers =
+      (json['answers'] as List<dynamic>?)?.map((e) => e as String).toList()
   ..explanation = json['explanation'] as String?;
 
 Map<String, dynamic> _$ExQuestionToJson(ExQuestion instance) =>
@@ -165,5 +167,6 @@ Map<String, dynamic> _$ExQuestionToJson(ExQuestion instance) =>
       'question': instance.question,
       'options': instance.options,
       'answer': instance.answer,
+      'answers': instance.answers,
       'explanation': instance.explanation,
     };

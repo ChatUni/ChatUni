@@ -315,10 +315,10 @@ abstract class _Exam with Store {
   }
 
   @action
-  void fill(int num, String answer) {
+  void fill(int num, String answer, {refresh = false}) {
     final q = getQuestion(num);
     if (q != null) q.userAnswer = answer;
-    //rc++;
+    if (refresh) rc++;
   }
 
   @action

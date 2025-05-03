@@ -23,6 +23,22 @@ mixin _$Auth on _Auth, Store {
               name: '_Auth.isLoginEnabled'))
           .value;
 
+  late final _$autoLoginEnabledAtom =
+      Atom(name: '_Auth.autoLoginEnabled', context: context);
+
+  @override
+  bool get autoLoginEnabled {
+    _$autoLoginEnabledAtom.reportRead();
+    return super.autoLoginEnabled;
+  }
+
+  @override
+  set autoLoginEnabled(bool value) {
+    _$autoLoginEnabledAtom.reportWrite(value, super.autoLoginEnabled, () {
+      super.autoLoginEnabled = value;
+    });
+  }
+
   late final _$isLoggedInAtom =
       Atom(name: '_Auth.isLoggedIn', context: context);
 
@@ -253,8 +269,31 @@ mixin _$Auth on _Auth, Store {
   }
 
   @override
+  void setUser(User newUser) {
+    final _$actionInfo =
+        _$_AuthActionController.startAction(name: '_Auth.setUser');
+    try {
+      return super.setUser(newUser);
+    } finally {
+      _$_AuthActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAutoLoginEnabled(bool value) {
+    final _$actionInfo =
+        _$_AuthActionController.startAction(name: '_Auth.setAutoLoginEnabled');
+    try {
+      return super.setAutoLoginEnabled(value);
+    } finally {
+      _$_AuthActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
+autoLoginEnabled: ${autoLoginEnabled},
 isLoggedIn: ${isLoggedIn},
 phone: ${phone},
 countryCode: ${countryCode},

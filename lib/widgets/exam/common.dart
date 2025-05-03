@@ -87,7 +87,7 @@ Widget fillQuestion(
                     exam.getParagraphForQuestion(num)!.maxChoice!.codeUnitAt(0),
                   ).map(String.fromCharCode).toList(),
                   exam.getQuestion(num)?.userAnswer,
-                  (t) => exam.fill(num, t),
+                  (t) => exam.fill(num, t, refresh: true),
                 )
               : fillInput(
                   (t) => exam.fill(num, t),
