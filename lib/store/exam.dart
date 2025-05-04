@@ -499,7 +499,7 @@ abstract class _Exam with Store {
   bool updateTimer() {
     if (countDown > 0) {
       countDown--;
-      rc++;
+      //rc++;
     }
     if (countDown == 0) {
       _tid = 0;

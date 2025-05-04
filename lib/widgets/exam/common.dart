@@ -327,7 +327,7 @@ Widget writeBoxAndAnswer(Question q) => obs<Exam>(
               ),
               analysis(q.answer, exam.isChecking),
               // vSpacer(4),
-              txt(exam.rc > 0 ? '' : ''),
+              // txt(exam.rc > 0 ? '' : ''),
             ])
           : vSpacer(1),
     );
