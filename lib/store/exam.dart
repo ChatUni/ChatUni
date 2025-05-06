@@ -432,8 +432,8 @@ abstract class _Exam with Store {
     for (var q in [...writeQuestions, ...speakQuestions]) {
       if (q.userAnswer != null && q.userAnswer != '') {
         q.answer = await writeScore(q.userAnswer!);
-        final m = RegExp('Score:\\*\\* (\\d+)').firstMatch(q.answer!);
-        if (m != null) q.score = m.group(1);
+        final m = RegExp('Score: (\\d) out of \\d').firstMatch(q.answer!);
+        q.score = m != null ? m.group(1) : '0';
       }
     }
     isScoring = false;

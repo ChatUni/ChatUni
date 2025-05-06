@@ -289,10 +289,21 @@ Widget prevNext() => obs<Exam>(
       ]),
     );
 
+Widget showExplain() => obs<Exam>(
+      (exam) =>
+          exam.component != null && exam.component!.isRead && exam.isChecking
+              ? button(
+                  () => exam.getExplain(),
+                  text: 'Analysis and Explanation',
+                  bgColor: Colors.green,
+                )
+              : vSpacer(1),
+    );
+
 Widget showResult(bool isChecking) => isChecking
     ? button(
         () => router.go('/exam_result'),
-        text: 'Show Results',
+        text: 'Back to Summary',
         bgColor: Colors.orange,
       )
     : vSpacer(1);
@@ -430,7 +441,7 @@ Widget explainCol(int number, bool isChecking, {bool hideNumber = false}) =>
               ? txt('Q$number)', bold: true, color: Colors.white)
               : bold('Q$number)')
           : hSpacer(1),
-      isChecking ? explainButton() : hSpacer(1),
+      hSpacer(1), // isChecking ? explainButton() : hSpacer(1),
     ]);
 
 Widget exQuestion(ExQuestion q) => ssRow([

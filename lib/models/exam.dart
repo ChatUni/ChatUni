@@ -212,6 +212,7 @@ class Component {
   List<Part> parts = [];
 
   bool get isListen => name == 'listen';
+  bool get isRead => name == 'read';
   bool get isWrite => name == 'write';
   bool get isSpeak => name == 'speak';
   bool get isQA => !isWrite && !isSpeak;

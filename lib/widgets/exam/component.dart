@@ -84,6 +84,8 @@ List<Widget> explain(Exam exam) => [
 
 List<Widget> nav(bool isChecking) => [
       prevNext(),
-      vSpacer(8),
+      vSpacer(4),
+      showExplain(),
+      vSpacer(4),
       showResult(isChecking),
     ];

@@ -13,10 +13,13 @@ Widget topBar() => obs<App>(
       (app) => AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'assets/images/logo.png',
-              fit: BoxFit.cover,
-              width: 80,
+            tap(
+              () => router.go('/'),
+              Image.asset(
+                'assets/images/logo.png',
+                fit: BoxFit.cover,
+                width: 80,
+              ),
             ),
             Expanded(
               child: Text(
